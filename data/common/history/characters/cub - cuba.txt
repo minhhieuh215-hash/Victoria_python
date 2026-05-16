@@ -1,0 +1,7 @@
+﻿CHARACTERS = {
+	c:CUB ?= {
+		create_character = {
+			template = CUB_miguel_tacon_y_rosique
+		}	
+	}
+}

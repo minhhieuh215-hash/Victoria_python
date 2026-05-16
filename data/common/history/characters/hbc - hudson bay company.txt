@@ -1,0 +1,7 @@
+﻿CHARACTERS = {
+	c:HBC ?= {
+		create_character = {
+			template = HBC_george_simpson
+		}
+	}
+}

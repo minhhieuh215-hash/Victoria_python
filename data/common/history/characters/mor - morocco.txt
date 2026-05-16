@@ -1,0 +1,11 @@
+﻿CHARACTERS = {
+	c:MOR ?= {
+		create_character = {
+			template = MOR_abd_al_rahman_al_alawi
+		}	
+
+		create_character = {
+			template = MOR_muhammad_al_alawi
+		}
+	}
+}

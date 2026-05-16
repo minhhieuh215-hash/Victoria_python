@@ -1,0 +1,7 @@
+﻿CHARACTERS = {
+	c:TRN ?= {
+		create_character = {
+			template = TRN_andries_pretorius
+		}
+	}
+}

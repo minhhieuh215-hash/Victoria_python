@@ -1,0 +1,11 @@
+﻿CHARACTERS = {
+	c:ZUL ?= {
+		create_character = {
+			template = ZUL_dingane
+		}	
+
+		create_character = {
+			template = ZUL_mpande_zulu
+		}
+	}
+}

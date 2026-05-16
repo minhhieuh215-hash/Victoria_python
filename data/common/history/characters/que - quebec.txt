@@ -1,0 +1,10 @@
+﻿CHARACTERS = {
+	c:QUE ?= {
+		create_character = {
+			template = QUE_archibald_acheson
+		}
+		create_character = {
+			template = QUE_louis_joseph_papineau
+		}
+	}
+}

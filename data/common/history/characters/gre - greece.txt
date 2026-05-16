@@ -1,0 +1,21 @@
+﻿CHARACTERS = {
+	c:GRE ?= {
+		create_character = {
+			template = GRE_otto_von_wittelsbach
+		}	
+
+		# no heir in 1836
+
+		create_character = {
+			template = GRE_josef_ludwig_von_armansperg
+		}
+
+		create_character = {
+			template = GRE_carl_wilhelm_von_heideck
+		}
+		
+		create_character = { # Sea
+		    template = GRE_antonios_kriezis
+		}
+	}
+}

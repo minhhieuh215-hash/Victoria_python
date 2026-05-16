@@ -1,0 +1,7 @@
+﻿CHARACTERS = {
+	c:ORA ?= {
+		create_character = {
+			template = ORA_piet_retief
+		}	
+	}
+}

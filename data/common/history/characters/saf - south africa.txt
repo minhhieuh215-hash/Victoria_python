@@ -1,0 +1,7 @@
+﻿CHARACTERS = {
+	c:SAF ?= {
+		create_character = {
+			template = SAF_benjamin_durban
+		}
+	}
+}
