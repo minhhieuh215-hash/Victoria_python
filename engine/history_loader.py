@@ -31,19 +31,24 @@ def load_state_history(provinces_dict):
                     prov_list = provinces_match.group(1).split()
 
                     for hex_pid in prov_list:
-                        # Làm sạch chuỗi Hex
-                        hex_str = hex_pid.replace('"', '').lstrip('x')
+                        # Làm sạch chuỗi: bỏ ngoặc kép, khoảng trắng thừa, và chữ 'x' hoặc 'X' ở đầu
+                        hex_str = hex_pid.replace('"', '').strip().lstrip('x').lstrip('X')
+                        
                         if len(hex_str) != 6:
                             continue
 
-                        # Chuyển Hex sang RGB
-                        r = int(hex_str[0:2], 16)
-                        g = int(hex_str[2:4], 16)
-                        b = int(hex_str[4:6], 16)
-                        target_color = (r, g, b)
+                        # DÙNG TRY-EXCEPT ĐỂ BẮT RÁC: Nếu chuỗi 6 ký tự nhưng không phải Hex hợp lệ, bỏ qua!
+                        try:
+                            r = int(hex_str[0:2], 16)
+                            g = int(hex_str[2:4], 16)
+                            b = int(hex_str[4:6], 16)
+                            target_color = (r, g, b)
 
-                        # Nếu Province này có tồn tại trên bản đồ, gán chủ sở hữu cho nó!
-                        if target_color in provinces_dict:
-                            provinces_dict[target_color].owner = owner_tag
+                            # Nếu Province này có tồn tại trên bản đồ, gán chủ sở hữu cho nó!
+                            if target_color in provinces_dict:
+                                provinces_dict[target_color].owner = owner_tag
+                        except ValueError:
+                            # Kệ nó, bỏ qua các chuỗi tào lao trong file game
+                            continue
 
     print("Đã chia chác lãnh thổ xong cho năm 1836!")
