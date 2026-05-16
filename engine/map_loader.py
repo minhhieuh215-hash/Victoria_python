@@ -7,8 +7,9 @@ from models.province import Province
 from models.state import State
 
 def load_provinces():
-    img = Image.open("data/map_data/provinces.png").convert("RGB")
-    pixels = img.load()
+    img = Image.open("data/map_data/provinces.png")
+    img_rgb = img.convert("RGB")
+    pixels = img_rgb.load()
 
     provinces = {}
     color_to_id = {}

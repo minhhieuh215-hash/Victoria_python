@@ -1,18 +1,22 @@
 import pygame
 import sys
+import os
 
 def run_game(color_to_province):
-    # Khởi tạo Pygame
+
     pygame.init()
-    
-    # Thiết lập cửa sổ màn hình (Windowed mode)
     screen_width, screen_height = 1280, 720
     screen = pygame.display.set_mode((screen_width, screen_height))
     pygame.display.set_caption("Victoria 3 Python Engine - Map Viewer")
 
     # Load ảnh map gốc lên
     print("Đang nạp ảnh bản đồ lên giao diện...")
-    map_image = pygame.image.load("data/map_data/provinces.png").convert()
+    
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    map_path = os.path.join(base_dir, "data", "map_data", "provinces.png")
+
+    print(f"Đường dẫn tuyệt đối: {map_path}")
+    map_image = pygame.image.load(map_path).convert()
     
     # Biến để điều khiển camera (di chuyển bản đồ)
     camera_x, camera_y = 0, 0

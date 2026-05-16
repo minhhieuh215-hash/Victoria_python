@@ -1,3 +1,4 @@
+from engine.country_loader import load_countries
 from engine.history_loader import load_state_history
 from engine.map_loader import load_provinces
 from engine.map_loader import *
