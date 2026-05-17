@@ -6,8 +6,8 @@ class Province:
         self.id = province_id
         self.color = color
         self.is_sea: bool = False
-        self.owner: str | None = None  
-        self.owner = None
+        self.is_lake: bool = False
+        self.owner: str | None = None
         self.population = 0
         self.terrain = "plains"
 

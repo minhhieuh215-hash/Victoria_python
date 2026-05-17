@@ -6,44 +6,49 @@ from PIL import Image
 from models.province import Province
 from models.state import State
 
+def _parse_hex_colors(block_str):
+    """Parse danh sách hex color từ một block string, trả về set các tuple (r,g,b)."""
+    colors = set()
+    for token in block_str.split():
+        hex_str = token.replace('"', '').strip().lstrip('x').lstrip('X')
+        if len(hex_str) != 6:
+            continue
+        try:
+            colors.add((int(hex_str[0:2], 16),
+                        int(hex_str[2:4], 16),
+                        int(hex_str[4:6], 16)))
+        except ValueError:
+            continue
+    return colors
+
 def load_sea_colors():
     sea_colors = set()
-    # Đường dẫn tới file default.map trong thư mục dự án của bạn
-    file_path = "data/map_data/default.map" 
-    
+    lake_colors = set()
+    file_path = "data/map_data/default.map"
+
     if not os.path.exists(file_path):
-        print(f"⚠️ Không tìm thấy file {file_path}! Tạm thời hệ thống chưa phân biệt được Biển.")
-        return sea_colors
+        print(f"⚠️ Không tìm thấy file {file_path}!")
+        return sea_colors, lake_colors
 
     with open(file_path, "r", encoding="utf-8") as file:
-        content = file.read()
-        
-        # Loại bỏ các đoạn ghi chú (comment bắt đầu bằng #) để tránh nhận diện nhầm ký tự rác
-        content_clean = re.sub(r'#.*', '', content)
-        
-        # Tìm khối sea_starts = { ... }
-        match = re.search(r"sea_starts\s*=\s*\{([^}]+)\}", content_clean)
-        if match:
-            hex_pids = match.group(1).split()
-            for hex_pid in hex_pids:
-                # Làm sạch chuỗi Hex (bỏ ngoặc kép, khoảng trắng và chữ x/X ở đầu)
-                hex_str = hex_pid.replace('"', '').strip().lstrip('x').lstrip('X')
-                if len(hex_str) != 6:
-                    continue
-                try:
-                    r = int(hex_str[0:2], 16)
-                    g = int(hex_str[2:4], 16)
-                    b = int(hex_str[4:6], 16)
-                    sea_colors.add((r, g, b))
-                except ValueError:
-                    continue
-                    
-    print(f"-> Đã trích xuất thành công {len(sea_colors)} mã màu của vùng Đại dương.")
-    return sea_colors
+        content = re.sub(r'#.*', '', file.read())
+
+    # 1. Đại dương (sea_starts)
+    match_sea = re.search(r"sea_starts\s*=\s*\{([^}]+)\}", content)
+    if match_sea:
+        sea_colors = _parse_hex_colors(match_sea.group(1))
+
+    # 2. Hồ nội địa (lakes) - tách RIÊNG, không gộp vào sea
+    match_lakes = re.search(r"lakes\s*=\s*\{([^}]+)\}", content)
+    if match_lakes:
+        lake_colors = _parse_hex_colors(match_lakes.group(1))
+
+    print(f"-> Biển: {len(sea_colors)} màu | Hồ nội địa: {len(lake_colors)} màu")
+    return sea_colors, lake_colors
 
 def load_provinces():
-    # Bước 1: Nạp danh sách các màu thuộc về Biển trước khi quét ảnh
-    sea_colors = load_sea_colors()
+    # Bước 1: Nạp danh sách màu Biển và Hồ nội địa
+    sea_colors, lake_colors = load_sea_colors()
 
     img = Image.open("data/map_data/provinces.png")
     img_rgb = img.convert("RGB")
@@ -68,22 +73,28 @@ def load_provinces():
 
             if color not in color_to_id:
                 color_to_id[color] = province_id
-                
-                # Tạo đối tượng Province
+
                 prov = Province(province_id, color)
-                
-                # Bước 2: Tự động đối chiếu màu để phân loại Đất liền vs Biển
+
                 if color in sea_colors:
+                    # Đại dương thật sự → tô xanh đậm
                     prov.is_sea = True
-                    prov.owner = "SEA"  # Đặt nhãn chủ sở hữu mặc định cho đại dương
+                    prov.is_lake = False
+                    prov.owner = "SEA"
+                elif color in lake_colors:
+                    # Hồ nội địa (Great Lakes, hồ Canada...) → tô xanh nhạt hơn biển
+                    prov.is_sea = False
+                    prov.is_lake = True
+                    prov.owner = "LAKE"
                 else:
                     prov.is_sea = False
-                    prov.owner = "Không có / Đất trống"  # Sẽ được ghi đè ở hàm history_loader sau này
-                
+                    prov.is_lake = False
+                    prov.owner = "Không có / Đất trống"
+
                 provinces[province_id] = prov
                 province_id += 1
-                
-    img.close()  # Đảm bảo giải phóng file ảnh để Pygame không bị lỗi tranh chấp (lock file)
+
+    img.close()
     return provinces
 
 def load_adjacencies(provinces):
