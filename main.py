@@ -33,7 +33,7 @@ def main():
     print("="*40)
     
     # Khởi chạy màn hình UI và truyền dữ liệu map vào
-    run_game(color_to_province)
+    run_game(color_to_province, countries_data)
 
 if __name__ == "__main__":
     main()

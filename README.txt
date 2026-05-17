@@ -1,1 +1,1 @@
-victoria 3 python day 1
+victoria 3 python day 2
