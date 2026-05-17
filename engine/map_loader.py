@@ -95,6 +95,8 @@ def load_provinces():
                 province_id += 1
 
     img.close()
+    print(f"-> Tổng số province: {len(provinces)}")
+    print(f"-> Đất có chủ: {sum(1 for p in provinces.values() if p.owner not in ('SEA', 'LAKE', 'Không có / Đất trống'))}")
     return provinces
 
 def load_adjacencies(provinces):
@@ -123,8 +125,12 @@ def load_states(provinces):
     for filename in os.listdir(folder):
         path = os.path.join(folder, filename)
 
+        if not os.path.isfile(path):
+            continue
+
         with open(path, "r", encoding="utf-8") as file:
             content = file.read()
+
             name_match = re.search(r"(\w+)\s*=", content)
             provinces_match = re.search(r"provinces\s*=\s*{([^}]*)}", content)
 
@@ -134,19 +140,24 @@ def load_states(provinces):
                 state = State(state_name)
 
                 for hex_pid in province_ids:
-                    hex_str = hex_pid.replace('"', '').lstrip('x')
+                    hex_str = hex_pid.replace('"', '').strip().lstrip('x').lstrip('X')
                     
                     if len(hex_str) != 6:
                         continue 
 
-                    r = int(hex_str[0:2], 16)
-                    g = int(hex_str[2:4], 16)
-                    b = int(hex_str[4:6], 16)
-                    target_color = (r, g, b)
+                    try:
+                        r = int(hex_str[0:2], 16)
+                        g = int(hex_str[2:4], 16)
+                        b = int(hex_str[4:6], 16)
+                        target_color = (r, g, b)
 
-                    if target_color in color_to_province:
-                        state.provinces.append(color_to_province[target_color])
+                        if target_color in color_to_province:
+                            state.provinces.append(color_to_province[target_color])
+                
+                    except ValueError:
+                        continue
 
                 states.append(state)
-
+                print(f"Loaded state: {state_name} with {len(state.provinces)} provinces")
+        
     return states

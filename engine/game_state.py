@@ -57,3 +57,11 @@ class GameState:
     def get_player_provinces(self):
         """Lấy tất cả province thuộc người chơi"""
         return [p for p in self.provinces.values() if getattr(p, 'owner', None) == self.player_tag]
+
+    def get_country_population(self, tag):
+        """Lấy dân số của một quốc gia từ các province"""
+        total_pop = 0
+        for prov in self.provinces.values():
+            if getattr(prov, 'owner', None) == tag:
+                total_pop += getattr(prov, 'population', 0)
+        return total_pop / 1000000  # Trả về triệu người

@@ -10,5 +10,4 @@ class Province:
         self.owner: str | None = None
         self.population = 0
         self.terrain = "plains"
-
         self.neighbors = []
