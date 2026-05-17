@@ -85,12 +85,16 @@ def generate_political_map(original_image, color_to_province, countries_data):
     return pol_map
 
 
-def run_game(color_to_province, countries_data):
+def run_game(game_state):
     pygame.init()
     screen_width, screen_height = 1280, 720
     screen = pygame.display.set_mode((screen_width, screen_height))
     pygame.display.set_caption("Victoria 3 Python Engine - Map Viewer")
 
+    # TỰ ĐỘNG LẤY DỮ LIỆU TỪ BỘ NÃO GAME_STATE RA ĐỂ CHẠY ĐỒ HỌA
+    color_to_province = {prov.color: prov for prov in game_state.provinces.values()}
+    countries_data = game_state.countries
+    
     # Tự động tìm đường dẫn file
     current_dir = os.path.dirname(os.path.abspath(__file__))
     if os.path.exists(os.path.join(current_dir, "data")):

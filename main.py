@@ -7,6 +7,7 @@ from engine.map_loader import load_provinces, load_states
 from engine.country_loader import load_countries
 from engine.history_loader import load_state_history
 from game_ui import run_game
+from engine.game_state import GameState
 
 def main():
     print("="*40)
@@ -31,6 +32,9 @@ def main():
     print("="*40)
     print("✅ NẠP DỮ LIỆU THÀNH CÔNG! ĐANG MỞ GIAO DIỆN...")
     print("="*40)
+    
+    print("Đang khởi tạo GameState...")
+    game_state = GameState(provinces, states, countries_data)
     
     # Khởi chạy màn hình UI và truyền dữ liệu map vào
     run_game(color_to_province, countries_data)
