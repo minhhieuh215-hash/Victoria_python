@@ -1,517 +1,778 @@
-import pygame
-import numpy as np
-import sys
-import os
-from PIL import Image
+import pygame, numpy as np, sys, os, json
 
-# ─────────────────────────────────────────────
-#  CONSTANTS
-# ─────────────────────────────────────────────
-SIDEBAR_W  = 280
-HUD_H      = 48
-COLOR_BG        = (15,  18,  28)
-COLOR_PANEL     = (22,  28,  42)
-COLOR_PANEL2    = (28,  36,  54)
-COLOR_BORDER    = (58,  72, 100)
-COLOR_GOLD      = (200, 165,  60)
-COLOR_GOLD_DIM  = (120, 100,  40)
-COLOR_SEA       = (19,  41,  63)
-COLOR_WHITE     = (230, 235, 245)
-COLOR_GREY      = (130, 140, 160)
-COLOR_GREEN     = ( 80, 200, 120)
-COLOR_RED       = (220,  80,  80)
+# ── Constants ──────────────────────────────────────
+from config import (
+    SCREEN_W, SCREEN_H, FPS, TITLE, ZOOM_MAX,
+    C_BG, C_PANEL, C_BORDER, C_GOLD, C_GOLD_DIM,
+    C_SEA, C_LAKE, C_WHITE, C_GREY, C_GREEN, C_RED,
+    C_LAND_EMPTY, C_COLONIZABLE, COLONIZABLE_TYPES
+)
+from engine.state_resource_loader import RESOURCE_DISPLAY
+from engine.state_resource_loader import get_state_for_province
 
-MONTH_NAMES = ["January","February","March","April","May","June",
-               "July","August","September","October","November","December"]
+SIDEBAR_W = 280
+HUD_H     = 48
+MONTH_FULL = ["January","February","March","April","May","June",
+              "July","August","September","October","November","December"]
 
 COUNTRY_NAMES = {
-    "GBR":"Great Britain",    "FRA":"France",           "RUS":"Russia",
-    "GER":"Germany",          "AUS":"Austria",          "PRU":"Prussia",
-    "USA":"United States",    "JAP":"Japan",            "CHI":"China",
-    "TUR":"Ottoman Empire",   "SPA":"Spain",            "POR":"Portugal",
-    "ITA":"Italy",            "SCA":"Scandinavia",      "NET":"Netherlands",
-    "BEL":"Belgium",          "SWI":"Switzerland",      "HBC":"Hudson Bay Co.",
-    "BRZ":"Brazil",           "ARG":"Argentina",        "MEX":"Mexico",
-    "PER":"Persia",           "EGY":"Egypt",            "ETH":"Ethiopia",
-    "MAD":"Madagascar",       "MOR":"Morocco",          "TUN":"Tunisia",
-    "TRI":"Tripoli",          "SOK":"Sokoto",           "ZUL":"Zulu Kingdom",
-    "NEP":"Nepal",            "BUR":"Burma",            "SIA":"Siam",
-    "DAI":"Dai Nam",          "KOR":"Korea",            "CAN":"Canada",
-    "CHL":"Chile",            "CLM":"Colombia",         "GRE":"Greece",
-    "SER":"Serbia",           "MON":"Montenegro",       "HAI":"Haiti",
-    "HAN":"Hannover",         "SAX":"Saxony",           "BAV":"Bavaria",
-    "NOR":"Norway",           "DEN":"Denmark",          "SWE":"Sweden",
-    "DEI":"Dutch East Indies","PHI":"Philippines",      "PAN":"Punjab",
-    "AFG":"Afghanistan",      "BOL":"Bolivia",          "VNZ":"Venezuela",
-    "UPP":"Upper Peru",       "PAR":"Paraguay",         "URU":"Uruguay",
-    "ICE":"Iceland",          "FIN":"Finland",          "POL":"Poland",
-    "ROM":"Romania",          "BUL":"Bulgaria",         "ALB":"Albania",
-    "TEX":"Texas",            "ECU":"Ecuador",
-    "UCA":"Central America",  "COS":"Costa Rica",
-    "HON":"Honduras",         "NIC":"Nicaragua",
-    "GUA":"Guatemala",        "ELS":"El Salvador",
-    "HAW":"Hawaii",           "TAH":"Tahiti",
-    "CUB":"Cuba",             "DOM":"Dominican Republic",
-    "HAI":"Haiti",            "PUR":"Puerto Rico",
-    "JAM":"Jamaica",          "BAH":"Bahamas",
-    "TRN":"Trinidad",         "GUY":"Guyana",
-    "SUR":"Suriname",         "FGU":"French Guiana",
-    "VIE":"Vietnam",          "LAO":"Laos",             "CAM":"Cambodia",
-    "BRU":"Brunei",           "MAL":"Malaya",           "SIN":"Singapore",
-    "INS":"Insulindia",       "TIM":"Timor",            "CEY":"Ceylon",
-    "BHU":"Bhutan",           "MGL":"Mongolia",         "TIB":"Tibet",
-    "XIN":"Xinjiang",         "MAN":"Manchuria",        "KOR":"Korea",
-    "JAP":"Japan",            "RYU":"Ryukyu",
-    "IRQ":"Iraq",             "SYR":"Syria",            "LEB":"Lebanon",
-    "JOR":"Jordan",           "ISR":"Israel",           "PAL":"Palestine",
-    "YEM":"Yemen",            "OMA":"Oman",             "TRU":"Trucial States",
-    "KSA":"Saudi Arabia",     "KUW":"Kuwait",           "BAH":"Bahrain",
-    "QAT":"Qatar",            "UAE":"United Arab Emirates",
-    "ALG":"Algeria",          "TUN":"Tunisia",          "MOR":"Morocco",
-    "LBY":"Libya",            "EGY":"Egypt",            "SUD":"Sudan",
-    "ETH":"Ethiopia",         "ERI":"Eritrea",          "SOM":"Somalia",
-    "KEN":"Kenya",            "UGA":"Uganda",           "TAN":"Tanganyika",
-    "ZAN":"Zanzibar",         "MOZ":"Mozambique",       "MAD":"Madagascar",
-    "ANG":"Angola",           "NAM":"Namibia",          "BOT":"Botswana",
-    "ZIM":"Zimbabwe",         "ZAM":"Zambia",           "MLW":"Malawi",
-    "RSA":"South Africa",     "SWA":"Swaziland",        "LES":"Lesotho",
-    "QUE":"Quebec",           "ONT":"Ontario",          "MAN":"Manitoba",
-    "SAS":"Saskatchewan",     "ALB":"Alberta",          "BC":"British Columbia",
-    "NWT":"Northwest Territories", "YUK":"Yukon",       "NUN":"Nunavut",
-    "CAL":"California",       "TEX":"Texas",            "FLO":"Florida",
-    "ALA":"Alabama",          "MIS":"Mississippi",      "LOU":"Louisiana",
-    "ARK":"Arkansas",         "TEN":"Tennessee",        "KEN":"Kentucky",
-    "OHI":"Ohio",             "IND":"Indiana",          "ILL":"Illinois",
-    "MIC":"Michigan",         "WIS":"Wisconsin",        "MIN":"Minnesota",
-    "IOW":"Iowa",             "MIS":"Missouri",         "NOR":"North Carolina",
-    "SOU":"South Carolina",   "GEO":"Georgia",          "VIR":"Virginia",
-    "WVA":"West Virginia",    "PEN":"Pennsylvania",     "NY":"New York",
-    "MAS":"Massachusetts",    "VER":"Vermont",          "NEW":"New Hampshire",
-    "MAI":"Maine",            "CON":"Connecticut",      "RHO":"Rhode Island",
-    "DEL":"Delaware",         "MAR":"Maryland",         "NJ":"New Jersey",
-    "VEN":"Venezuela",        "COL":"Colombia",         "ECU":"Ecuador",
-    "PER":"Peru",             "BOL":"Bolivia",          "PAR":"Paraguay",
-    "CHL":"Chile",            "ARG":"Argentina",        "URU":"Uruguay",
-    "BRZ":"Brazil",           "GUY":"Guyana",           "SUR":"Suriname",
-    "FGU":"French Guiana",
-    "AUS":"Australia",        "NZL":"New Zealand",      "PNG":"Papua New Guinea",
-    "FIJ":"Fiji",             "SOL":"Solomon Islands",   "VAN":"Vanuatu",
-    "NCL":"New Caledonia",    "SAM":"Samoa",            "TON":"Tonga",
+    "GBR":"Great Britain",  "FRA":"France",       "RUS":"Russia",
+    "GER":"Germany",        "AUS":"Austria",       "PRU":"Prussia",
+    "USA":"United States",  "JAP":"Japan",         "CHI":"China",
+    "TUR":"Ottoman Empire", "SPA":"Spain",         "POR":"Portugal",
+    "ITA":"Italy",          "SCA":"Scandinavia",   "NET":"Netherlands",
+    "BEL":"Belgium",        "HBC":"Hudson Bay Co.","BRZ":"Brazil",
+    "ARG":"Argentina",      "MEX":"Mexico",        "PER":"Persia",
+    "EGY":"Egypt",          "ETH":"Ethiopia",      "MOR":"Morocco",
+    "NEP":"Nepal",          "BUR":"Burma",         "SIA":"Siam",
+    "DAI":"Dai Nam",        "KOR":"Korea",         "CAN":"Canada",
+    "CHL":"Chile",          "CLM":"Colombia",      "GRE":"Greece",
+    "SER":"Serbia",         "HAN":"Hannover",      "SAX":"Saxony",
+    "BAV":"Bavaria",        "NOR":"Norway",        "DEN":"Denmark",
+    "SWE":"Sweden",         "DEI":"Dutch East Indies",
+    "AFG":"Afghanistan",    "BOL":"Bolivia",       "VNZ":"Venezuela",
+    "TEX":"Texas",          "ECU":"Ecuador",       "UCA":"Central America",
+    "COS":"Costa Rica",     "HON":"Honduras",      "NIC":"Nicaragua",
+    "GUA":"Guatemala",      "ELS":"El Salvador",   "CUB":"Cuba",
+    "DOM":"Dominican Republic", "HAI":"Haiti",     "JAM":"Jamaica",
 }
 
-COUNTRY_POP = {
-    "GBR":25.0,"FRA":33.0,"RUS":60.0,"GER":30.0,"AUS":35.0,"PRU":14.0,
-    "USA":15.0,"CHI":400.0,"JAP":30.0,"TUR":25.0,"SPA":12.0,"BRZ":7.0,
-    "ITA":22.0,"SCA":4.0,"NET":3.0,"MEX":7.0,"PER":9.0,"EGY":4.0,
-    "ETH":5.0,"MOR":4.0,"NEP":5.0,"BUR":8.0,"SIA":5.0,"KOR":8.0,
-    "DAI":8.0,"HBC":0.1,"CAN":1.5,"ARG":0.8,"GRE":0.8,"SER":1.0,
-    "DEI":30.0,"CHI":400.0,"POR":3.5,"BEL":4.0,"NET":3.0,
+GOVT_LABELS = {
+    "default":"Mac dinh",           "absolute_monarchy":"Quan chu chuyen che",
+    "republic":"Cong hoa",          "dictatorship":"Doc tai",
+    "theocracy":"Than quyen",       "communist":"Cong san",
+    "fascist":"Phat xit",           "subject":"Phu thuoc",
 }
 
+DIPLOMACY_PANEL_W = 500
+DIPLOMACY_PANEL_H = 450
+MAP_MODE_POLITICAL = 0
+MAP_MODE_COUNTRY_NAMES = 1
+MAP_MODE_PROVINCE_NAMES = 2
 
-# ─────────────────────────────────────────────
-#  FONT HELPER
-# ─────────────────────────────────────────────
+current_map_mode = MAP_MODE_POLITICAL
+country_name_surface = None
+province_name_surface = None
+game_state_ref = None
+show_diplomacy = False
+diplomacy_selected_tag = None
+
+# ── Global flags cache ──────────────────────────────
+_flags = {}   # { TAG: { mode: Surface } }
+
+# ── Fonts ───────────────────────────────────────────
 def load_fonts():
-    candidates = ['Georgia', 'Times New Roman', 'Palatino', 'serif', 'arial']
-    serif = None
-    for name in candidates:
+    for name in ["segoeui","tahoma","calibri","verdana","arial","freesans"]:
         try:
-            f = pygame.font.SysFont(name, 12)
-            if f: serif = name; break
+            if pygame.font.SysFont(name,14).render("A",True,(0,0,0)).get_width():
+                chosen = name; break
         except: pass
-    serif = serif or 'arial'
+    else:
+        chosen = "arial"
     return {
-        'title' : pygame.font.SysFont(serif, 22, bold=True),
-        'med'   : pygame.font.SysFont(serif, 16, bold=True),
-        'sm'    : pygame.font.SysFont(serif, 13),
-        'hud'   : pygame.font.SysFont(serif, 17, bold=True),
-        'date'  : pygame.font.SysFont(serif, 20, bold=True),
-        'big'   : pygame.font.SysFont(serif, 26, bold=True),
+        "big"  : pygame.font.SysFont(chosen, 24, bold=True),
+        "title": pygame.font.SysFont(chosen, 19, bold=True),
+        "med"  : pygame.font.SysFont(chosen, 15, bold=True),
+        "sm"   : pygame.font.SysFont(chosen, 13),
+        "hud"  : pygame.font.SysFont(chosen, 16, bold=True),
+        "date" : pygame.font.SysFont(chosen, 18, bold=True),
     }
 
 
-# ─────────────────────────────────────────────
-#  MAP GENERATION
-# ─────────────────────────────────────────────
-def load_flags_cache(base_dir):
-    """Parse flags: Flag_TAG.png hoặc Flag_TAG_chedo.png -> {TAG: {mode: Surface}}"""
-    flags_cache = {}
-    flags_dir = os.path.join(base_dir, "data", "flags")
-    if not os.path.exists(flags_dir):
-        os.makedirs(flags_dir)
-        return flags_cache
-    for filename in os.listdir(flags_dir):
-        if not filename.endswith(".png"): continue
-        parts = filename[:-4].split("_")
+# ── Flag helpers ────────────────────────────────────
+def load_flags(base_dir):
+    global _flags
+    d = os.path.join(base_dir, "data", "flags")
+    if not os.path.exists(d): return
+    for fn in os.listdir(d):
+        if not fn.endswith(".png"): continue
+        parts = fn[:-4].split("_")
         if len(parts) < 2 or parts[0].lower() != "flag": continue
         tag  = parts[1].upper()
-        mode = "_".join(parts[2:]) if len(parts) > 2 else "default"
+        mode = "_".join(parts[2:]) or "default"
         try:
-            img = pygame.image.load(os.path.join(flags_dir, filename)).convert_alpha()
-            if tag not in flags_cache: flags_cache[tag] = {}
-            flags_cache[tag][mode] = img
+            img = pygame.image.load(os.path.join(d,fn)).convert_alpha()
+            _flags.setdefault(tag, {})[mode] = img
         except: pass
-    print(f"Nap flags: {len(flags_cache)} quoc gia")
-    return flags_cache
+    print(f"Flags: {len(_flags)} quoc gia")
 
-def get_flag(flags_cache, tag, mode="default", size=(72,48)):
-    entry = flags_cache.get(tag, {})
-    img = entry.get(mode) or entry.get("default") or None
-    if img: return pygame.transform.scale(img, size)
-    return None
+def get_flag(tag, mode="default", size=(72,48)):
+    entry = _flags.get(tag, {})
+    img = entry.get(mode) or entry.get("default")
+    return pygame.transform.scale(img, size) if img else None
 
-GOVTS = [
-    ("default",           "Mac dinh"),
-    ("absolute_monarchy", "Quan chu chuyen che"),
-    ("republic",          "Cong hoa"),
-    ("dictatorship",      "Doc tai"),
-    ("theocracy",         "Than quyen"),
-    ("communist",         "Cong san"),
-]
-# ─── FLAGS HELPERS ───
-flags_cache_ref = {}   # global ref, set bởi start_engine
-
-def _avail_modes(cache, tag):
-    """Các chế độ có cờ cho TAG này, luôn có 'default' đầu tiên."""
-    entry = cache.get(tag, {})
-    modes = sorted(entry.keys())
-    if "default" in modes:
-        modes.remove("default")
-        modes = ["default"] + modes
-    return modes if modes else ["default"]
-
-def _mode_label(mode):
-    labels = {
-        "default":           "Mac dinh",
-        "absolute_monarchy": "Quan chu chuyen che",
-        "republic":          "Cong hoa",
-        "dictatorship":      "Doc tai",
-        "theocracy":         "Than quyen",
-        "communist":         "Cong san",
-        "fascist":           "Phat xit",
-        "subject":           "Phu thuoc",
-    }
-    return labels.get(mode, mode.replace("_"," ").title())
+def avail_modes(tag):
+    modes = sorted(_flags.get(tag, {}).keys())
+    if "default" in modes: modes.remove("default"); modes = ["default"]+modes
+    return modes or ["default"]
 
 
-def find_province_by_color(rgb, color_to_province, tolerance=5):
-    """Find province by RGB color with fuzzy matching (within tolerance)."""
-    # Normalize RGB to tuple of ints
-    if not isinstance(rgb, tuple) or len(rgb) < 3:
-        return None
-    
-    try:
-        r, g, b = int(rgb[0]), int(rgb[1]), int(rgb[2])
-    except (ValueError, TypeError):
-        return None
-    
-    # Try exact match first
-    exact_key = (r, g, b)
-    if exact_key in color_to_province:
-        return color_to_province[exact_key]
-    
-    # Fuzzy match: find closest color within tolerance
-    best_match = None
-    best_distance = float('inf')
-    
-    for color_key in color_to_province.keys():
-        if not isinstance(color_key, tuple) or len(color_key) < 3:
-            continue
-        try:
-            cr, cg, cb = int(color_key[0]), int(color_key[1]), int(color_key[2])
-        except (ValueError, TypeError):
-            continue
-        
-        # Euclidean distance
-        distance = ((r - cr)**2 + (g - cg)**2 + (b - cb)**2) ** 0.5
-        if distance < best_distance:
-            best_distance = distance
-            best_match = color_to_province[color_key]
-    
-    # Only return if within tolerance
-    if best_distance <= tolerance:
-        return best_match
-    return None
-
-def generate_political_map(original_image, color_to_province, countries_data):
-    print("Đang tô màu bản đồ...")
+# ── Border masks ────────────────────────────────────
+def generate_province_border_mask(original_image, color_to_province, countries_data):
+    """
+    Tạo mask cho viền tỉnh, CHỈ vẽ viền giữa các tỉnh khác quốc gia.
+    """
     arr = pygame.surfarray.array3d(original_image).transpose(1, 0, 2)
-    H, W, _ = arr.shape
-    color_lookup = {}
-    for rgb_tuple, prov in color_to_province.items():
-        if getattr(prov, 'is_sea', False):
-            color_lookup[rgb_tuple] = COLOR_SEA
-        elif getattr(prov, 'is_lake', False):
-            color_lookup[rgb_tuple] = (26, 128, 128)
+    h, w = arr.shape[:2]
+    
+    owner_map = np.zeros((h, w), dtype=np.uint32)
+    owner_by_color = {}
+    
+    for rgb, prov in color_to_province.items():
+        owner = getattr(prov, 'owner', None)
+        if owner and owner not in ("SEA", "LAKE", "Không có / Đất trống"):
+            owner_by_color[rgb] = hash(owner) % (2**32)
         else:
-            owner_tag = getattr(prov, 'owner', None)
-            if owner_tag and owner_tag in countries_data:
-                color_lookup[rgb_tuple] = tuple(int(v) for v in countries_data[owner_tag][:3])
-            else:
-                color_lookup[rgb_tuple] = (26, 128, 128)
+            owner_by_color[rgb] = 0
+    
+    for y in range(h):
+        for x in range(w):
+            rgb = tuple(arr[y, x])
+            owner_map[y, x] = owner_by_color.get(rgb, 0)
+    
+    mask = np.zeros((h, w), dtype=bool)
+    mask[:, 1:] |= (owner_map[:, 1:] != owner_map[:, :-1]) & (owner_map[:, 1:] != 0) & (owner_map[:, :-1] != 0)
+    mask[1:, :] |= (owner_map[1:, :] != owner_map[:-1, :]) & (owner_map[1:, :] != 0) & (owner_map[:-1, :] != 0)
+    mask &= (owner_map != 0)
+    
+    return mask
 
-    arr_u32 = (arr[:,:,0].astype(np.uint32)*65536 +
-               arr[:,:,1].astype(np.uint32)*256 +
-               arr[:,:,2].astype(np.uint32))
+def generate_province_border_mask_only(original_image, color_to_province):
+    """Tạo mask viền cho TẤT CẢ các tỉnh (không phân biệt quốc gia)"""
+    arr = pygame.surfarray.array3d(original_image).transpose(1, 0, 2)
+    h, w = arr.shape[:2]
+    
+    province_map = np.zeros((h, w), dtype=np.uint32)
+    province_by_color = {}
+    
+    for rgb, prov in color_to_province.items():
+        province_by_color[rgb] = prov.id
+    
+    for y in range(h):
+        for x in range(w):
+            rgb = tuple(arr[y, x])
+            province_map[y, x] = province_by_color.get(rgb, 0)
+    
+    mask = np.zeros((h, w), dtype=bool)
+    mask[:, 1:] |= (province_map[:, 1:] != province_map[:, :-1]) & (province_map[:, 1:] != 0) & (province_map[:, :-1] != 0)
+    mask[1:, :] |= (province_map[1:, :] != province_map[:-1, :]) & (province_map[1:, :] != 0) & (province_map[:-1, :] != 0)
+    mask &= (province_map != 0)
+    
+    return mask
+
+
+# ── Map generation ──────────────────────────────────
+def generate_political_map(original_image, color_to_province, countries_data, countries_full, mode=MAP_MODE_POLITICAL):
+    print("Dang to mau ban do...")
+    arr = pygame.surfarray.array3d(original_image).transpose(1,0,2)
     lut_r = np.zeros(16777216, dtype=np.uint8)
     lut_g = np.zeros(16777216, dtype=np.uint8)
     lut_b = np.zeros(16777216, dtype=np.uint8)
-    in_lookup = np.zeros(16777216, dtype=bool)
-    for (r,g,b),(nr,ng,nb) in color_lookup.items():
-        k = r*65536+g*256+b
-        lut_r[k]=nr; lut_g[k]=ng; lut_b[k]=nb; in_lookup[k]=True
-    mask = in_lookup[arr_u32]
+    in_lut = np.zeros(16777216, dtype=bool)
+
+    for rgb, prov in color_to_province.items():
+        if getattr(prov,"is_sea",False):
+            nr,ng,nb = C_SEA
+        elif getattr(prov,"is_lake",False):
+            nr,ng,nb = C_LAKE
+        else:
+            owner = getattr(prov,"owner",None)
+            if owner and owner in countries_data:
+                ctype = countries_full.get(owner,{}).get("type","recognized")
+                if ctype in COLONIZABLE_TYPES:
+                    nr,ng,nb = C_COLONIZABLE
+                else:
+                    v = countries_data[owner]
+                    nr,ng,nb = int(v[0]),int(v[1]),int(v[2])
+            else:
+                nr,ng,nb = C_LAND_EMPTY
+
+        k = rgb[0]*65536+rgb[1]*256+rgb[2]
+        lut_r[k]=nr; lut_g[k]=ng; lut_b[k]=nb; in_lut[k]=True
+
+    u32 = (arr[:,:,0].astype(np.uint32)*65536 +
+           arr[:,:,1].astype(np.uint32)*256   +
+           arr[:,:,2].astype(np.uint32))
+    mask = in_lut[u32]
     result = np.stack([
-        np.where(mask, lut_r[arr_u32], arr[:,:,0]),
-        np.where(mask, lut_g[arr_u32], arr[:,:,1]),
-        np.where(mask, lut_b[arr_u32], arr[:,:,2]),
+        np.where(mask, lut_r[u32], arr[:,:,0]),
+        np.where(mask, lut_g[u32], arr[:,:,1]),
+        np.where(mask, lut_b[u32], arr[:,:,2]),
     ], axis=2)
-    surf = pygame.surfarray.make_surface(result.transpose(1,0,2))
-    print("-> Hoàn tất!")
-    return surf
 
-def draw_panel(screen, x, y, w, h, alpha=230, border=True):
-    s = pygame.Surface((w, h), pygame.SRCALPHA)
-    s.fill((*COLOR_PANEL, alpha))
-    screen.blit(s, (x, y))
-    if border:
-        pygame.draw.rect(screen, COLOR_BORDER, (x, y, w, h), 1)
+    if mode == MAP_MODE_PROVINCE_NAMES:
+        border_mask = generate_province_border_mask_only(original_image, color_to_province)
+        result[border_mask] = np.array([80, 80, 80], dtype=np.uint8)
+    else:
+        border_mask = generate_province_border_mask(original_image, color_to_province, countries_data)
+        result[border_mask] = np.array([60, 60, 60], dtype=np.uint8)
 
-def draw_gold_rect(screen, x, y, w, h, radius=4):
-    pygame.draw.rect(screen, COLOR_GOLD, (x, y, w, h), 1, border_radius=radius)
+    result = (result * 0.9).astype(np.uint8)
 
-def draw_label_value(screen, fonts, x, y, label, value, val_color=COLOR_WHITE):
-    lbl = fonts['sm'].render(label, True, COLOR_GREY)
-    val = fonts['med'].render(str(value), True, val_color)
-    screen.blit(lbl, (x, y))
-    screen.blit(val, (x, y + 16))
-    return y + 38
+    print("-> Hoan tat!")
+    return pygame.surfarray.make_surface(result.transpose(1,0,2))
 
-def draw_separator(screen, x, y, w):
-    pygame.draw.line(screen, COLOR_BORDER, (x+8, y), (x+w-8, y))
-    return y + 10
+def generate_country_name_map(original_image, color_to_province, countries_data, fonts):
+    """Tạo bản đồ hiển thị tên quốc gia ngay trên map"""
+    print("Dang tao ban do ten quoc gia...")
+    
+    map_w, map_h = original_image.get_size()
+    text_surface = pygame.Surface((map_w, map_h), pygame.SRCALPHA)
+    
+    country_centers = {}
+    country_pixels = {}
+    
+    arr = pygame.surfarray.array3d(original_image).transpose(1, 0, 2)
+    
+    for y in range(0, map_h, 10):
+        for x in range(0, map_w, 10):
+            rgb = tuple(arr[y, x])
+            prov = color_to_province.get(rgb)
+            if prov:
+                owner = getattr(prov, 'owner', None)
+                if owner and owner not in ("SEA", "LAKE", "Không có / Đất trống"):
+                    if owner not in country_pixels:
+                        country_pixels[owner] = []
+                    country_pixels[owner].append((x, y))
+    
+    for owner, pixels in country_pixels.items():
+        if len(pixels) > 100:
+            center_x = sum(p[0] for p in pixels) // len(pixels)
+            center_y = sum(p[1] for p in pixels) // len(pixels)
+            country_centers[owner] = (center_x, center_y)
+    
+    for owner, (cx, cy) in list(country_centers.items())[:50]:  # Chỉ 50 nước lớn nhất
+        name = COUNTRY_NAMES.get(owner, owner)
+        if name is None:
+            name = owner if owner else "Unknown"
 
-def draw_sidebar(screen, fonts, selected_tag, countries_data, screen_h, game_state):
-    if not selected_tag or selected_tag in ("SEA","LAKE","Không có / Đất trống"):
+        if not name or len(name) < 3:
+            continue
+            
+        if len(name) > 12:
+            name = name[:10] + ".."
+        
+        text = fonts["sm"].render(name, True, C_WHITE)
+        text_rect = text.get_rect(center=(cx, cy))
+        
+        padding = 2
+        bg_rect = pygame.Rect(text_rect.x - padding, text_rect.y - padding,
+                              text_rect.width + padding * 2, text_rect.height + padding * 2)
+        pygame.draw.rect(text_surface, (*C_PANEL, 180), bg_rect, border_radius=2)
+        text_surface.blit(text, text_rect)
+    
+    print("-> Hoan tat!")
+    return text_surface
+
+def generate_province_name_map(original_image, color_to_province, fonts):
+    """Tạo bản đồ hiển thị tên tỉnh - PHIÊN BẢN SIÊU NHẸ (chỉ hiển thị state lớn)"""
+    print("Dang tao ban do ten tinh (toi uu cao)...")
+    
+    map_w, map_h = original_image.get_size()
+    text_surface = pygame.Surface((map_w, map_h), pygame.SRCALPHA)
+    
+    # Chỉ xử lý state đã được cache từ trước
+    from engine.state_resource_loader import _color_to_state_cache
+    
+    # Gom các province theo state từ cache
+    state_colors = {}
+    for color, state in _color_to_state_cache.items():
+        state_name = state.name
+        if state_name not in state_colors:
+            state_colors[state_name] = []
+        state_colors[state_name].append(color)
+    
+    # Lấy mẫu pixel nhanh hơn
+    arr = pygame.surfarray.array3d(original_image).transpose(1, 0, 2)
+    h, w = arr.shape[:2]
+    
+    # Dictionary lưu tổng và đếm
+    state_totals = {}
+    state_counts = {}
+    
+    # Lấy mẫu thưa hơn (mỗi 20 pixel)
+    step = 20
+    for y in range(0, h, step):
+        for x in range(0, w, step):
+            rgb = tuple(arr[y, x])
+            state = _color_to_state_cache.get(rgb)
+            if state:
+                state_name = state.name
+                if state_name not in state_totals:
+                    state_totals[state_name] = [0, 0]
+                    state_counts[state_name] = 0
+                state_totals[state_name][0] += x
+                state_totals[state_name][1] += y
+                state_counts[state_name] += 1
+    
+    # Vẽ text cho state đủ lớn
+    for state_name, count in state_counts.items():
+        if count < 30:  # Chỉ state có ít nhất 30 điểm mẫu
+            continue
+        
+        center_x = state_totals[state_name][0] // count
+        center_y = state_totals[state_name][1] // count
+        
+        # Lấy tên đẹp
+        display_name = state_name.replace("STATE_", "").replace("_", " ").title()
+        if len(display_name) > 12:
+            display_name = display_name[:10] + ".."
+        
+        # Vẽ text trực tiếp (không có nền)
+        text = fonts["sm"].render(display_name, True, (C_WHITE[0], C_WHITE[1], C_WHITE[2], 200))
+        text_rect = text.get_rect(center=(center_x, center_y))
+        text_surface.blit(text, text_rect)
+    
+    print(f"-> Hoan tat! Hien thi {len(state_counts)} tinh")
+    return text_surface
+
+# ── Draw helpers ─────────────────────────────────────
+def panel(screen, x, y, w, h, alpha=230):
+    s = pygame.Surface((w,h), pygame.SRCALPHA)
+    s.fill((*C_PANEL, alpha)); screen.blit(s,(x,y))
+    pygame.draw.rect(screen, C_BORDER, (x,y,w,h), 1)
+
+def gold_border(screen, x, y, w, h, r=4):
+    pygame.draw.rect(screen, C_GOLD, (x,y,w,h), 1, border_radius=r)
+
+def text(screen, fonts, key, txt, x, y, color=None):
+    s = fonts[key].render(str(txt), True, color or C_WHITE)
+    screen.blit(s,(x,y)); return s
+
+def row(screen, fonts, x, y, label, value, vcol=None):
+    text(screen,fonts,"sm",label,x,y,C_GREY)
+    vs = fonts["med"].render(str(value),True,vcol or C_WHITE)
+    screen.blit(vs,(x+SIDEBAR_W-vs.get_width()-28,y))
+    return y+26
+
+def divider(screen, x, y, w):
+    pygame.draw.line(screen,C_BORDER,(x+8,y),(x+w-8,y)); return y+10
+
+def get_relations_color(value):
+    if value >= 75: return (80, 220, 100)
+    if value >= 50: return (80, 200, 120)
+    if value >= 25: return (120, 200, 120)
+    if value >= 0: return (180, 180, 100)
+    if value >= -25: return (200, 150, 80)
+    if value >= -50: return (200, 120, 60)
+    if value >= -75: return (210, 80, 80)
+    return (220, 50, 50)
+
+
+# ── Tooltip ─────────────────────────────────────────
+def draw_province_tooltip(screen, fonts, original_map, color_to_province, mx, my, cam_x, cam_y, zoom, screen_h):
+    if mx >= SCREEN_W - SIDEBAR_W or my >= screen_h - HUD_H:
         return
 
-    x = screen.get_width() - SIDEBAR_W
+    map_w, map_h = original_map.get_size()
+    map_x = mx - cam_x
+    map_y = my - cam_y
+    sw2 = int(map_w * zoom)
 
-    # Nền sidebar
-    draw_panel(screen, x, 0, SIDEBAR_W, screen_h, alpha=245)
+    while map_x < 0:
+        map_x += sw2
+    while map_x >= sw2:
+        map_x -= sw2
 
-    # Header — màu quốc gia
-    raw = countries_data.get(selected_tag, [100, 100, 100])
+    if not (0 <= map_x < sw2 and 0 <= map_y < map_h * zoom):
+        return
+
+    rx = int(map_x / zoom)
+    ry = int(map_y / zoom)
+    if not (0 <= rx < map_w and 0 <= ry < map_h):
+        return
+
+    rgb = original_map.get_at((rx, ry))[:3]
+    prov = color_to_province.get(rgb)
+    if not prov:
+        prov = find_closest_province(rgb, color_to_province, tolerance=5)
+    if not prov or prov.is_sea or prov.is_lake:
+        return
+
+    owner = getattr(prov, "owner", None) or "Không có"
+    owner_name = COUNTRY_NAMES.get(owner, owner)
+    
+    state = get_state_for_province(rgb)
+    state_name = state.display_name() if state else "Không xác định"
+    
+    lines = [
+        f"🏛️ {state_name}",
+        f"👑 {owner_name}",
+        f"📍 Tỉnh {prov.id}"
+    ]
+    
+    if state and state.capped_resources:
+        top_res = list(state.capped_resources.items())[:2]
+        for res, amount in top_res:
+            name, icon = RESOURCE_DISPLAY.get(res, (res, "📦"))
+            lines.append(f"{icon} {name}: {amount}")
+    
+    width = max(fonts["sm"].size(line)[0] for line in lines) + 16
+    height = len(lines) * (fonts["sm"].get_height() + 4) + 10
+    tx = min(mx + 20, SCREEN_W - SIDEBAR_W - width - 10)
+    ty = max(10, min(my + 20, screen_h - HUD_H - height - 10))
+
+    panel(screen, tx, ty, width, height, 220)
+    pygame.draw.rect(screen, C_GOLD, (tx, ty, width, height), 1, border_radius=4)
+    for i, line in enumerate(lines):
+        text(screen, fonts, "sm", line, tx + 8, ty + 8 + i * (fonts["sm"].get_height() + 4), C_WHITE)
+
+
+# ── Leaderboard ─────────────────────────────────────
+def draw_leaderboard(screen, fonts, game_state, x=16, y=16, width=260, max_rows=6):
+    sorted_countries = sorted(game_state.countries.values(), key=lambda c: c.gdp, reverse=True)
+    height = 32 + max_rows * 18 + 14
+    panel(screen, x, y, width, height, 230)
+    pygame.draw.rect(screen, C_GOLD, (x, y, width, height), 1, border_radius=6)
+
+    title = fonts["med"].render("BẢNG XẾP HẠNG GDP", True, C_GOLD)
+    screen.blit(title, (x + 10, y + 8))
+    ty = y + 32
+
+    for idx, country in enumerate(sorted_countries[:max_rows]):
+        display_name = COUNTRY_NAMES.get(country.tag, country.tag)
+        if display_name is None:
+            display_name = country.tag if country.tag else "Unknown"
+        if display_name and len(display_name) > 14:
+            display_name = display_name[:11] + "..."
+        row_color = C_WHITE if country.tag == game_state.player_tag else C_GREY
+        text(screen, fonts, "sm", f"{idx+1}. {display_name}", x + 10, ty, row_color)
+        gdp_text = fonts["sm"].render(f"{country.gdp:.0f}M", True, row_color)
+        screen.blit(gdp_text, (x + width - gdp_text.get_width() - 10, ty))
+        ty += 18
+
+    if game_state.player_tag not in [c.tag for c in sorted_countries[:max_rows]]:
+        player = game_state.player_country
+        if player:
+            ty += 6
+            text(screen, fonts, "sm", "...", x + 10, ty, C_GREY)
+            ty += 18
+            player_name = COUNTRY_NAMES.get(player.tag, player.tag)
+            if player_name and len(player_name) > 14:
+                player_name = player_name[:11] + "..."
+            text(screen, fonts, "sm", f"* {player_name}", x + 10, ty, C_WHITE)
+            gdp_text = fonts["sm"].render(f"{player.gdp:.0f}M", True, C_WHITE)
+            screen.blit(gdp_text, (x + width - gdp_text.get_width() - 10, ty))
+
+
+# ── Sidebar ──────────────────────────────────────────
+def draw_sidebar(screen, fonts, tag, game_state, screen_h):
+    if not tag or tag in ("SEA","LAKE"): return
+    x = SCREEN_W - SIDEBAR_W
+
+    for i in range(screen_h):
+        alpha = int(200 - i * 0.15)
+        s = pygame.Surface((SIDEBAR_W, 1), pygame.SRCALPHA)
+        s.fill((*C_PANEL, max(50, alpha)))
+        screen.blit(s, (x, i))
+
+    pygame.draw.line(screen, C_GOLD_DIM, (x,0),(x,screen_h), 3)
+
+    raw = game_state.countries_data.get(tag,[100,100,100])
     c = tuple(int(v) for v in raw[:3])
-    # Gradient giả: vẽ 2 lớp
-    pygame.draw.rect(screen, c, (x, 0, SIDEBAR_W, 60))
-    dark = tuple(max(0, v-40) for v in c)
-    pygame.draw.rect(screen, dark, (x, 50, SIDEBAR_W, 10))
-    pygame.draw.line(screen, COLOR_GOLD, (x, 60), (x+SIDEBAR_W, 60), 2)
 
-    # Tên quốc gia
-    name = COUNTRY_NAMES.get(selected_tag, selected_tag)
-    surf = fonts['title'].render(name, True, COLOR_WHITE)
-    if surf.get_width() > SIDEBAR_W - 20:
-        surf = fonts['med'].render(name, True, COLOR_WHITE)
-    screen.blit(surf, (x + 12, 10))
+    for i in range(58):
+        ratio = i / 58
+        r = int(c[0] * (1 - ratio) + max(0, c[0]-60) * ratio)
+        g = int(c[1] * (1 - ratio) + max(0, c[1]-60) * ratio)
+        b = int(c[2] * (1 - ratio) + max(0, c[2]-60) * ratio)
+        pygame.draw.line(screen, (r, g, b), (x, i), (x+SIDEBAR_W, i))
 
-    # TAG nhỏ
-    tag_s = fonts['sm'].render(f"[{selected_tag}]", True, (220,220,220,180))
-    screen.blit(tag_s, (x + 12, 36))
-
-    y_cur = 76
-
-    # ── Thông tin quốc gia ──
-    pop = COUNTRY_POP.get(selected_tag)
-    pop_str = f"{pop:.1f}M" if pop else "Chưa có dữ liệu"
-
-    # Dân số
-    lbl = fonts['sm'].render("Dân số (1836)", True, COLOR_GREY)
-    val = fonts['med'].render(pop_str, True, COLOR_GREEN)
-    screen.blit(lbl, (x+12, y_cur)); screen.blit(val, (x+12, y_cur+16))
-    y_cur += 42
-
-    y_cur = draw_separator(screen, x, y_cur, SIDEBAR_W)
-
-    # Màu hex
-    hex_str = "#{:02X}{:02X}{:02X}".format(*c)
-    lbl = fonts['sm'].render("Màu quốc gia", True, COLOR_GREY)
-    val = fonts['sm'].render(hex_str, True, (200,200,200))
-    swatch = pygame.Surface((14,14)); swatch.fill(c)
-    screen.blit(lbl, (x+12, y_cur))
-    screen.blit(swatch, (x+SIDEBAR_W-30, y_cur+2))
-    screen.blit(val, (x+SIDEBAR_W-val.get_width()-32, y_cur+2))
-    y_cur += 24
-    y_cur = draw_separator(screen, x, y_cur, SIDEBAR_W)
-
-    # Hint dưới cùng
-    for txt in ["Chuột trái: kéo bản đồ", "Chuột phải: chọn tỉnh", "SPACE: Next Turn"]:
-        s = fonts['sm'].render(txt, True, (70,85,110))
-        screen.blit(s, (x+12, screen_h - 60 + (["Chuột trái: kéo bản đồ","Chuột phải: chọn tỉnh","SPACE: Next Turn"].index(txt))*18))
-
-    # Viền trái
-    pygame.draw.line(screen, COLOR_GOLD_DIM, (x, 0), (x, screen_h), 2)
-
-def draw_hud(screen, fonts, game_state, flags_cache, screen_w, screen_h):
-    y0 = screen_h - HUD_H
-    draw_panel(screen, 0, y0, screen_w, HUD_H, alpha=250)
-    pygame.draw.line(screen, COLOR_GOLD, (0, y0), (screen_w, y0), 2)
-
-    # Cờ + tên người chơi (trái)
-    tag  = game_state.player_tag
-    mode = getattr(game_state, "player_mode", "default")
-    flag_rect = pygame.Rect(8, y0 + 4, 60, 40)
-    flag_surf = get_flag(flags_cache, tag, mode, (60, 40))
-    if flag_surf:
-        screen.blit(flag_surf, flag_rect.topleft)
-    else:
-        pygame.draw.rect(screen, tuple(int(v) for v in game_state.countries_data.get(tag,[80,80,80])[:3]),
-                         flag_rect, border_radius=4)
-        ft = fonts["med"].render(tag, True, COLOR_WHITE)
-        screen.blit(ft, ft.get_rect(center=flag_rect.center))
-    pygame.draw.rect(screen, COLOR_GOLD, flag_rect, 1, border_radius=4)
+    pygame.draw.line(screen, C_GOLD, (x,58),(x+SIDEBAR_W,58), 3)
 
     name = COUNTRY_NAMES.get(tag, tag)
-    ns = fonts['hud'].render(name, True, (220, 200, 140))
-    screen.blit(ns, (76, y0 + (HUD_H - ns.get_height())//2))
-
-    # Ngày tháng (giữa)
-    d = game_state.current_date
-    date_str = f"{MONTH_NAMES[d.month-1]} {d.year}"
-    ds = fonts['date'].render(date_str, True, COLOR_GOLD)
-    screen.blit(ds, (screen_w//2 - ds.get_width()//2, y0 + (HUD_H - ds.get_height())//2))
-
-    # Nút Next Turn (phải)
-    btn_w, btn_h = 140, 32
-    btn_x = screen_w - btn_w - 16
-    btn_y = y0 + (HUD_H - btn_h)//2
-    btn_rect = pygame.Rect(btn_x, btn_y, btn_w, btn_h)
-    mx, my = pygame.mouse.get_pos()
-    hovered = btn_rect.collidepoint(mx, my)
-    btn_color = (55, 130, 75) if hovered else (38, 95, 55)
-    pygame.draw.rect(screen, btn_color, btn_rect, border_radius=6)
-    draw_gold_rect(screen, btn_x, btn_y, btn_w, btn_h, radius=6)
-    bt = fonts['hud'].render("Next Turn  ▶", True, (200, 255, 210))
-    screen.blit(bt, bt.get_rect(center=btn_rect.center))
-    return btn_rect
-
-#  LOBBY
-def run_lobby(screen, fonts, original_map, political_map, color_to_province, zoom_level, pil_pixels=None):
-    sw, sh = screen.get_size()
-    map_w, map_h = original_map.get_size()
-
-    zoom      = zoom_level
-    cam_x     = 0
-    cam_y     = 0
-    is_pan    = False
-    last_pos  = (0,0)
-
-    selected_tag  = "DAI"  # Default to Dai Nam
-    selected_mode = "default"
-    mode_idx      = 0
-
-    PANEL_H = 110
-    panel_y = sh - PANEL_H
-
-    # Nút chuyển chế độ (< >) – hiện khi đã chọn quốc gia
-    btn_prev = pygame.Rect(0, 0, 32, 32)
-    btn_next = pygame.Rect(0, 0, 32, 32)
-
-    # Nút VÀO GAME
-    btn_start = pygame.Rect(sw - 196, panel_y + (PANEL_H-46)//2, 180, 46)
-
-    def scaled():
-        return pygame.transform.scale(political_map,
-               (int(map_w*zoom), int(map_h*zoom)))
-
-    def clamp(cx, cy):
-        sw2 = int(map_w*zoom); sh2 = int(map_h*zoom)
-        cy = max(panel_y - sh2, min(0, cy))
-        cx = cx % sw2
-        return cx, cy
-
-    sc_map = scaled()
-    clock  = pygame.time.Clock()
+    shadow = fonts["title"].render(name, True, (0,0,0))
+    screen.blit(shadow, (x+13, (58-shadow.get_height())//2 + 1))
+    ns = fonts["title"].render(name,True,C_WHITE)
+    if ns.get_width() > SIDEBAR_W-20: ns = fonts["sm"].render(name,True,C_WHITE)
+    screen.blit(ns,(x+12, (58-ns.get_height())//2))
     
-    print(f"[LOBBY] Default country: {selected_tag} (Dai Nam)")
+    ts = fonts["sm"].render(f"[{tag}]",True,(220,220,220))
+    screen.blit(ts,(x+SIDEBAR_W-ts.get_width()-10,(58-ts.get_height())//2))
+    
+    y = 66
+    country = game_state.countries.get(tag)
+    if country:
+        y = row(screen,fonts,x,y,"Dan so", f"{country.population:.1f}M", C_GREEN)
+        y = row(screen,fonts,x,y,"GDP", f"{country.gdp:.0f}M £", (180,220,255))
+        y = divider(screen,x,y,SIDEBAR_W)
+        y = row(screen,fonts,x,y,"Kho bac", f"{country.treasury:.0f} £",
+                C_GREEN if country.treasury>=0 else C_RED)
+        y = row(screen,fonts,x,y,"Thue suat", f"{country.tax_rate*100:.0f}%", (220,200,140))
+        y = divider(screen,x,y,SIDEBAR_W)
+        y = row(screen,fonts,x,y,"Quan doi", f"{country.army_size}k quan", (220,160,100))
+        y = row(screen,fonts,x,y,"Uy tin", f"{country.prestige:.0f}", (200,200,100))
+        y = divider(screen,x,y,SIDEBAR_W)
+
+        rep = game_state.economy_report.get(tag)
+        if rep:
+            dy = C_GREEN if rep["delta"]>=0 else C_RED
+            y = row(screen,fonts,x,y,"Thu nhap/thang", f"+{rep['income']:.1f}£", C_GREEN)
+            y = row(screen,fonts,x,y,"Chi phi/thang",  f"-{rep['expense']:.1f}£", C_RED)
+            y = row(screen,fonts,x,y,"Can doi",        f"{rep['delta']:+.1f}£", dy)
+            y = divider(screen,x,y,SIDEBAR_W)
+        
+        if country.relations:
+            y = row(screen, fonts, x, y, "Quan he ngoai giao", "", None)
+            for rel_tag, rel_value in list(sorted(country.relations.items(), key=lambda x: x[1], reverse=True))[:3]:
+                rel_name = COUNTRY_NAMES.get(rel_tag, rel_tag)
+                rel_color = get_relations_color(rel_value)
+                rel_text = f"{rel_name}: {rel_value:+d}"
+                text(screen, fonts, "sm", rel_text, x+12, y, rel_color)
+                y += 20
+
+    if tag == game_state.player_tag and game_state.last_event:
+        ev = game_state.last_event
+        yt = y
+        evs = fonts["med"].render(ev["title"],True,(255,210,80))
+        screen.blit(evs,(x+12,yt)); yt += evs.get_height()+4
+        words = ev["desc"].split()
+        line_w, line = 0, []
+        for w in words:
+            ww = fonts["sm"].size(w+" ")[0]
+            if line_w+ww > SIDEBAR_W-24:
+                ds = fonts["sm"].render(" ".join(line),True,(180,180,180))
+                screen.blit(ds,(x+12,yt)); yt+=ds.get_height()+2
+                line=[w]; line_w=ww
+            else:
+                line.append(w); line_w+=ww
+        if line:
+            ds = fonts["sm"].render(" ".join(line),True,(180,180,180))
+            screen.blit(ds,(x+12,yt)); yt+=ds.get_height()+4
+        es = fonts["sm"].render(ev["effect_text"],True,(120,220,120))
+        screen.blit(es,(x+12,yt))
+
+    for i, txt in enumerate(["SPACE: Next Turn", "ESC: Menu", "1: Political", "2: Country Names", "3: Province Names", "F2: Diplomacy"]):
+        hs = fonts["sm"].render(txt, True, (65, 80, 105))
+        screen.blit(hs, (x+12, screen_h-52+i*16))
+
+# ── HUD ──────────────────────────────────────────────
+def draw_hud(screen, fonts, game_state, screen_w, screen_h):
+    y0 = screen_h - HUD_H
+    panel(screen,0,y0,screen_w,HUD_H,250)
+    pygame.draw.line(screen,C_GOLD,(0,y0),(screen_w,y0),2)
+    
+    for i in range(HUD_H):
+        alpha = int(200 - i * 2)
+        s = pygame.Surface((screen_w, 1), pygame.SRCALPHA)
+        s.fill((*C_PANEL, alpha))
+        screen.blit(s, (0, y0 + i))
+
+    tag  = game_state.player_tag
+    mode = getattr(game_state,"player_mode","default")
+
+    flag_r = pygame.Rect(8,y0+4,60,40)
+    fl = get_flag(tag,mode,(60,40))
+    if fl: 
+        screen.blit(fl,flag_r.topleft)
+        pygame.draw.rect(screen, (C_GOLD[0], C_GOLD[1], C_GOLD[2], 100), flag_r, 2, border_radius=4)
+    else:
+        raw = game_state.countries_data.get(tag,[100,100,100])
+        pygame.draw.rect(screen,tuple(int(v)for v in raw[:3]),flag_r,border_radius=4)
+        ft = fonts["med"].render(tag,True,C_WHITE)
+        screen.blit(ft,ft.get_rect(center=flag_r.center))
+    pygame.draw.rect(screen,C_GOLD,flag_r,2,border_radius=4)
+
+    name_text = COUNTRY_NAMES.get(tag,tag)
+    shadow = fonts["hud"].render(name_text, True, (0,0,0))
+    screen.blit(shadow, (77, y0+(HUD_H-shadow.get_height())//2 + 1))
+    ns = fonts["hud"].render(name_text, True, (220,200,140))
+    screen.blit(ns,(76,y0+(HUD_H-ns.get_height())//2))
+
+    country = game_state.countries.get(tag)
+    if country:
+        pound_icon = fonts["med"].render("£", True, C_GOLD)
+        screen.blit(pound_icon, (265, y0+(HUD_H-pound_icon.get_height())//2))
+        ts = fonts["med"].render(f"{country.treasury:.0f}", True,
+             C_GREEN if country.treasury>=0 else C_RED)
+        screen.blit(ts, (280, y0+(HUD_H-ts.get_height())//2))
+
+    clock_icon = fonts["sm"].render("📅", True, C_GOLD)
+    screen.blit(clock_icon, (screen_w//2 - 60, y0+(HUD_H-clock_icon.get_height())//2))
+    
+    ds = fonts["date"].render(game_state.current_date.full, True, C_GOLD)
+    screen.blit(ds, (screen_w//2 - ds.get_width()//2, y0+(HUD_H-ds.get_height())//2))
+
+    mx,my = pygame.mouse.get_pos()
+    bw,bh = 150,36
+    bx = screen_w-bw-16
+    by = y0+(HUD_H-bh)//2
+    btn = pygame.Rect(bx,by,bw,bh)
+    hov = btn.collidepoint(mx,my)
+    
+    if hov:
+        color1 = (65, 150, 85)
+        color2 = (45, 110, 65)
+    else:
+        color1 = (45, 110, 65)
+        color2 = (35, 80, 50)
+    
+    for i in range(bh):
+        ratio = i / bh
+        r = int(color1[0] * (1 - ratio) + color2[0] * ratio)
+        g = int(color1[1] * (1 - ratio) + color2[1] * ratio)
+        b = int(color1[2] * (1 - ratio) + color2[2] * ratio)
+        pygame.draw.line(screen, (r, g, b), (bx, by + i), (bx + bw, by + i))
+    
+    pygame.draw.rect(screen, C_GOLD, btn, 2, border_radius=8)
+    bt = fonts["hud"].render("▶ NEXT TURN", True, (200,255,210))
+    screen.blit(bt, bt.get_rect(center=btn.center))
+    return btn
+
+
+# ── Cache helpers ───────────────────────────────────
+_closest_cache = {}
+
+def find_closest_province(rgb, color_to_province, tolerance=10):
+    r, g, b = rgb
+    key = (r, g, b, tolerance)
+    if key in _closest_cache:
+        return _closest_cache[key]
+    
+    best_prov = None
+    best_dist = float('inf')
+    
+    for color, prov in color_to_province.items():
+        cr, cg, cb = color
+        dist = ((r-cr)**2 + (g-cg)**2 + (b-cb)**2) ** 0.5
+        if dist < best_dist:
+            best_dist = dist
+            best_prov = prov
+    
+    result = best_prov if best_dist <= tolerance else None
+    _closest_cache[key] = result
+    return result
+
+
+# ── Diplomacy Panel ─────────────────────────────────
+def draw_diplomacy_panel(screen, fonts, game_state, mouse_pos):
+    global diplomacy_selected_tag
+    
+    sw, sh = screen.get_size()
+    panel_x = (sw - DIPLOMACY_PANEL_W) // 2
+    panel_y = (sh - DIPLOMACY_PANEL_H) // 2
+    
+    panel(screen, panel_x, panel_y, DIPLOMACY_PANEL_W, DIPLOMACY_PANEL_H, 250)
+    text(screen, fonts, "big", "NGHỊ TRÌNH NGOẠI GIAO", panel_x + 20, panel_y + 15, C_GOLD)
+    
+    country = game_state.player_country
+    y = panel_y + 60
+    
+    close_btn = pygame.Rect(panel_x + DIPLOMACY_PANEL_W - 40, panel_y + 10, 30, 30)
+    hover_close = close_btn.collidepoint(mouse_pos)
+    pygame.draw.rect(screen, (160, 45, 45) if hover_close else (90, 30, 30), close_btn, border_radius=4)
+    text(screen, fonts, "med", "X", close_btn.x + 10, close_btn.y + 6, C_WHITE)
+    
+    relations_list = sorted(country.relations.items(), key=lambda x: x[1], reverse=True)
+    
+    for tag, relation in relations_list:
+        rel_color = get_relations_color(relation)
+        rel_name = COUNTRY_NAMES.get(tag, tag)
+        
+        row_rect = pygame.Rect(panel_x + 10, y - 5, DIPLOMACY_PANEL_W - 20, 40)
+        if row_rect.collidepoint(mouse_pos):
+            pygame.draw.rect(screen, (45, 55, 75), row_rect, border_radius=4)
+            diplomacy_selected_tag = tag
+        
+        text(screen, fonts, "med", rel_name, panel_x + 20, y, C_WHITE)
+        rel_text = f"{relation:+d}"
+        text(screen, fonts, "med", rel_text, panel_x + 180, y, rel_color)
+        
+        improve_btn = pygame.Rect(panel_x + 250, y - 5, 95, 28)
+        worsen_btn = pygame.Rect(panel_x + 355, y - 5, 95, 28)
+        
+        hover_improve = improve_btn.collidepoint(mouse_pos)
+        pygame.draw.rect(screen, (40, 100, 60) if hover_improve else (30, 70, 40), improve_btn, border_radius=4)
+        text(screen, fonts, "sm", "Cải thiện", improve_btn.x + 12, improve_btn.y + 6, C_WHITE)
+        
+        hover_worsen = worsen_btn.collidepoint(mouse_pos)
+        pygame.draw.rect(screen, (140, 50, 50) if hover_worsen else (100, 30, 30), worsen_btn, border_radius=4)
+        text(screen, fonts, "sm", "Làm xấu", worsen_btn.x + 15, worsen_btn.y + 6, C_WHITE)
+        
+        if hover_improve and pygame.mouse.get_pressed()[0]:
+            country.relations[tag] = min(100, country.relations.get(tag, 0) + 10)
+            pygame.time.wait(200)
+        if hover_worsen and pygame.mouse.get_pressed()[0]:
+            country.relations[tag] = max(-100, country.relations.get(tag, 0) - 10)
+            pygame.time.wait(200)
+        
+        y += 42
+        if y > panel_y + DIPLOMACY_PANEL_H - 80:
+            break
+    
+    if diplomacy_selected_tag and diplomacy_selected_tag != country.tag:
+        war_btn = pygame.Rect(panel_x + DIPLOMACY_PANEL_W - 160, panel_y + DIPLOMACY_PANEL_H - 50, 140, 35)
+        hover_war = war_btn.collidepoint(mouse_pos)
+        pygame.draw.rect(screen, (160, 40, 40) if hover_war else (120, 30, 30), war_btn, border_radius=4)
+        text(screen, fonts, "med", "TUYÊN CHIẾN", war_btn.x + 15, war_btn.y + 8, C_WHITE)
+        
+        if hover_war and pygame.mouse.get_pressed()[0]:
+            target_name = COUNTRY_NAMES.get(diplomacy_selected_tag, diplomacy_selected_tag)
+            country.at_war_with.add(diplomacy_selected_tag)
+            country.relations[diplomacy_selected_tag] = max(-100, country.relations.get(diplomacy_selected_tag, 0) - 50)
+            game_state.last_event = {
+                "title": "CHIẾN TRANH!",
+                "desc": f"{COUNTRY_NAMES.get(country.tag, country.tag)} tuyên chiến với {target_name}.",
+                "effect_text": f"Quan hệ với {target_name} -50"
+            }
+            pygame.time.wait(200)
+    
+    return close_btn
+
+
+# ── LOBBY ────────────────────────────────────────────
+def run_lobby(screen, fonts, original_map, pol_map, color_to_province, zoom_level):
+    global game_state_ref
+    sw,sh    = screen.get_size()
+    map_w,map_h = original_map.get_size()
+    zoom     = zoom_level
+    cam_x    = cam_y = 0.0
+    is_pan   = False
+    last_pos = (0,0)
+    sel_tag  = None
+    sel_mode = "default"
+    mode_idx = 0
+    PANEL_H  = 110
+    panel_y  = sh-PANEL_H
+    exit_r   = pygame.Rect(sw-44,8,36,36)
+    btn_st   = pygame.Rect(sw-200,panel_y+32,184,46)
+    btn_prev = pygame.Rect(0,0,1,1)
+    btn_next = pygame.Rect(0,0,1,1)
+
+    def clamp(cx,cy):
+        sw2=int(map_w*zoom); sh2=int(map_h*zoom)
+        return cx%sw2, max(panel_y-sh2,min(0.0,cy))
+
+    sc = pygame.transform.scale(pol_map,(int(map_w*zoom),int(map_h*zoom)))
+    clock = pygame.time.Clock()
 
     while True:
-        scaled_w = int(map_w * zoom)
-        scaled_h = int(map_h * zoom)
-        mx, my = pygame.mouse.get_pos()
-
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit(); sys.exit()
-
+            if event.type == pygame.QUIT: pygame.quit(); sys.exit()
             elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    pygame.quit(); 
-                    sys.exit()
-                elif event.key == pygame.K_d:
-                    print("\n=== DEBUG INFO ===")
-                    print(f"Camera position: ({cam_x}, {cam_y})")
-                    print(f"Zoom level: {zoom}")
-                    print(f"Map size: {map_w}x{map_h}")
-                    print(f"Scaled map size: {int(map_w*zoom)}x{int(map_h*zoom)}")
-                    print(f"Screen size: {sw}x{sh}")
-                    print(f"Selected country: {selected_tag}")
-                    print(f"Color lookup size: {len(color_to_province)}")
-
-                    center_x = sw // 2
-                    center_y = sh // 2
-                    print(f"\nChecking center of screen ({center_x}, {center_y}):")
-                    
-                    scaled_w = int(map_w * zoom)
-                    map_x = center_x - cam_x
-                    while map_x < 0:
-                        map_x += scaled_w
-                    while map_x >= scaled_w:
-                        map_x -= scaled_w
-                    map_y = center_y - cam_y
-
-                    if 0 <= map_x < scaled_w and 0 <= map_y < scaled_h:
-                        rx = int(map_x / zoom)
-                        ry = int(map_y / zoom)
-                        debug_color_at_position(pil_pixels, rx, ry, color_to_province)
+                if event.key == pygame.K_ESCAPE: pygame.quit(); sys.exit()
 
             elif event.type == pygame.MOUSEWHEEL:
-                old_z = zoom
-                zoom *= 1.15 if event.y > 0 else (1/1.15)
-                zoom = max(zoom_level, min(zoom, 8.0))
-                if old_z != zoom:
-                    cam_x = mx - (mx - cam_x)*(zoom/old_z)
-                    cam_y = my - (my - cam_y)*(zoom/old_z)
-                    cam_x, cam_y = clamp(cam_x, cam_y)
-                    sc_map = scaled()
+                oz=zoom
+                zoom=max(zoom_level,min(zoom*(1.15 if event.y>0 else 1/1.15),8.0))
+                if oz!=zoom:
+                    ex,ey=pygame.mouse.get_pos()
+                    cam_x=ex-(ex-cam_x)*(zoom/oz)
+                    cam_y=ey-(ey-cam_y)*(zoom/oz)
+                    cam_x,cam_y=clamp(cam_x,cam_y)
+                    sc=pygame.transform.scale(pol_map,(int(map_w*zoom),int(map_h*zoom)))
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                ex, ey = event.pos   # dùng event.pos chính xác, không dùng mx,my
-
-                if event.button == 1:
-                    # Ưu tiên kiểm tra nút UI trước
-                    clicked_ui = False
-
-                    # Nút Start
-                    if btn_start.collidepoint(ex, ey) and selected_tag:
-                        return selected_tag, selected_mode
-
-                    # Nút chuyển chế độ
-                    if selected_tag and btn_prev.collidepoint(ex, ey):
-                        avail = _avail_modes(flags_cache_ref, selected_tag)
-                        mode_idx = (mode_idx - 1) % len(avail)
-                        selected_mode = avail[mode_idx]
-                        clicked_ui = True
-
-                    if selected_tag and btn_next.collidepoint(ex, ey):
-                        avail = _avail_modes(flags_cache_ref, selected_tag)
-                        mode_idx = (mode_idx + 1) % len(avail)
-                        selected_mode = avail[mode_idx]
-                        clicked_ui = True
-
-                    if not clicked_ui and ey < panel_y:
+                ex,ey=event.pos
+                if event.button==1:
+                    if exit_r.collidepoint(ex,ey): pygame.quit(); sys.exit()
+                    elif btn_st.collidepoint(ex,ey) and sel_tag:
+                        return sel_tag, sel_mode
+                    elif btn_prev.collidepoint(ex,ey) and sel_tag:
+                        av=avail_modes(sel_tag); mode_idx=(mode_idx-1)%len(av); sel_mode=av[mode_idx]
+                    elif btn_next.collidepoint(ex,ey) and sel_tag:
+                        av=avail_modes(sel_tag); mode_idx=(mode_idx+1)%len(av); sel_mode=av[mode_idx]
+                    elif ey<panel_y:
                         scaled_w = int(map_w * zoom)
                         scaled_h = int(map_h * zoom)
 
@@ -527,399 +788,326 @@ def run_lobby(screen, fonts, original_map, political_map, color_to_province, zoo
                             rx = int(map_x / zoom)
                             ry = int(map_y / zoom)
 
-                            rx = max(0, min(rx, map_w - 1))
-                            ry = max(0, min(ry, map_h - 1))
+                            if 0 <= rx < map_w and 0 <= ry < map_h:
+                                rgb = original_map.get_at((rx, ry))[:3]
+                                prov = color_to_province.get(rgb)
+                                if not prov:
+                                    prov = find_closest_province(rgb, color_to_province, tolerance=5)
 
-                            try:
-                                if pil_pixels:
-                                    rgb = pil_pixels[rx, ry]
-                                else:
-                                    rgb = original_map.get_at((rx, ry))[:3]
-                                
-                                print(f"Click at screen ({ex},{ey}) -> map ({rx},{ry}) -> RGB {rgb}")
-                                
-                                prov = find_province_by_color(rgb, color_to_province, tolerance=5)
                                 if prov:
                                     owner = getattr(prov, "owner", None)
                                     if owner and owner not in ("SEA", "LAKE", "Không có / Đất trống"):
-                                        selected_tag  = owner
-                                        mode_idx      = 0
-                                        selected_mode = _avail_modes(flags_cache_ref, owner)[0]
-                                        print(f"✓ Selected country: {selected_tag} (RGB: {rgb})")
-                                    else:
-                                        print(f"✗ Click on water/empty land (owner: {owner})")
-                                else:
-                                    print(f"✗ Color not found: {rgb}")
-
-                            except Exception as e:
-                                print(f"✗ Error selecting country: {e}")
-
-                    # Bắt đầu kéo map (chỉ khi click vào bản đồ, không trúng UI)
-                    if not clicked_ui and ey < panel_y:
-                        is_pan   = True
+                                        sel_tag = owner
+                                        print(f"✓ Chọn: {owner} tại ({rx},{ry}) RGB={rgb}")
+                        is_pan = True
                         last_pos = event.pos
+                elif event.button==3:
+                    is_pan = True
+                    last_pos = event.pos
 
-                elif event.button == 3:
-                    if ey < panel_y:
-                        is_pan   = True
-                        last_pos = event.pos
+            elif event.type==pygame.MOUSEBUTTONUP:
+                if event.button in(1,3): is_pan=False
+            elif event.type==pygame.MOUSEMOTION and is_pan:
+                ex,ey=event.pos
+                cam_x+=ex-last_pos[0]; cam_y+=ey-last_pos[1]
+                last_pos=event.pos; cam_x,cam_y=clamp(cam_x,cam_y)
 
-            elif event.type == pygame.MOUSEBUTTONUP:
-                if event.button in (1, 3): is_pan = False
+        mx,my=pygame.mouse.get_pos()
+        screen.fill(C_SEA)
+        sw2=int(map_w*zoom)
+        for ox in(0,-sw2,sw2): screen.blit(sc,(int(cam_x)+ox,int(cam_y)))
 
-            elif event.type == pygame.MOUSEMOTION and is_pan:
-                cam_x += mx - last_pos[0]
-                cam_y += my - last_pos[1]
-                last_pos = (mx, my)
-                cam_x, cam_y = clamp(cam_x, cam_y)
+        ov=pygame.Surface((sw,PANEL_H),pygame.SRCALPHA); ov.fill((*C_BG,240))
+        screen.blit(ov,(0,panel_y))
+        pygame.draw.line(screen,C_GOLD,(0,panel_y),(sw,panel_y),2)
 
-        # ── Render ──
-        screen.fill(COLOR_SEA)
-        sw2 = int(map_w*zoom)
-        screen.blit(sc_map, (cam_x, cam_y))
-        screen.blit(sc_map, (cam_x - sw2, cam_y))
-        screen.blit(sc_map, (cam_x + sw2, cam_y))
+        t1=fonts["big"].render("Victoria 3 — Simple Engine",True,C_GOLD)
+        t2=fonts["sm"].render("Click chon quoc gia  |  Giu chuot de keo  |  Lan chuot de zoom",True,C_GREY)
+        screen.blit(t1,(20,panel_y+8)); screen.blit(t2,(20,panel_y+38))
 
-        # Panel dưới
-        ov = pygame.Surface((sw, PANEL_H), pygame.SRCALPHA)
-        ov.fill((*COLOR_BG, 238))
-        screen.blit(ov, (0, panel_y))
-        pygame.draw.line(screen, COLOR_GOLD, (0, panel_y), (sw, panel_y), 2)
-
-        # Title
-        t1 = fonts["big"].render("Victoria 3 — Simple Engine", True, COLOR_GOLD)
-        screen.blit(t1, (20, panel_y + 10))
-        t2 = fonts["sm"].render("Click chon quoc gia · Cuon chuot de zoom · Giu chuot de keo ban do", True, COLOR_GREY)
-        screen.blit(t2, (20, panel_y + 42))
-
-        if selected_tag:
-            name = COUNTRY_NAMES.get(selected_tag, selected_tag)
-            avail = _avail_modes(flags_cache_ref, selected_tag)
-            mode_label = _mode_label(selected_mode)
-
-            # Cờ lớn
-            flag_surf = get_flag(flags_cache_ref, selected_tag, selected_mode, (90, 60))
-            flag_r = pygame.Rect(sw//2 - 220, panel_y + 12, 90, 60)
-            if flag_surf:
-                screen.blit(flag_surf, flag_r.topleft)
+        if sel_tag:
+            name=COUNTRY_NAMES.get(sel_tag,sel_tag)
+            av=avail_modes(sel_tag)
+            fl=get_flag(sel_tag,sel_mode,(90,60))
+            fr=pygame.Rect(sw//2-240,panel_y+10,90,60)
+            if fl: screen.blit(fl,fr.topleft)
             else:
-                raw = flags_cache_ref  # fallback màu
-                pygame.draw.rect(screen, (80,80,80), flag_r, border_radius=4)
-            pygame.draw.rect(screen, COLOR_GOLD, flag_r, 1, border_radius=4)
+                raw=game_state_ref.countries_data.get(sel_tag,[80,80,80]) if game_state_ref else [80,80,80]
+                pygame.draw.rect(screen,tuple(int(v)for v in raw[:3]),fr,border_radius=4)
+            pygame.draw.rect(screen,C_GOLD,fr,1,border_radius=4)
+            screen.blit(fonts["title"].render(name,True,C_WHITE),(fr.right+10,panel_y+10))
 
-            # Tên quốc gia
-            ns = fonts["title"].render(name, True, COLOR_WHITE)
-            screen.blit(ns, (flag_r.right + 12, panel_y + 12))
-
-            # Chế độ + nút < >
-            TAG_X = flag_r.right + 12
-            mode_y = panel_y + 44
-            btn_prev.topleft = (TAG_X, mode_y)
-            btn_next.topleft = (TAG_X + 200, mode_y)
-
-            # Nút <
-            ph = btn_prev.collidepoint(mx, my)
-            pygame.draw.rect(screen, (50,65,85) if ph else (35,45,60), btn_prev, border_radius=5)
-            pygame.draw.rect(screen, COLOR_BORDER, btn_prev, 1, border_radius=5)
-            ps = fonts["hud"].render("<", True, COLOR_WHITE)
-            screen.blit(ps, ps.get_rect(center=btn_prev.center))
-
-            # Label chế độ
-            ml = fonts["med"].render(mode_label, True, (180,220,255))
-            screen.blit(ml, (TAG_X + 38, mode_y + 8))
-
-            # Nút >
-            nh = btn_next.collidepoint(mx, my)
-            pygame.draw.rect(screen, (50,65,85) if nh else (35,45,60), btn_next, border_radius=5)
-            pygame.draw.rect(screen, COLOR_BORDER, btn_next, 1, border_radius=5)
-            ns2 = fonts["hud"].render(">", True, COLOR_WHITE)
-            screen.blit(ns2, ns2.get_rect(center=btn_next.center))
-
-            # Chỉ số chế độ
-            idx_s = fonts["sm"].render(f"{mode_idx+1}/{len(avail)}", True, COLOR_GREY)
-            screen.blit(idx_s, (TAG_X + 38, mode_y + 14 + ml.get_height()))
-
+            TAG_X=fr.right+10; my2=panel_y+44
+            btn_prev=pygame.Rect(TAG_X,my2,28,26)
+            btn_next=pygame.Rect(TAG_X+200,my2,28,26)
+            for br,lbl in((btn_prev,"<"),(btn_next,">")):
+                hv=br.collidepoint(mx,my)
+                pygame.draw.rect(screen,(60,80,100)if hv else(35,50,65),br,border_radius=4)
+                pygame.draw.rect(screen,C_BORDER,br,1,border_radius=4)
+                bs=fonts["med"].render(lbl,True,C_WHITE); screen.blit(bs,bs.get_rect(center=br.center))
+            ml=fonts["med"].render(GOVT_LABELS.get(sel_mode,sel_mode),True,(160,210,255))
+            screen.blit(ml,(TAG_X+34,my2+4))
+            cs=fonts["sm"].render(f"{mode_idx+1}/{len(av)}",True,C_GREY)
+            screen.blit(cs,(TAG_X+34,my2+22))
         else:
-            hint = fonts["hud"].render("Click vao mot quoc gia de chon...", True, COLOR_GREY)
-            screen.blit(hint, (sw//2 - hint.get_width()//2, panel_y + 38))
+            hs=fonts["hud"].render("Click vao mot quoc gia tren ban do...",True,C_GREY)
+            screen.blit(hs,(sw//2-hs.get_width()//2,panel_y+40))
+            btn_prev=btn_next=pygame.Rect(0,0,1,1)
 
-        # Nút VÀO GAME
-        active = bool(selected_tag)
-        bc = (40,120,60) if active else (40,45,58)
-        pygame.draw.rect(screen, bc, btn_start, border_radius=8)
-        if active: draw_gold_rect(screen, btn_start.x, btn_start.y, btn_start.w, btn_start.h, 8)
-        else: pygame.draw.rect(screen, COLOR_BORDER, btn_start, 1, border_radius=8)
-        bt = fonts["hud"].render("VAO GAME  >", True, COLOR_WHITE if active else COLOR_GREY)
-        screen.blit(bt, bt.get_rect(center=btn_start.center))
+        ac=bool(sel_tag)
+        bc=(55,150,75)if btn_st.collidepoint(mx,my)and ac else((40,120,60)if ac else(40,48,58))
+        pygame.draw.rect(screen,bc,btn_st,border_radius=8)
+        if ac: gold_border(screen,btn_st.x,btn_st.y,btn_st.w,btn_st.h,8)
+        else: pygame.draw.rect(screen,C_BORDER,btn_st,1,border_radius=8)
+        bs=fonts["hud"].render("VAO GAME  >",True,C_WHITE if ac else C_GREY)
+        screen.blit(bs,bs.get_rect(center=btn_st.center))
 
-        pygame.display.flip()
-        clock.tick(60)
+        xh=exit_r.collidepoint(mx,my)
+        pygame.draw.rect(screen,(160,45,45)if xh else(90,30,30),exit_r,border_radius=6)
+        pygame.draw.rect(screen,(200,70,70),exit_r,1,border_radius=6)
+        xs=fonts["title"].render("X",True,C_WHITE); screen.blit(xs,xs.get_rect(center=exit_r.center))
+
+        pygame.display.flip(); clock.tick(60)
 
 
-def run_game(screen, fonts, game_state, original_map, political_map,
-             color_to_province, initial_zoom, flags_cache, pil_pixels=None):
+# ── GAME ─────────────────────────────────────────────
+def run_game(screen, fonts, game_state, original_map, pol_map,
+                 color_to_province, init_zoom, country_name_surface, province_name_surface):
+    global show_diplomacy, diplomacy_selected_tag, current_map_mode
+    
     sw, sh = screen.get_size()
     map_w, map_h = original_map.get_size()
+    zoom = init_zoom
+    cam_x = cam_y = 0.0
+    is_pan = False
+    last_pos = (0, 0)
+    sel_tag = game_state.player_tag
+    show_pol = True
+    cur_map = pol_map
+    next_turn_cooldown = 0
+    show_diplomacy = False
+    diplomacy_selected_tag = None
+    current_map_mode = MAP_MODE_POLITICAL
 
-    zoom_level  = initial_zoom
-    camera_x    = 0
-    camera_y    = 0
-    is_panning  = False
-    last_mouse  = (0, 0)
-    selected_tag = None
-    show_political = True
-    next_turn_pressed = False
-    menu_open   = False
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    full_path = os.path.join(base_dir, "data", "countries_full.json")
+    try:
+        with open(full_path, "r", encoding="utf-8") as f:
+            countries_full = json.load(f)
+    except:
+        countries_full = {}
 
-    current_map = political_map
-    scaled_map  = pygame.transform.scale(current_map,
-                  (int(map_w*zoom_level), int(map_h*zoom_level)))
+    # Tạo các bản đồ kết hợp
+    combined_political = pol_map.copy()
+    combined_country = pol_map.copy()
+    combined_country.blit(country_name_surface, (0, 0))
+    
+    # Tạo bản đồ tỉnh với viền
+    province_border_map = generate_political_map(original_map, color_to_province,
+                                                  game_state.countries_data, countries_full,
+                                                  mode=MAP_MODE_PROVINCE_NAMES)
+    combined_province = province_border_map.copy()
+    combined_province.blit(province_name_surface, (0, 0))
 
-    def clamp(cx, cy, z):
-        sw2 = int(map_w*z)
-        sh2 = int(map_h*z)
-        cy = max(sh - HUD_H - sh2, min(0, cy))
-        cx = cx % sw2
-        return cx, cy
+    def clamp(cx, cy):
+        sw2 = int(map_w * zoom)
+        sh2 = int(map_h * zoom)
+        return cx % sw2, max(sh - HUD_H - sh2, min(0.0, cy))
 
-    def rescale(z):
-        return pygame.transform.scale(current_map, (int(map_w*z), int(map_h*z)))
-
+    sc = pygame.transform.scale(cur_map, (int(map_w * zoom), int(map_h * zoom)))
     clock = pygame.time.Clock()
-    running = True
 
-    while running:
+    while True:
+        if next_turn_cooldown > 0:
+            next_turn_cooldown -= 1
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                running = False
+                pygame.quit()
+                sys.exit()
 
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    menu_open = not menu_open   # Toggle menu
-                elif event.key == pygame.K_SPACE:
+                    show_diplomacy = False
+                    return
+                elif event.key == pygame.K_SPACE and next_turn_cooldown == 0:
                     game_state.next_turn()
+                    next_turn_cooldown = 10
                 elif event.key == pygame.K_m:
-                    show_political = not show_political
-                    current_map = political_map if show_political else original_map
-                    scaled_map = rescale(zoom_level)
+                    show_pol = not show_pol
+                    cur_map = pol_map if show_pol else original_map
+                    sc = pygame.transform.scale(cur_map, (int(map_w * zoom), int(map_h * zoom)))
+                elif event.key == pygame.K_F2:
+                    show_diplomacy = not show_diplomacy
+                elif event.key == pygame.K_1:
+                    current_map_mode = MAP_MODE_POLITICAL
+                    cur_map = combined_political
+                    sc = pygame.transform.scale(cur_map, (int(map_w * zoom), int(map_h * zoom)))
+                    print("Switched to: Political Map")
+                elif event.key == pygame.K_2:
+                    current_map_mode = MAP_MODE_COUNTRY_NAMES
+                    cur_map = combined_country
+                    sc = pygame.transform.scale(cur_map, (int(map_w * zoom), int(map_h * zoom)))
+                    print("Switched to: Country Names Map")
+                elif event.key == pygame.K_3:
+                    current_map_mode = MAP_MODE_PROVINCE_NAMES
+                    cur_map = combined_province
+                    sc = pygame.transform.scale(cur_map, (int(map_w * zoom), int(map_h * zoom)))
+                    print("Switched to: Province Names Map")
 
             elif event.type == pygame.MOUSEWHEEL:
-                old = zoom_level
-                zoom_level *= 1.2 if event.y > 0 else (1/1.2)
-                zoom_level = max(initial_zoom, min(zoom_level, 6.0))
-                if old != zoom_level:
+                oz = zoom
+                zoom = max(init_zoom, min(zoom * (1.2 if event.y > 0 else 1 / 1.2), ZOOM_MAX))
+                if oz != zoom:
                     mx, my = pygame.mouse.get_pos()
-                    camera_x = mx - (mx - camera_x) * (zoom_level/old)
-                    camera_y = my - (my - camera_y) * (zoom_level/old)
-                    camera_x, camera_y = clamp(camera_x, camera_y, zoom_level)
-                    scaled_map = rescale(zoom_level)
+                    cam_x = mx - (mx - cam_x) * (zoom / oz)
+                    cam_y = my - (my - cam_y) * (zoom / oz)
+                    cam_x, cam_y = clamp(cam_x, cam_y)
+                    sc = pygame.transform.scale(cur_map, (int(map_w * zoom), int(map_h * zoom)))
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
+                ex, ey = event.pos
                 if event.button == 1:
-                    is_panning = True
-                    last_mouse = event.pos
-                    # Check if Next Turn button was clicked (will check btn rect in render loop)
+                    if ex < sw - SIDEBAR_W and ey < sh - HUD_H:
+                        rx = int((ex - cam_x) / zoom)
+                        ry = int((ey - cam_y) / zoom)
+                        if 0 <= rx < map_w and 0 <= ry < map_h:
+                            rgb = original_map.get_at((rx, ry))[:3]
+                            prov = color_to_province.get(rgb)
+                            if not prov:
+                                prov = find_closest_province(rgb, color_to_province, tolerance=5)
+                            owner = getattr(prov, "owner", None) if prov else None
+                            if owner and owner not in ("SEA", "LAKE", "Không có / Đất trống"):
+                                sel_tag = owner
+                                print(f"Selected: {owner} (left click)")
+                        is_pan = True
+                        last_pos = event.pos
                 elif event.button == 3:
-                    mx, my = event.pos
-                    # Right-click to select province - only outside sidebar and HUD
-                    if mx < sw - SIDEBAR_W and my < sh - HUD_H:
-                        try:
-                            rx = int((mx - camera_x) / zoom_level)
-                            ry = int((my - camera_y) / zoom_level)
-                            if 0 <= rx < map_w and 0 <= ry < map_h:
-                                # Use PIL for exact colors if available
-                                if pil_pixels:
-                                    rgb = pil_pixels[rx, ry]
-                                else:
-                                    rgb = original_map.get_at((rx, ry))[:3]
-                                
-                                prov = find_province_by_color(rgb, color_to_province, tolerance=3)
-                                if prov:
-                                    owner = getattr(prov, 'owner', None)
-                                    if owner and owner not in ('SEA', 'LAKE', 'Không có / Đất trống'):
-                                        selected_tag = owner
-                                        print(f"✓ Selected province owner: {selected_tag} (RGB: {rgb})")
-                                    else:
-                                        print(f"✗ Click on {owner}")
-                                else:
-                                    print(f"✗ Province not found for color: {rgb}")
-                        except Exception as e:
-                            print(f"✗ Error selecting province: {e}")
+                    if ex < sw - SIDEBAR_W and ey < sh - HUD_H:
+                        rx = int((ex - cam_x) / zoom)
+                        ry = int((ey - cam_y) / zoom)
+                        if 0 <= rx < map_w and 0 <= ry < map_h:
+                            rgb = original_map.get_at((rx, ry))[:3]
+                            prov = color_to_province.get(rgb)
+                            if not prov:
+                                prov = find_closest_province(rgb, color_to_province, tolerance=5)
+                            owner = getattr(prov, "owner", None) if prov else None
+                            if owner and owner not in ("SEA", "LAKE", "Không có / Đất trống"):
+                                sel_tag = owner
+                                show_diplomacy = True
+                                print(f"Selected: {owner} (right click) - Diplomacy panel opened")
 
-            elif event.type == pygame.MOUSEBUTTONUP:
-                if event.button == 1:
-                    is_panning = False
+        mx, my = pygame.mouse.get_pos()
+        screen.fill(C_SEA)
+        sw2 = int(map_w * zoom)
+        for ox in (0, -sw2, sw2):
+            screen.blit(sc, (int(cam_x) + ox, int(cam_y)))
 
-            elif event.type == pygame.MOUSEMOTION:
-                if is_panning:
-                    mx, my = event.pos
-                    camera_x += mx - last_mouse[0]
-                    camera_y += my - last_mouse[1]
-                    last_mouse = event.pos
-                    camera_x, camera_y = clamp(camera_x, camera_y, zoom_level)
+        draw_sidebar(screen, fonts, sel_tag, game_state, sh)
+        btn = draw_hud(screen, fonts, game_state, sw, sh)
 
-        # ── Render ──
-        screen.fill(COLOR_SEA)
-        scaled_w = int(map_w * zoom_level)
-        screen.blit(scaled_map, (camera_x, camera_y))
-        screen.blit(scaled_map, (camera_x - scaled_w, camera_y))
-        screen.blit(scaled_map, (camera_x + scaled_w, camera_y))
+        draw_leaderboard(screen, fonts, game_state, x=16, y=16, width=260, max_rows=6)
 
-        # Sidebar + HUD
-        draw_sidebar(screen, fonts, selected_tag,
-                     game_state.countries_data, sh, game_state)
-        btn = draw_hud(screen, fonts, game_state, flags_cache, sw, sh)
+        if current_map_mode == MAP_MODE_POLITICAL:
+            draw_province_tooltip(screen, fonts, original_map, color_to_province, mx, my, cam_x, cam_y, zoom, sh)
 
-        # Menu button or menu overlay
-        if menu_open:
-            # Draw semi-transparent overlay
-            overlay = pygame.Surface((sw, sh), pygame.SRCALPHA)
-            overlay.fill((0, 0, 0, 200))
-            screen.blit(overlay, (0, 0))
-            
-            # Menu panel
-            menu_w, menu_h = 300, 200
-            menu_x = sw // 2 - menu_w // 2
-            menu_y = sh // 2 - menu_h // 2
-            pygame.draw.rect(screen, COLOR_PANEL, (menu_x, menu_y, menu_w, menu_h), border_radius=8)
-            pygame.draw.rect(screen, COLOR_GOLD, (menu_x, menu_y, menu_w, menu_h), 2, border_radius=8)
-            
-            # Menu title
-            title = fonts["big"].render("MENU", True, COLOR_GOLD)
-            screen.blit(title, (menu_x + (menu_w - title.get_width()) // 2, menu_y + 15))
-            
-            # Continue button
-            continue_rect = pygame.Rect(menu_x + 30, menu_y + 60, menu_w - 60, 40)
-            cmx, cmy = pygame.mouse.get_pos()
-            ch = continue_rect.collidepoint(cmx, cmy)
-            pygame.draw.rect(screen, (50, 100, 50) if ch else (30, 60, 30), continue_rect, border_radius=4)
-            pygame.draw.rect(screen, COLOR_GOLD, continue_rect, 1, border_radius=4)
-            ct = fonts["sm"].render("Continue", True, COLOR_WHITE)
-            screen.blit(ct, ct.get_rect(center=continue_rect.center))
-            if pygame.mouse.get_pressed()[0] and ch:
-                menu_open = False
-            
-            # Exit button
-            exit_rect = pygame.Rect(menu_x + 30, menu_y + 110, menu_w - 60, 40)
-            eh = exit_rect.collidepoint(cmx, cmy)
-            pygame.draw.rect(screen, (140, 40, 40) if eh else (80, 30, 30), exit_rect, border_radius=4)
-            pygame.draw.rect(screen, (180, 60, 60), exit_rect, 1, border_radius=4)
-            et = fonts["sm"].render("Exit to Lobby", True, COLOR_WHITE)
-            screen.blit(et, et.get_rect(center=exit_rect.center))
-            if pygame.mouse.get_pressed()[0] and eh:
-                return
-        else:
-            # Show MENU button when menu is not open
-            menu_rect = pygame.Rect(sw - SIDEBAR_W - 100, 8, 88, 30)
-            mmx, mmy = pygame.mouse.get_pos()
-            mh = menu_rect.collidepoint(mmx, mmy)
-            pygame.draw.rect(screen, (140,40,40) if mh else (80,30,30), menu_rect, border_radius=6)
-            pygame.draw.rect(screen, (180,60,60), menu_rect, 1, border_radius=6)
-            ms = fonts["sm"].render("< MENU", True, COLOR_WHITE)
-            screen.blit(ms, ms.get_rect(center=menu_rect.center))
-            if pygame.mouse.get_pressed()[0] and mh:
-                menu_open = True
-
-        # Next Turn click - handle left mouse click with debounce
-        mouse_pressed = pygame.mouse.get_pressed()[0]
-        if mouse_pressed and btn.collidepoint(pygame.mouse.get_pos()):
-            if not next_turn_pressed:
+        if pygame.mouse.get_pressed()[0] and next_turn_cooldown == 0:
+            if btn.collidepoint(mx, my):
                 game_state.next_turn()
-                next_turn_pressed = True
-        else:
-            next_turn_pressed = False
+                next_turn_cooldown = 10
+
+        menu_r = pygame.Rect(sw - SIDEBAR_W - 110, 8, 100, 30)
+        mh = menu_r.collidepoint(mx, my)
+        pygame.draw.rect(screen, (75, 45, 18) if mh else (45, 28, 12), menu_r, border_radius=6)
+        gold_border(screen, menu_r.x, menu_r.y, menu_r.w, menu_r.h, 6)
+        ms = fonts["sm"].render("< MENU", True, C_GOLD)
+        screen.blit(ms, ms.get_rect(center=menu_r.center))
+        if pygame.mouse.get_pressed()[0] and mh:
+            show_diplomacy = False
+            return
+
+        help_text = fonts["sm"].render("F2: Diplomacy | L-Click: Select | R-Click: Select & Diplomacy", True, C_GOLD_DIM)
+        screen.blit(help_text, (10, sh - HUD_H - help_text.get_height() - 5))
+
+        if show_diplomacy:
+            close_btn = draw_diplomacy_panel(screen, fonts, game_state, (mx, my))
+            if close_btn.collidepoint(mx, my) and pygame.mouse.get_pressed()[0]:
+                show_diplomacy = False
+                pygame.time.wait(200)
 
         pygame.display.flip()
-        clock.tick(60)
-
-    pygame.quit()
-    sys.exit()
-
-# Thêm vào game_ui.py, ví dụ sau hàm find_province_by_color
-
-def debug_color_at_position(pil_image, x, y, color_to_province):
-    """Debug function to check color mapping at specific coordinates"""
-    if not pil_image:
-        print("PIL image not available")
-        return None, None
-    
-    width, height = pil_image.size
-    if 0 <= x < width and 0 <= y < height:
-        rgb = pil_image.getpixel((x, y))
-        prov = find_province_by_color(rgb, color_to_province, tolerance=5)
-        
-        print(f"\n--- DEBUG ---")
-        print(f"Position: ({x}, {y})")
-        print(f"RGB value: {rgb}")
-        
-        if prov:
-            print(f"Province ID: {prov.id}")
-            print(f"Province color: {prov.color}")
-            print(f"Is sea: {prov.is_sea}")
-            print(f"Is lake: {prov.is_lake}")
-            print(f"Owner: {prov.owner}")
-        else:
-            print("No province found for this color")
-            # Tìm màu gần nhất để debug
-            closest = None
-            min_dist = float('inf')
-            for color_key, p in color_to_province.items():
-                if len(color_key) == 3:
-                    dist = ((rgb[0]-color_key[0])**2 + (rgb[1]-color_key[1])**2 + (rgb[2]-color_key[2])**2)**0.5
-                    if dist < min_dist:
-                        min_dist = dist
-                        closest = p
-            if closest:
-                print(f"Closest province: ID {closest.id}, color {closest.color}, distance: {min_dist:.2f}")
-        print("---------------\n")
-        return rgb, prov
-    else:
-        print(f"Coordinates ({x},{y}) out of bounds (0-{width}, 0-{height})")
-        return None, None
+        clock.tick(FPS)
 
 
-#  ENTRY POINT
+# ── ENTRY ────────────────────────────────────────────
 def start_engine(game_state):
-    global flags_cache_ref
+    global game_state_ref, country_name_surface, province_name_surface, current_map_mode
+    game_state_ref = game_state
+
+    print("Initializing Pygame...")
     pygame.init()
     pygame.font.init()
 
-    sw, sh = 1280, 720
-    screen = pygame.display.set_mode((sw, sh))
-    pygame.display.set_caption("Victoria 3 — Simple Engine")
+    from engine.fonts import load_vic3_fonts
+    vic3_fonts = load_vic3_fonts()
 
+    from engine.state_resource_loader import load_state_resources, build_color_cache
+    state_resources = load_state_resources()
+    build_color_cache(state_resources)
+    
+    print(f"Creating screen {SCREEN_W}x{SCREEN_H}...")
+    screen = pygame.display.set_mode((SCREEN_W, SCREEN_H))
+    pygame.display.set_caption(TITLE)
+    
+    print("Loading fonts...")
     fonts = load_fonts()
 
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    map_path = os.path.join(base_dir, "data", "map_data", "provinces.png")
+    print(f"Loading flags from {base_dir}...")
+    load_flags(base_dir)
 
-    flags_cache_ref = load_flags_cache(base_dir)
-    # Load WITHOUT .convert() to preserve exact color values
-    original_map = pygame.image.load(map_path)
+    map_path = os.path.join(base_dir,"data","map_data","provinces.png")
+    print(f"Loading map from {map_path}...")
+    original_map = pygame.image.load(map_path).convert()
     
-    # Also load with PIL for guaranteed exact color lookups
-    pil_map = Image.open(map_path).convert("RGB")
-    pil_pixels = pil_map.load()
-    
-    color_to_province = {prov.color: prov for prov in game_state.provinces.values()}
-    print(f"[DEBUG] Loaded {len(color_to_province)} provinces in color lookup")
+    print("Building color map...")
+    color_to_province = {p.color:p for p in game_state.provinces.values()}
 
-    political_map = generate_political_map(
-        original_map, color_to_province, game_state.countries_data)
+    full_path = os.path.join(base_dir,"data","countries_full.json")
+    try: 
+        with open(full_path, "r", encoding="utf-8") as f:
+            countries_full = json.load(f)
+        print(f"Loaded countries_full.json with {len(countries_full)} entries")
+    except: 
+        countries_full = {}
+        print("No countries_full.json found")
+
+    print("Generating political map...")
+    pol_map = generate_political_map(original_map, color_to_province,
+                                     game_state.countries_data, countries_full)
+    
+    print("Generating country name map...")
+    country_name_surface = generate_country_name_map(original_map, color_to_province,
+                                                      game_state.countries_data, fonts)
+    
+    print("Generating province name map...")
+    province_name_surface = generate_province_name_map(original_map, color_to_province, fonts)
 
     map_w, map_h = original_map.get_size()
-    initial_zoom = max(sw / map_w, sh / map_h)
+    init_zoom = max(SCREEN_W / map_w, SCREEN_H / map_h)
+    print(f"Map size: {map_w}x{map_h}, initial zoom: {init_zoom:.2f}")
 
-    # Lobby trả về (tag, mode)
+    print("Entering game loop...")
     while True:
-        result = run_lobby(screen, fonts, original_map, political_map,
-                           color_to_province, initial_zoom, pil_pixels)
-        chosen_tag, chosen_mode = result
-        game_state.player_tag  = chosen_tag
-        game_state.player_mode = chosen_mode   # lưu chế độ chính phủ
-
-        print(f"Chon: {chosen_tag} / che do: {chosen_mode}")
-
-        run_game(screen, fonts, game_state, original_map, political_map,
-                 color_to_province, initial_zoom, flags_cache_ref, pil_pixels)
-        # Nếu run_game return (nhấn ESC) thì quay về lobby
+        tag, mode = run_lobby(screen, fonts, original_map, pol_map,
+                              color_to_province, init_zoom)
+        print(f"Selected: {tag} / {mode}")
+        game_state.player_tag = tag
+        game_state.player_mode = mode
+        
+        for t in game_state.countries:
+            if t != tag and t not in game_state.countries[tag].relations:
+                game_state.countries[tag].relations[t] = 0
+        
+        run_game(screen, fonts, game_state, original_map, pol_map,
+                 color_to_province, init_zoom, country_name_surface, province_name_surface)

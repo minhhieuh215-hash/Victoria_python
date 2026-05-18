@@ -1,0 +1,15 @@
+{
+    "GBR": {"type": "recognized"},
+    "FRA": {"type": "recognized"},
+    "RUS": {"type": "recognized"},
+    "GER": {"type": "recognized"},
+    "AUS": {"type": "recognized"},
+    "PRU": {"type": "recognized"},
+    "USA": {"type": "recognized"},
+    "JAP": {"type": "unrecognized"},
+    "CHI": {"type": "unrecognized"},
+    "TUR": {"type": "unrecognized"},
+    "DAI": {"type": "unrecognized"},
+    "TEX": {"type": "unrecognized"},
+    "ECU": {"type": "unrecognized"}
+}

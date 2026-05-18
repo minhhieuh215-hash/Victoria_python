@@ -121,43 +121,75 @@ def load_states(provinces):
     folder = "data/map_data/state_regions"
 
     color_to_province = {prov.color: prov for prov in provinces.values()}
+    
+    # Debug: in ra 10 màu đầu tiên để kiểm tra
+    print(f"Debug: First 5 province colors: {list(color_to_province.keys())[:5]}")
 
     for filename in os.listdir(folder):
         path = os.path.join(folder, filename)
-
+        
         if not os.path.isfile(path):
             continue
 
-        with open(path, "r", encoding="utf-8") as file:
-            content = file.read()
+        try:
+            with open(path, "r", encoding="utf-8-sig") as file:
+                content = file.read()
+        except UnicodeDecodeError:
+            with open(path, "r", encoding="latin-1") as file:
+                content = file.read()
+            
+        for match in re.finditer(r'^([A-Z_]+)\s*=\s*\{', content, re.MULTILINE):
+            state_name = match.group(1)
+            start_pos = match.end()
 
-            name_match = re.search(r"(\w+)\s*=", content)
-            provinces_match = re.search(r"provinces\s*=\s*{([^}]*)}", content)
+            brace_count = 1
+            end_pos = start_pos
+            for i in range(start_pos, len(content)):
+                if content[i] == '{':
+                    brace_count += 1
+                elif content[i] == '}':
+                    brace_count -= 1
+                    if brace_count == 0:
+                        end_pos = i
+                        break
 
-            if name_match and provinces_match:
-                state_name = name_match.group(1)
-                province_ids = provinces_match.group(1).split()
-                state = State(state_name)
+            if end_pos <= start_pos:
+                continue
 
-                for hex_pid in province_ids:
-                    hex_str = hex_pid.replace('"', '').strip().lstrip('x').lstrip('X')
-                    
-                    if len(hex_str) != 6:
-                        continue 
+            state_body = content[start_pos:end_pos]
+            prov_match = re.search(r'provinces\s*=\s*\{([^}]+(?:{[^}]*}[^}]*)*)\}', state_body, re.DOTALL)
+            if not prov_match:
+                continue
 
-                    try:
-                        r = int(hex_str[0:2], 16)
-                        g = int(hex_str[2:4], 16)
-                        b = int(hex_str[4:6], 16)
-                        target_color = (r, g, b)
+            # Parse province colors
+            province_ids = prov_match.group(1).split()
+            state = State(state_name)
+            matched_count = 0
 
-                        if target_color in color_to_province:
-                            state.provinces.append(color_to_province[target_color])
+            for hex_pid in province_ids:
+                hex_str = hex_pid.replace('"', '').strip().lstrip('x').lstrip('X')
                 
-                    except ValueError:
-                        continue
+                if len(hex_str) != 6:
+                    continue
 
+                try:
+                    r = int(hex_str[0:2], 16)
+                    g = int(hex_str[2:4], 16)
+                    b = int(hex_str[4:6], 16)
+                    target_color = (r, g, b)
+
+                    if target_color in color_to_province:
+                        state.provinces.append(color_to_province[target_color])
+                        matched_count += 1
+
+                except ValueError:
+                    continue
+                
+            if state.provinces:
                 states.append(state)
-                print(f"Loaded state: {state_name} with {len(state.provinces)} provinces")
-        
+                # Chỉ in ra nếu có vấn đề hoặc giảm log
+                if matched_count < len(province_ids) * 0.5:
+                    print(f"State {state_name}: matched {matched_count}/{len(province_ids)} provinces")
+    
+    print(f"Total states loaded: {len(states)}")
     return states
