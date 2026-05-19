@@ -1,0 +1,20 @@
+{
+    "production": {
+        "romanticism": {"cost": 1000, "unlocks": ["art_academy"]},
+        "railways": {"cost": 2000, "unlocks": ["railroad"], "effects": {"infrastructure": 0.2}},
+        "mechanization": {"cost": 3000, "unlocks": ["engine_factory"], "effects": {"factory_output": 0.15}},
+        "electricity": {"cost": 5000, "unlocks": ["power_plant"], "effects": {"urbanization": 0.1}}
+    },
+    "military": {
+        "line_infantry": {"cost": 1000, "effects": {"army_offense": 0.1}},
+        "artillery": {"cost": 1500, "unlocks": ["artillery_regiment"]},
+        "mobilization": {"cost": 2000, "effects": {"conscription_rate": 0.05}},
+        "trench_infantry": {"cost": 3000, "effects": {"army_defense": 0.15}}
+    },
+    "society": {
+        "education": {"cost": 1000, "effects": {"literacy_growth": 0.02}},
+        "egalitarianism": {"cost": 2000, "effects": {"pop_consciousness": -0.1}},
+        "nationalism": {"cost": 2500, "effects": {"assimilation_rate": 0.03}},
+        "socialism": {"cost": 4000, "effects": {"worker_power": 0.15}}
+    }
+}

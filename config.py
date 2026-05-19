@@ -28,8 +28,10 @@ START_MONTH = 1
 
 # ── Kinh tế (mỗi lượt = 1 tháng) ──
 BASE_TAX_RATE    = 0.15
-BASE_POP_GROWTH  = 0.001   # 0.1% mỗi tháng
 BASE_GDP_GROWTH  = 0.002
+
+# ── Dân số ──
+BASE_POP_GROWTH = 0.001   # 0.1% mỗi tháng
 
 # ── Quân sự ──
 ARMY_UPKEEP_PER_1000 = 5   # gold/tháng cho mỗi 1000 quân

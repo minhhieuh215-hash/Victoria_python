@@ -1,59 +1,92 @@
 """
-Hệ thống chính trị đơn giản hóa.
+engine/politics.py
+Gộp từ: politics.py + law.py + interest_groups.py
 """
 import random
 
-from config import COLONIZABLE_TYPES
 
+# ── GOVERNMENT TYPES ────────────────────────────────────────────
 GOVERNMENT_TYPES = {
-    "default":            {"tax_bonus": 0.00, "pop_happiness": 0.0,  "prestige_gain": 0.1},
-    "absolute_monarchy":  {"tax_bonus": 0.05, "pop_happiness":-0.1,  "prestige_gain": 0.2},
-    "republic":           {"tax_bonus":-0.02, "pop_happiness": 0.2,  "prestige_gain": 0.1},
-    "dictatorship":       {"tax_bonus": 0.08, "pop_happiness":-0.2,  "prestige_gain": 0.0},
-    "theocracy":          {"tax_bonus": 0.03, "pop_happiness": 0.1,  "prestige_gain": 0.3},
-    "communist":          {"tax_bonus": 0.10, "pop_happiness":-0.3,  "prestige_gain":-0.1},
+    "default":           {"tax_bonus": 0.00, "pop_happiness": 0.0,  "prestige_gain": 0.1},
+    "absolute_monarchy": {"tax_bonus": 0.05, "pop_happiness":-0.1,  "prestige_gain": 0.2},
+    "republic":          {"tax_bonus":-0.02, "pop_happiness": 0.2,  "prestige_gain": 0.1},
+    "dictatorship":      {"tax_bonus": 0.08, "pop_happiness":-0.2,  "prestige_gain": 0.0},
+    "theocracy":         {"tax_bonus": 0.03, "pop_happiness": 0.1,  "prestige_gain": 0.3},
+    "communist":         {"tax_bonus": 0.10, "pop_happiness":-0.3,  "prestige_gain":-0.1},
+    "fascist":           {"tax_bonus": 0.07, "pop_happiness":-0.25, "prestige_gain": 0.0},
 }
 
 
+# ── INTEREST GROUPS ─────────────────────────────────────────────
+class InterestGroup:
+    def __init__(self, name, ideology, pops_supported):
+        self.name          = name
+        self.ideology      = ideology
+        self.pops_supported = pops_supported
+        self.clout         = 0.0   # 0–100
+        self.leader        = None
+        self.opinion       = 0     # -100–100
+        self.in_government = False
+
+    def calculate_clout(self, country):
+        total = 0
+        for pop in country.pops:
+            if pop.type in self.pops_supported:
+                total += pop.size * getattr(pop, "political_power", 1)
+        self.clout = min(100, total / max(country.population, 1) * 100)
+        return self.clout
+
+
+INTEREST_GROUPS = {
+    "landowners":     InterestGroup("Địa chủ",   "conservative", ["aristocrats"]),
+    "industrialists": InterestGroup("Tư bản",    "liberal",      ["capitalists"]),
+    "military":       InterestGroup("Quân đội",  "jingoist",     ["officers"]),
+    "clergy":         InterestGroup("Giáo hội",  "moralist",     ["clergymen"]),
+    "intelligentsia": InterestGroup("Trí thức",  "progressive",  ["bureaucrats", "clerks"]),
+    "peasants":       InterestGroup("Nông dân",  "agrarian",     ["farmers"]),
+    "workers":        InterestGroup("Công nhân", "socialist",    ["laborers", "machinists"]),
+}
+
+
+# ── LAWS ─────────────────────────────────────────────────────────
+class Law:
+    def __init__(self, name, category, enactment_chance):
+        self.name             = name
+        self.category         = category   # "governance" | "economy" | "human_rights"
+        self.enactment_chance = enactment_chance
+        self.supporters       = []         # Interest group names
+        self.opposers         = []
+
+
+LAWS = {
+    "free_press":        Law("Tự do báo chí",    "human_rights", 0.4),
+    "land_reform":       Law("Cải cách ruộng đất","economy",      0.3),
+    "universal_suffrage":Law("Phổ thông đầu phiếu","governance",  0.25),
+    "conscription":      Law("Nghĩa vụ quân sự", "governance",   0.5),
+    "free_trade":        Law("Thương mại tự do",  "economy",      0.45),
+}
+
+
+# ── LOGIC FUNCTIONS ──────────────────────────────────────────────
 def apply_government_bonus(country):
-    """Áp dụng bonus chính phủ vào tax_rate và prestige."""
     gov = GOVERNMENT_TYPES.get(country.government, GOVERNMENT_TYPES["default"])
-    country.tax_rate = max(0.05, min(0.40,
-        0.15 + gov["tax_bonus"]))
+    country.tax_rate = max(0.05, min(0.40, 0.15 + gov["tax_bonus"]))
     country.prestige += gov["prestige_gain"]
 
 
 def monthly_politics_tick(countries: dict, player_tag: str):
-    """
-    Xử lý chính trị mỗi tháng:
-    - Áp dụng bonus chính phủ
-    - AI quốc gia lớn có thể tăng quân
-    """
     for tag, country in countries.items():
         if country.is_colonizable:
             continue
         apply_government_bonus(country)
-
-        # AI: quốc gia giàu tự động tăng quân
+        # AI tự tăng quân nếu đủ giàu
         if tag != player_tag and country.treasury > 200 and random.random() < 0.05:
             country.army_size += 5
             country.treasury  -= 50
 
-# Trong politics.py, thêm:
+
 def get_relations_color(value: int) -> tuple:
-    """Trả về màu cho quan hệ ngoại giao"""
-    if value >= 75:
-        return (80, 220, 100)   # Xanh đậm - Đồng minh
-    if value >= 50:
-        return (80, 200, 120)   # Xanh - Thân thiện
-    if value >= 25:
-        return (120, 200, 120)  # Xanh nhạt
-    if value >= 0:
-        return (180, 180, 100)  # Vàng - Trung lập
-    if value >= -25:
-        return (200, 150, 80)   # Cam nhạt
-    if value >= -50:
-        return (200, 120, 60)   # Cam - Căng thẳng
-    if value >= -75:
-        return (210, 80, 80)    # Đỏ nhạt
-    return (220, 50, 50)        # Đỏ đậm - Thù địch
+    if value >= 50:  return (80, 200, 120)
+    if value >= 0:   return (180, 180, 100)
+    if value >= -50: return (200, 120, 60)
+    return (200, 60, 60)

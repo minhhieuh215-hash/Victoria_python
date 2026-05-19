@@ -55,6 +55,7 @@ country_name_surface = None
 province_name_surface = None
 game_state_ref = None
 show_diplomacy = False
+show_build_panel = False
 diplomacy_selected_tag = None
 
 # ── Global flags cache ──────────────────────────────
@@ -219,13 +220,12 @@ def generate_country_name_map(original_image, color_to_province, countries_data,
     map_w, map_h = original_image.get_size()
     text_surface = pygame.Surface((map_w, map_h), pygame.SRCALPHA)
     
-    country_centers = {}
     country_pixels = {}
     
     arr = pygame.surfarray.array3d(original_image).transpose(1, 0, 2)
     
-    for y in range(0, map_h, 10):
-        for x in range(0, map_w, 10):
+    for y in range(0, map_h, 5):
+        for x in range(0, map_w, 5):
             rgb = tuple(arr[y, x])
             prov = color_to_province.get(rgb)
             if prov:
@@ -234,97 +234,147 @@ def generate_country_name_map(original_image, color_to_province, countries_data,
                     if owner not in country_pixels:
                         country_pixels[owner] = []
                     country_pixels[owner].append((x, y))
-    
+
+    country_data = []
     for owner, pixels in country_pixels.items():
-        if len(pixels) > 100:
+        if len(pixels) > 50:  # Bỏ qua nước quá nhỏ
             center_x = sum(p[0] for p in pixels) // len(pixels)
             center_y = sum(p[1] for p in pixels) // len(pixels)
-            country_centers[owner] = (center_x, center_y)
+            area = len(pixels)
+            country_data.append((owner, center_x, center_y, area))
     
-    for owner, (cx, cy) in list(country_centers.items())[:50]:  # Chỉ 50 nước lớn nhất
+    country_data.sort(key=lambda x: x[3], reverse=True)
+    if not country_data:
+        return text_surface
+    
+    areas = [c[3] for c in country_data]
+    min_area, max_area = min(areas), max(areas)
+    
+    for owner, cx, cy, area in country_data:
+        # Tính kích thước chữ: từ 10px đến 28px
+        font_size = 10 + int(18 * (area - min_area) / (max_area - min_area + 1))
+        font_size = max(10, min(28, font_size))
+        
+        # Tạo font tạm thời với kích thước phù hợp
+        try:
+            temp_font = pygame.font.SysFont("arial", font_size, bold=True)
+        except:
+            temp_font = fonts["sm"]
+        
         name = COUNTRY_NAMES.get(owner, owner)
         if name is None:
             name = owner if owner else "Unknown"
-
+        
         if not name or len(name) < 3:
             continue
-            
-        if len(name) > 12:
-            name = name[:10] + ".."
         
-        text = fonts["sm"].render(name, True, C_WHITE)
+        # Rút gọn tên nếu quá dài
+        max_len = 14 if font_size > 20 else 18
+        if len(name) > max_len:
+            name = name[:max_len-2] + ".."
+        
+        # Vẽ bóng và text
+        text = temp_font.render(name, True, C_WHITE)
         text_rect = text.get_rect(center=(cx, cy))
         
-        padding = 2
+        # Nền mờ phía sau text
+        padding = max(3, font_size // 8)
         bg_rect = pygame.Rect(text_rect.x - padding, text_rect.y - padding,
                               text_rect.width + padding * 2, text_rect.height + padding * 2)
-        pygame.draw.rect(text_surface, (*C_PANEL, 180), bg_rect, border_radius=2)
+        pygame.draw.rect(text_surface, (*C_PANEL, 200), bg_rect, border_radius=4)
+        pygame.draw.rect(text_surface, C_GOLD, bg_rect, 1, border_radius=4)
+        
+        # Vẽ bóng đổ
+        shadow = temp_font.render(name, True, (0, 0, 0, 150))
+        text_surface.blit(shadow, (text_rect.x + 1, text_rect.y + 1))
         text_surface.blit(text, text_rect)
     
     print("-> Hoan tat!")
     return text_surface
 
 def generate_province_name_map(original_image, color_to_province, fonts):
-    """Tạo bản đồ hiển thị tên tỉnh - PHIÊN BẢN SIÊU NHẸ (chỉ hiển thị state lớn)"""
-    print("Dang tao ban do ten tinh (toi uu cao)...")
+    """Tạo bản đồ tên tỉnh với kích thước chữ theo diện tích"""
+    print("Dang tao ban do ten tinh (voi kich thuoc linh hoat)...")
     
     map_w, map_h = original_image.get_size()
     text_surface = pygame.Surface((map_w, map_h), pygame.SRCALPHA)
     
-    # Chỉ xử lý state đã được cache từ trước
     from engine.state_resource_loader import _color_to_state_cache
     
-    # Gom các province theo state từ cache
-    state_colors = {}
-    for color, state in _color_to_state_cache.items():
-        state_name = state.name
-        if state_name not in state_colors:
-            state_colors[state_name] = []
-        state_colors[state_name].append(color)
-    
-    # Lấy mẫu pixel nhanh hơn
+    # Gom các province theo state
+    state_pixels = {}
     arr = pygame.surfarray.array3d(original_image).transpose(1, 0, 2)
-    h, w = arr.shape[:2]
     
-    # Dictionary lưu tổng và đếm
-    state_totals = {}
-    state_counts = {}
-    
-    # Lấy mẫu thưa hơn (mỗi 20 pixel)
-    step = 20
-    for y in range(0, h, step):
-        for x in range(0, w, step):
+    for y in range(0, map_h, 10):
+        for x in range(0, map_w, 10):
             rgb = tuple(arr[y, x])
             state = _color_to_state_cache.get(rgb)
             if state:
                 state_name = state.name
-                if state_name not in state_totals:
-                    state_totals[state_name] = [0, 0]
-                    state_counts[state_name] = 0
-                state_totals[state_name][0] += x
-                state_totals[state_name][1] += y
-                state_counts[state_name] += 1
+                if state_name not in state_pixels:
+                    state_pixels[state_name] = []
+                state_pixels[state_name].append((x, y))
     
-    # Vẽ text cho state đủ lớn
-    for state_name, count in state_counts.items():
-        if count < 30:  # Chỉ state có ít nhất 30 điểm mẫu
-            continue
+    # Tính trung tâm và diện tích
+    state_data = []
+    for state_name, pixels in state_pixels.items():
+        if len(pixels) > 30:
+            center_x = sum(p[0] for p in pixels) // len(pixels)
+            center_y = sum(p[1] for p in pixels) // len(pixels)
+            area = len(pixels)
+            state_data.append((state_name, center_x, center_y, area))
+    
+    if not state_data:
+        return text_surface
+    
+    # Sắp xếp và tính kích thước
+    state_data.sort(key=lambda x: x[3], reverse=True)
+    areas = [s[3] for s in state_data]
+    min_area, max_area = min(areas), max(areas)
+    
+    for state_name, cx, cy, area in state_data:
+        # Kích thước chữ từ 8px đến 18px cho tỉnh
+        font_size = 8 + int(10 * (area - min_area) / (max_area - min_area + 1))
+        font_size = max(8, min(18, font_size))
         
-        center_x = state_totals[state_name][0] // count
-        center_y = state_totals[state_name][1] // count
+        try:
+            temp_font = pygame.font.SysFont("arial", font_size, bold=True)
+        except:
+            temp_font = fonts["sm"]
         
-        # Lấy tên đẹp
         display_name = state_name.replace("STATE_", "").replace("_", " ").title()
-        if len(display_name) > 12:
-            display_name = display_name[:10] + ".."
+        max_len = 12 if font_size > 14 else 15
+        if len(display_name) > max_len:
+            display_name = display_name[:max_len-2] + ".."
         
-        # Vẽ text trực tiếp (không có nền)
-        text = fonts["sm"].render(display_name, True, (C_WHITE[0], C_WHITE[1], C_WHITE[2], 200))
-        text_rect = text.get_rect(center=(center_x, center_y))
+        text = temp_font.render(display_name, True, C_WHITE)
+        text_rect = text.get_rect(center=(cx, cy))
+        
+        # Nền mờ nhạt hơn cho tỉnh
+        padding = max(2, font_size // 8)
+        bg_rect = pygame.Rect(text_rect.x - padding, text_rect.y - padding,
+                              text_rect.width + padding * 2, text_rect.height + padding * 2)
+        pygame.draw.rect(text_surface, (*C_PANEL, 160), bg_rect, border_radius=2)
+        
         text_surface.blit(text, text_rect)
     
-    print(f"-> Hoan tat! Hien thi {len(state_counts)} tinh")
+    print("-> Hoan tat!")
     return text_surface
+
+def generate_combined_political_map(original_image, color_to_province, countries_data, countries_full, fonts):
+    """Tạo bản đồ chính trị kết hợp tên quốc gia"""
+    print("Dang tao ban do chinh tri + ten quoc gia...")
+    
+    # Tạo bản đồ chính trị
+    political = generate_political_map(original_image, color_to_province, 
+                                        countries_data, countries_full, 
+                                        mode=MAP_MODE_POLITICAL)
+    
+    # Thêm tên quốc gia
+    country_names = generate_country_name_map(original_image, color_to_province, countries_data, fonts)
+    political.blit(country_names, (0, 0))
+    
+    return political
 
 # ── Draw helpers ─────────────────────────────────────
 def panel(screen, x, y, w, h, alpha=230):
@@ -417,6 +467,67 @@ def draw_province_tooltip(screen, fonts, original_map, color_to_province, mx, my
     for i, line in enumerate(lines):
         text(screen, fonts, "sm", line, tx + 8, ty + 8 + i * (fonts["sm"].get_height() + 4), C_WHITE)
 
+def draw_build_panel(screen, fonts, game_state):
+    """Panel xây dựng công trình - gọi khi nhấn B"""
+    global show_build_panel
+    
+    sw, sh = screen.get_size()
+    panel_w, panel_h = 300, 280
+    panel_x = (sw - panel_w) // 2
+    panel_y = (sh - panel_h) // 2
+    
+    panel(screen, panel_x, panel_y, panel_w, panel_h, 250)
+    text(screen, fonts, "med", "XÂY DỰNG CÔNG TRÌNH", panel_x + 10, panel_y + 10, C_GOLD)
+    
+    country = game_state.player_country
+    if not country:
+        return
+    
+    buildings = [
+        ("🌾 Nông trại", 50, "Tăng lương thực & dân số"),
+        ("⛏️ Mỏ", 100, "Khai thác than/sắt"),
+        ("🏭 Nhà máy", 200, "Sản xuất hàng hóa"),
+        ("🎓 Đại học", 300, "Tăng học thức & nghiên cứu"),
+        ("🏛️ Doanh trại", 150, "Tăng quân đội"),
+    ]
+    
+    y = panel_y + 45
+    for name, cost, desc in buildings:
+        can_build = country.treasury >= cost
+        btn = pygame.Rect(panel_x + 10, y, panel_w - 20, 38)
+        hover = btn.collidepoint(pygame.mouse.get_pos())
+        
+        # Màu nút
+        if hover and can_build:
+            color = (50, 120, 70)
+        elif can_build:
+            color = (40, 90, 55)
+        else:
+            color = (50, 50, 50)
+        
+        pygame.draw.rect(screen, color, btn, border_radius=4)
+        pygame.draw.rect(screen, C_GOLD if can_build else C_GREY, btn, 1, border_radius=4)
+        
+        text(screen, fonts, "sm", name, panel_x + 20, y + 11, C_WHITE)
+        cost_text = f"£{cost}"
+        text(screen, fonts, "sm", cost_text, panel_x + panel_w - 60, y + 11, 
+             C_GREEN if can_build else C_RED)
+        
+        if hover and can_build and pygame.mouse.get_pressed()[0]:
+            country.treasury -= cost
+            # TODO: Thêm building vào state
+            print(f"Built {name}")
+            pygame.time.wait(200)
+        
+        y += 45
+    
+    # Nút đóng
+    close_btn = pygame.Rect(panel_x + panel_w - 35, panel_y + 8, 28, 28)
+    if close_btn.collidepoint(pygame.mouse.get_pos()) and pygame.mouse.get_pressed()[0]:
+        show_build_panel = False
+        pygame.time.wait(200)
+    pygame.draw.rect(screen, (120, 40, 40), close_btn, border_radius=4)
+    text(screen, fonts, "med", "X", close_btn.x + 8, close_btn.y + 5, C_WHITE)
 
 # ── Leaderboard ─────────────────────────────────────
 def draw_leaderboard(screen, fonts, game_state, x=16, y=16, width=260, max_rows=6):
@@ -460,91 +571,48 @@ def draw_sidebar(screen, fonts, tag, game_state, screen_h):
     if not tag or tag in ("SEA","LAKE"): return
     x = SCREEN_W - SIDEBAR_W
 
-    for i in range(screen_h):
-        alpha = int(200 - i * 0.15)
-        s = pygame.Surface((SIDEBAR_W, 1), pygame.SRCALPHA)
-        s.fill((*C_PANEL, max(50, alpha)))
-        screen.blit(s, (x, i))
-
-    pygame.draw.line(screen, C_GOLD_DIM, (x,0),(x,screen_h), 3)
+    panel(screen, x, 0, SIDEBAR_W, screen_h, 240)
+    pygame.draw.line(screen, C_GOLD_DIM, (x,0),(x,screen_h), 2)
 
     raw = game_state.countries_data.get(tag,[100,100,100])
     c = tuple(int(v) for v in raw[:3])
-
-    for i in range(58):
-        ratio = i / 58
-        r = int(c[0] * (1 - ratio) + max(0, c[0]-60) * ratio)
-        g = int(c[1] * (1 - ratio) + max(0, c[1]-60) * ratio)
-        b = int(c[2] * (1 - ratio) + max(0, c[2]-60) * ratio)
-        pygame.draw.line(screen, (r, g, b), (x, i), (x+SIDEBAR_W, i))
-
-    pygame.draw.line(screen, C_GOLD, (x,58),(x+SIDEBAR_W,58), 3)
+    pygame.draw.rect(screen, c, (x,0,SIDEBAR_W,50))
+    pygame.draw.line(screen, C_GOLD, (x,50),(x+SIDEBAR_W,50), 2)
 
     name = COUNTRY_NAMES.get(tag, tag)
-    shadow = fonts["title"].render(name, True, (0,0,0))
-    screen.blit(shadow, (x+13, (58-shadow.get_height())//2 + 1))
     ns = fonts["title"].render(name,True,C_WHITE)
-    if ns.get_width() > SIDEBAR_W-20: ns = fonts["sm"].render(name,True,C_WHITE)
-    screen.blit(ns,(x+12, (58-ns.get_height())//2))
+    if ns.get_width() > SIDEBAR_W-20: 
+        ns = fonts["sm"].render(name,True,C_WHITE)
+    screen.blit(ns,(x+10, (50-ns.get_height())//2))
     
-    ts = fonts["sm"].render(f"[{tag}]",True,(220,220,220))
-    screen.blit(ts,(x+SIDEBAR_W-ts.get_width()-10,(58-ts.get_height())//2))
-    
-    y = 66
+    y = 60
     country = game_state.countries.get(tag)
     if country:
-        y = row(screen,fonts,x,y,"Dan so", f"{country.population:.1f}M", C_GREEN)
+        # Dùng row đơn giản hơn
+        y = row(screen,fonts,x,y,"Dân số", f"{country.population:.1f}M", C_GREEN)
         y = row(screen,fonts,x,y,"GDP", f"{country.gdp:.0f}M £", (180,220,255))
         y = divider(screen,x,y,SIDEBAR_W)
-        y = row(screen,fonts,x,y,"Kho bac", f"{country.treasury:.0f} £",
+        y = row(screen,fonts,x,y,"Ngân khố", f"£{country.treasury:.0f}",
                 C_GREEN if country.treasury>=0 else C_RED)
-        y = row(screen,fonts,x,y,"Thue suat", f"{country.tax_rate*100:.0f}%", (220,200,140))
+        y = row(screen,fonts,x,y,"Thuế", f"{country.tax_rate*100:.0f}%", (220,200,140))
         y = divider(screen,x,y,SIDEBAR_W)
-        y = row(screen,fonts,x,y,"Quan doi", f"{country.army_size}k quan", (220,160,100))
-        y = row(screen,fonts,x,y,"Uy tin", f"{country.prestige:.0f}", (200,200,100))
+        y = row(screen,fonts,x,y,"Quân đội", f"{country.army_size}k", (220,160,100))
+        y = row(screen,fonts,x,y,"Uy tín", f"{country.prestige:.0f}", (200,200,100))
         y = divider(screen,x,y,SIDEBAR_W)
-
+        
+        # Báo cáo kinh tế gọn
         rep = game_state.economy_report.get(tag)
         if rep:
             dy = C_GREEN if rep["delta"]>=0 else C_RED
-            y = row(screen,fonts,x,y,"Thu nhap/thang", f"+{rep['income']:.1f}£", C_GREEN)
-            y = row(screen,fonts,x,y,"Chi phi/thang",  f"-{rep['expense']:.1f}£", C_RED)
-            y = row(screen,fonts,x,y,"Can doi",        f"{rep['delta']:+.1f}£", dy)
+            y = row(screen,fonts,x,y,"Thu nhập", f"+{rep['income']:.0f}£", C_GREEN)
+            y = row(screen,fonts,x,y,"Chi phí", f"-{rep['expense']:.0f}£", C_RED)
+            y = row(screen,fonts,x,y,"Cân đối", f"{rep['delta']:+.0f}£", dy)
             y = divider(screen,x,y,SIDEBAR_W)
-        
-        if country.relations:
-            y = row(screen, fonts, x, y, "Quan he ngoai giao", "", None)
-            for rel_tag, rel_value in list(sorted(country.relations.items(), key=lambda x: x[1], reverse=True))[:3]:
-                rel_name = COUNTRY_NAMES.get(rel_tag, rel_tag)
-                rel_color = get_relations_color(rel_value)
-                rel_text = f"{rel_name}: {rel_value:+d}"
-                text(screen, fonts, "sm", rel_text, x+12, y, rel_color)
-                y += 20
-
-    if tag == game_state.player_tag and game_state.last_event:
-        ev = game_state.last_event
-        yt = y
-        evs = fonts["med"].render(ev["title"],True,(255,210,80))
-        screen.blit(evs,(x+12,yt)); yt += evs.get_height()+4
-        words = ev["desc"].split()
-        line_w, line = 0, []
-        for w in words:
-            ww = fonts["sm"].size(w+" ")[0]
-            if line_w+ww > SIDEBAR_W-24:
-                ds = fonts["sm"].render(" ".join(line),True,(180,180,180))
-                screen.blit(ds,(x+12,yt)); yt+=ds.get_height()+2
-                line=[w]; line_w=ww
-            else:
-                line.append(w); line_w+=ww
-        if line:
-            ds = fonts["sm"].render(" ".join(line),True,(180,180,180))
-            screen.blit(ds,(x+12,yt)); yt+=ds.get_height()+4
-        es = fonts["sm"].render(ev["effect_text"],True,(120,220,120))
-        screen.blit(es,(x+12,yt))
-
-    for i, txt in enumerate(["SPACE: Next Turn", "ESC: Menu", "1: Political", "2: Country Names", "3: Province Names", "F2: Diplomacy"]):
-        hs = fonts["sm"].render(txt, True, (65, 80, 105))
-        screen.blit(hs, (x+12, screen_h-52+i*16))
+    
+    # Hints gọn
+    for i, txt in enumerate(["SPACE: Next Turn", "F2: Ngoại giao", "B: Xây dựng"]):
+        hs = fonts["sm"].render(txt,True,(80,90,110))
+        screen.blit(hs,(x+10, screen_h-40+i*16))
 
 # ── HUD ──────────────────────────────────────────────
 def draw_hud(screen, fonts, game_state, screen_w, screen_h):
@@ -872,7 +940,7 @@ def run_lobby(screen, fonts, original_map, pol_map, color_to_province, zoom_leve
 
 # ── GAME ─────────────────────────────────────────────
 def run_game(screen, fonts, game_state, original_map, pol_map,
-                 color_to_province, init_zoom, country_name_surface, province_name_surface):
+             color_to_province, init_zoom, combined_political, combined_province):
     global show_diplomacy, diplomacy_selected_tag, current_map_mode
     
     sw, sh = screen.get_size()
@@ -882,32 +950,12 @@ def run_game(screen, fonts, game_state, original_map, pol_map,
     is_pan = False
     last_pos = (0, 0)
     sel_tag = game_state.player_tag
-    show_pol = True
-    cur_map = pol_map
+    cur_map = combined_political  # Mặc định là bản đồ chính trị + tên nước
     next_turn_cooldown = 0
     show_diplomacy = False
     diplomacy_selected_tag = None
     current_map_mode = MAP_MODE_POLITICAL
-
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    full_path = os.path.join(base_dir, "data", "countries_full.json")
-    try:
-        with open(full_path, "r", encoding="utf-8") as f:
-            countries_full = json.load(f)
-    except:
-        countries_full = {}
-
-    # Tạo các bản đồ kết hợp
-    combined_political = pol_map.copy()
-    combined_country = pol_map.copy()
-    combined_country.blit(country_name_surface, (0, 0))
-    
-    # Tạo bản đồ tỉnh với viền
-    province_border_map = generate_political_map(original_map, color_to_province,
-                                                  game_state.countries_data, countries_full,
-                                                  mode=MAP_MODE_PROVINCE_NAMES)
-    combined_province = province_border_map.copy()
-    combined_province.blit(province_name_surface, (0, 0))
+    show_build_panel = False
 
     def clamp(cx, cy):
         sw2 = int(map_w * zoom)
@@ -933,10 +981,6 @@ def run_game(screen, fonts, game_state, original_map, pol_map,
                 elif event.key == pygame.K_SPACE and next_turn_cooldown == 0:
                     game_state.next_turn()
                     next_turn_cooldown = 10
-                elif event.key == pygame.K_m:
-                    show_pol = not show_pol
-                    cur_map = pol_map if show_pol else original_map
-                    sc = pygame.transform.scale(cur_map, (int(map_w * zoom), int(map_h * zoom)))
                 elif event.key == pygame.K_F2:
                     show_diplomacy = not show_diplomacy
                 elif event.key == pygame.K_1:
@@ -945,15 +989,12 @@ def run_game(screen, fonts, game_state, original_map, pol_map,
                     sc = pygame.transform.scale(cur_map, (int(map_w * zoom), int(map_h * zoom)))
                     print("Switched to: Political Map")
                 elif event.key == pygame.K_2:
-                    current_map_mode = MAP_MODE_COUNTRY_NAMES
-                    cur_map = combined_country
-                    sc = pygame.transform.scale(cur_map, (int(map_w * zoom), int(map_h * zoom)))
-                    print("Switched to: Country Names Map")
-                elif event.key == pygame.K_3:
                     current_map_mode = MAP_MODE_PROVINCE_NAMES
                     cur_map = combined_province
                     sc = pygame.transform.scale(cur_map, (int(map_w * zoom), int(map_h * zoom)))
-                    print("Switched to: Province Names Map")
+                    print("Switched to: Province Map")
+                elif event.key == pygame.K_b:
+                    show_build_panel = not show_build_panel
 
             elif event.type == pygame.MOUSEWHEEL:
                 oz = zoom
@@ -967,7 +1008,7 @@ def run_game(screen, fonts, game_state, original_map, pol_map,
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 ex, ey = event.pos
-                if event.button == 1:
+                if event.button == 1:  # Left click - chọn quốc gia
                     if ex < sw - SIDEBAR_W and ey < sh - HUD_H:
                         rx = int((ex - cam_x) / zoom)
                         ry = int((ey - cam_y) / zoom)
@@ -982,7 +1023,7 @@ def run_game(screen, fonts, game_state, original_map, pol_map,
                                 print(f"Selected: {owner} (left click)")
                         is_pan = True
                         last_pos = event.pos
-                elif event.button == 3:
+                elif event.button == 3:  # Right click - mở diplomacy
                     if ex < sw - SIDEBAR_W and ey < sh - HUD_H:
                         rx = int((ex - cam_x) / zoom)
                         ry = int((ey - cam_y) / zoom)
@@ -997,6 +1038,18 @@ def run_game(screen, fonts, game_state, original_map, pol_map,
                                 show_diplomacy = True
                                 print(f"Selected: {owner} (right click) - Diplomacy panel opened")
 
+            elif event.type == pygame.MOUSEBUTTONUP:
+                if event.button == 1:
+                    is_pan = False
+
+            elif event.type == pygame.MOUSEMOTION and is_pan:
+                ex, ey = event.pos
+                cam_x += ex - last_pos[0]
+                cam_y += ey - last_pos[1]
+                last_pos = event.pos
+                cam_x, cam_y = clamp(cam_x, cam_y)
+
+        # Render
         mx, my = pygame.mouse.get_pos()
         screen.fill(C_SEA)
         sw2 = int(map_w * zoom)
@@ -1008,14 +1061,16 @@ def run_game(screen, fonts, game_state, original_map, pol_map,
 
         draw_leaderboard(screen, fonts, game_state, x=16, y=16, width=260, max_rows=6)
 
-        if current_map_mode == MAP_MODE_POLITICAL:
-            draw_province_tooltip(screen, fonts, original_map, color_to_province, mx, my, cam_x, cam_y, zoom, sh)
+        if show_build_panel:
+            draw_build_panel(screen, fonts, game_state)
 
+        # Xử lý click nút Next Turn
         if pygame.mouse.get_pressed()[0] and next_turn_cooldown == 0:
             if btn.collidepoint(mx, my):
                 game_state.next_turn()
                 next_turn_cooldown = 10
 
+        # Nút MENU
         menu_r = pygame.Rect(sw - SIDEBAR_W - 110, 8, 100, 30)
         mh = menu_r.collidepoint(mx, my)
         pygame.draw.rect(screen, (75, 45, 18) if mh else (45, 28, 12), menu_r, border_radius=6)
@@ -1029,6 +1084,7 @@ def run_game(screen, fonts, game_state, original_map, pol_map,
         help_text = fonts["sm"].render("F2: Diplomacy | L-Click: Select | R-Click: Select & Diplomacy", True, C_GOLD_DIM)
         screen.blit(help_text, (10, sh - HUD_H - help_text.get_height() - 5))
 
+        # Diplomacy Panel
         if show_diplomacy:
             close_btn = draw_diplomacy_panel(screen, fonts, game_state, (mx, my))
             if close_btn.collidepoint(mx, my) and pygame.mouse.get_pressed()[0]:
@@ -1037,7 +1093,6 @@ def run_game(screen, fonts, game_state, original_map, pol_map,
 
         pygame.display.flip()
         clock.tick(FPS)
-
 
 # ── ENTRY ────────────────────────────────────────────
 def start_engine(game_state):
@@ -1085,6 +1140,19 @@ def start_engine(game_state):
     print("Generating political map...")
     pol_map = generate_political_map(original_map, color_to_province,
                                      game_state.countries_data, countries_full)
+    
+    print("Generating combined political map with country names...")
+    combined_political = generate_combined_political_map(original_map, color_to_province,
+                                                          game_state.countries_data, 
+                                                          countries_full, fonts)
+    
+    print("Generating province map...")
+    province_map = generate_political_map(original_map, color_to_province,
+                                          game_state.countries_data, countries_full,
+                                          mode=MAP_MODE_PROVINCE_NAMES)
+    province_name_surface = generate_province_name_map(original_map, color_to_province, fonts)
+    combined_province = province_map.copy()
+    combined_province.blit(province_name_surface, (0, 0))
     
     print("Generating country name map...")
     country_name_surface = generate_country_name_map(original_map, color_to_province,

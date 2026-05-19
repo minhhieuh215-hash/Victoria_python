@@ -1,43 +1,51 @@
+# models/market.py
 class Market:
-    """Thị trường toàn cầu đơn giản hóa."""
-
     BASE_PRICES = {
-        "grain":    2.0,
-        "fabric":   5.0,
-        "iron":     8.0,
-        "coal":     4.0,
-        "lumber":   3.0,
-        "opium":   20.0,
-        "cotton":   6.0,
-        "rubber":  15.0,
+        "grain": 2.0, "fish": 2.5, "meat": 4.0, "fruit": 3.0,
+        "wood": 3.0, "coal": 4.0, "iron": 8.0, "steel": 15.0,
+        "fabric": 5.0, "clothes": 12.0, "glass": 10.0,
+        "tools": 12.0, "paper": 6.0, "furniture": 10.0,
+        "opium": 20.0, "tea": 8.0, "coffee": 7.0, "sugar": 6.0,
+        "oil": 15.0, "rubber": 18.0, "electricity": 25.0
     }
-
+    
     def __init__(self):
-        self.prices  = dict(self.BASE_PRICES)
-        self.supply  = {g: 1000.0 for g in self.BASE_PRICES}
-        self.demand  = {g: 1000.0 for g in self.BASE_PRICES}
-
+        self.prices = dict(self.BASE_PRICES)
+        self.supply = {g: 1000.0 for g in self.BASE_PRICES}
+        self.demand = {g: 1000.0 for g in self.BASE_PRICES}
+        self.convoys = {}  # {tag: available_convoys}
+    
     def get_price(self, good: str) -> float:
         return self.prices.get(good, 1.0)
-
-    def monthly_tick(self):
-        """Điều chỉnh giá theo cung/cầu."""
+    
+    def update_monthly(self, countries):
+        """Cập nhật giá dựa trên cung cầu toàn cầu"""
+        # Reset supply/demand
+        for good in self.prices:
+            self.supply[good] = max(100, self.supply[good] * 0.7)
+            self.demand[good] = max(100, self.demand[good] * 0.7)
+        
+        # Tích lũy từ các quốc gia
+        for country in countries.values():
+            for good, amount in country.production.items():
+                self.supply[good] += amount
+            for good, amount in country.consumption.items():
+                self.demand[good] += amount
+        
+        # Cập nhật giá
         for good in self.prices:
             ratio = self.demand[good] / max(self.supply[good], 1)
-            # Giá dao động ±10% quanh giá cơ bản
-            target = self.BASE_PRICES[good] * ratio
-            self.prices[good] = round(
-                self.prices[good] * 0.9 + target * 0.1, 2)
-
-    def buy(self, good: str, amount: float) -> float:
-        """Mua hàng, trả về chi phí thực tế."""
-        self.demand[good] = self.demand[good] * 0.99 + amount
-        return self.get_price(good) * amount
-
-    def sell(self, good: str, amount: float) -> float:
-        """Bán hàng, trả về doanh thu."""
-        self.supply[good] = self.supply[good] * 0.99 + amount
-        return self.get_price(good) * amount * 0.9   # phí thị trường 10%
-
-    def __repr__(self):
-        return f"<Market grain={self.prices['grain']:.2f} iron={self.prices['iron']:.2f}>"
+            target = self.BASE_PRICES[good] * (0.5 + ratio * 0.5)
+            target = max(0.2, min(5.0, target))  # Giới hạn 0.2x - 5x
+            self.prices[good] = round(self.prices[good] * 0.8 + target * 0.2, 2)
+    
+    def trade(self, tag, good, amount, is_export):
+        """Thực hiện giao dịch"""
+        if is_export:
+            revenue = self.prices[good] * amount * 0.95  # 5% phí
+            self.supply[good] += amount
+            return revenue
+        else:
+            cost = self.prices[good] * amount
+            self.demand[good] += amount
+            return -cost

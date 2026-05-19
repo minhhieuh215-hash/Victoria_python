@@ -1,81 +1,224 @@
-from config import BASE_GDP_GROWTH, BASE_POP_GROWTH
+"""
+engine/economy.py
+Hệ thống kinh tế cho Victoria 3 Simple Engine
+"""
+from config import BASE_TAX_RATE, BASE_GDP_GROWTH, BASE_POP_GROWTH
 
-# Dân số ước tính ban đầu (triệu) cho 1836
-INITIAL_POP = {
-    "GBR":25.0,"FRA":33.0,"RUS":60.0,"GER":30.0,"AUS":35.0,"PRU":14.0,
-    "USA":15.0,"CHI":400.0,"JAP":30.0,"TUR":25.0,"SPA":12.0,"BRZ":7.0,
-    "ITA":22.0,"NET":3.0,"MEX":7.0,"PER":9.0,"EGY":4.0,"ETH":5.0,
-    "MOR":4.0,"NEP":5.0,"BUR":8.0,"SIA":5.0,"KOR":8.0,"DAI":8.0,
-    "HBC":0.1,"CAN":1.5,"ARG":0.8,"GRE":0.8,"SER":1.0,"DEI":30.0,
-    "POR":3.5,"BEL":4.0,"SWE":3.5,"NOR":1.5,"DEN":2.0,"POL":8.0,
-}
-
-# GDP ước tính ban đầu (triệu £)
-INITIAL_GDP = {
-    "GBR":800,"FRA":500,"RUS":350,"GER":400,"AUS":300,"PRU":250,
-    "USA":300,"CHI":600,"JAP":150,"TUR":200,"SPA":150,"BRZ":80,
-    "ITA":200,"NET":120,"MEX":70,"PER":80,"EGY":60,"DEI":100,
-    "POR":80,"BEL":90,"SWE":80,"DEN":60,
-}
-
-
-def init_countries(countries_data: dict, countries_full: dict) -> dict:
+def calculate_country_gdp(country):
     """
-    Khởi tạo Country objects với dân số và GDP ban đầu.
-    countries_data: { TAG: [R,G,B] }
-    countries_full: { TAG: {color, type} }
+    Tính GDP của một quốc gia dựa trên:
+    - Dân số
+    - Sản lượng công nghiệp
+    - Trình độ công nghệ
+    """
+    # GDP cơ bản từ dân số (mỗi người đóng góp ~0.5£)
+    base_gdp = country.population * 0.5
+    
+    # GDP từ sản xuất công nghiệp
+    industrial_gdp = 0
+    if hasattr(country, 'production'):
+        industrial_gdp = sum(country.production.values()) * 2
+    
+    # Bonus từ literacy (giáo dục)
+    literacy_bonus = 1 + (country.literacy * 0.5)
+    
+    # Bonus từ công nghệ
+    tech_bonus = 1 + (len(country.technologies) * 0.05)
+    
+    return (base_gdp + industrial_gdp) * literacy_bonus * tech_bonus
+
+
+def calculate_tax_income(country):
+    """Tính thu thuế hàng tháng"""
+    # Thuế dựa trên GDP và thuế suất
+    tax_from_gdp = country.gdp * country.tax_rate * 0.1
+    
+    # Thuế từ dân số giàu
+    pop_tax = 0
+    if hasattr(country, 'pops'):
+        for pop in country.pops:
+            if pop.type in ['aristocrats', 'capitalists']:
+                pop_tax += pop.size * country.tax_rate * 0.5
+    
+    return tax_from_gdp + pop_tax
+
+
+def calculate_expenses(country, game_state=None):
+    """Tính chi tiêu hàng tháng"""
+    # Chi phí quân đội
+    army_cost = country.army_size * 5
+    
+    # Chi phí hành chính (dựa trên số bang)
+    admin_cost = len(country.states) * 2 if hasattr(country, 'states') else 10
+    
+    # Chi phí duy trì công trình
+    building_cost = 0
+    if hasattr(country, 'states'):
+        for state in country.states.values():
+            building_cost += sum(b.upkeep for b in state.buildings)
+    
+    # Chi phí giáo dục (dựa trên literacy)
+    education_cost = country.literacy * 20
+    
+    return army_cost + admin_cost + building_cost + education_cost
+
+
+def update_population_growth(country):
+    """Cập nhật tăng trưởng dân số"""
+    # Tăng trưởng cơ bản
+    growth_rate = BASE_POP_GROWTH
+    
+    # Bonus từ lương thực
+    if hasattr(country, 'production') and country.production.get('grain', 0) > 0:
+        growth_rate += 0.0005
+    
+    # Bonus từ y tế (nếu có công nghệ)
+    if 'medicine' in country.technologies:
+        growth_rate += 0.0005
+    
+    # Phạt từ chiến tranh
+    if country.at_war_with:
+        growth_rate -= 0.0002
+    
+    country.population *= (1 + growth_rate)
+    
+    # Giới hạn dân số tối thiểu
+    country.population = max(0.1, country.population)
+
+
+def update_market_prices(market, countries):
+    """Cập nhật giá thị trường dựa trên cung cầu"""
+    if not market:
+        return
+    
+    # Reset supply/demand
+    for good in market.prices:
+        market.supply[good] = max(100, market.supply[good] * 0.8)
+        market.demand[good] = max(100, market.demand[good] * 0.8)
+    
+    # Tích lũy từ các quốc gia
+    for country in countries.values():
+        if hasattr(country, 'production'):
+            for good, amount in country.production.items():
+                market.supply[good] = market.supply.get(good, 0) + amount
+        
+        if hasattr(country, 'consumption'):
+            for good, amount in country.consumption.items():
+                market.demand[good] = market.demand.get(good, 0) + amount
+    
+    # Cập nhật giá theo công thức: giá mới = giá cũ * (cầu/cung)
+    for good in market.prices:
+        supply = max(market.supply.get(good, 100), 1)
+        demand = max(market.demand.get(good, 100), 1)
+        ratio = demand / supply
+        
+        # Giá dao động từ 0.5x đến 2x base price
+        base = market.BASE_PRICES.get(good, 10)
+        target_price = base * (0.5 + ratio * 0.5)
+        target_price = max(base * 0.3, min(base * 3, target_price))
+        
+        # Điều chỉnh dần (tránh biến động đột ngột)
+        market.prices[good] = market.prices[good] * 0.7 + target_price * 0.3
+
+
+def monthly_economy_tick(countries, market, player_tag=None):
+    """
+    Xử lý kinh tế hàng tháng cho tất cả các nước
+    
+    Returns:
+        dict: Báo cáo kinh tế cho từng quốc gia
+    """
+    reports = {}
+    
+    for tag, country in countries.items():
+        # 1. Cập nhật GDP
+        old_gdp = country.gdp
+        country.gdp = calculate_country_gdp(country)
+        
+        # 2. Tính thu nhập và chi phí
+        income = calculate_tax_income(country)
+        expense = calculate_expenses(country)
+        net_change = income - expense
+        
+        # 3. Cập nhật ngân khố
+        country.treasury += net_change
+        
+        # 4. Cập nhật tăng trưởng dân số
+        update_population_growth(country)
+        
+        # 5. Tự động điều chỉnh thuế suất AI (nếu là AI và treasury thấp)
+        if tag != player_tag and country.treasury < 50 and country.tax_rate < 0.25:
+            country.tax_rate = min(0.3, country.tax_rate + 0.01)
+        elif tag != player_tag and country.treasury > 500 and country.tax_rate > 0.1:
+            country.tax_rate = max(0.05, country.tax_rate - 0.005)
+        
+        # 6. Lưu báo cáo
+        reports[tag] = {
+            "income": income,
+            "expense": expense,
+            "delta": net_change,
+            "old_gdp": old_gdp,
+            "new_gdp": country.gdp
+        }
+        
+        # 7. Cập nhật production từ buildings nếu có
+        if hasattr(country, 'states'):
+            country.production = {}
+            for state in country.states.values():
+                for building in state.buildings:
+                    if building.type == "farm":
+                        country.production['grain'] = country.production.get('grain', 0) + building.production
+                        country.production['fruit'] = country.production.get('fruit', 0) + building.production * 0.2
+                    elif building.type == "mine":
+                        country.production['coal'] = country.production.get('coal', 0) + building.production
+                        country.production['iron'] = country.production.get('iron', 0) + building.production * 0.5
+                    elif building.type == "factory":
+                        country.production['fabric'] = country.production.get('fabric', 0) + building.production
+                        country.production['clothes'] = country.production.get('clothes', 0) + building.production * 0.3
+                    elif building.type == "university":
+                        # Đại học tăng literacy
+                        country.literacy = min(0.95, country.literacy + 0.001)
+                    elif building.type == "barracks":
+                        # Doanh trại tăng quân đội
+                        country.army_size += 1
+    
+    # Cập nhật thị trường toàn cầu
+    update_market_prices(market, countries)
+    
+    return reports
+
+
+def init_countries(countries_data, countries_full):
+    """
+    Khởi tạo các đối tượng Country từ dữ liệu màu sắc và loại quốc gia
+    
+    Args:
+        countries_data: dict {TAG: (R,G,B)}
+        countries_full: dict {TAG: {"type": "recognized"}}
+    
+    Returns:
+        dict: {TAG: Country}
     """
     from models.country import Country
-    result = {}
+    
+    countries = {}
+    
     for tag, color in countries_data.items():
-        ctype = countries_full.get(tag, {}).get("type", "recognized")
-        c = Country(tag, tuple(int(v) for v in color[:3]), ctype)
-        c.population = INITIAL_POP.get(tag, 0.5)
-        c.gdp        = float(INITIAL_GDP.get(tag, 20))
-        c.treasury   = c.gdp * 0.1
-        c.army_size  = max(1, int(c.population * 0.5))
-        result[tag]  = c
-    return result
-
-
-def monthly_economy_tick(countries: dict, market, player_tag: str) -> dict:
-    """
-    Tính toán kinh tế 1 tháng cho tất cả quốc gia.
-    Trả về { TAG: { income, expense, delta } } để hiển thị.
-    """
-    report = {}
-    for tag, country in countries.items():
-        if country.is_colonizable:
-            continue
-
-        # Thu nhập thuế
-        tax_income = country.gdp * country.tax_rate / 12
-
-        # Thu nhập thương mại (đơn giản)
-        trade_income = country.gdp * 0.02 / 12
-
-        # Chi phí quân sự
-        army_expense = country.army_size * 0.005  # £/tháng per 1k quân
-
-        # Chi phí hành chính
-        admin_expense = country.population * 0.1 / 12
-
-        income  = tax_income + trade_income
-        expense = army_expense + admin_expense
-        delta   = income - expense
-
-        country.treasury += delta
-
-        # Tăng trưởng GDP & dân số
-        prosperity = min(1.5, max(0.5, country.treasury / max(country.gdp, 1)))
-        country.gdp        *= (1 + BASE_GDP_GROWTH * prosperity)
-        country.population *= (1 + BASE_POP_GROWTH * prosperity)
-
-        report[tag] = {
-            "income":  round(income, 2),
-            "expense": round(expense, 2),
-            "delta":   round(delta, 2),
-            "treasury": round(country.treasury, 1),
-        }
-
-    return report
+        # Lấy thông tin loại quốc gia
+        info = countries_full.get(tag, {})
+        country_type = info.get("type", "recognized")
+        
+        # Tạo country object
+        country = Country(tag, color, country_type)
+        
+        # Set giá trị mặc định
+        country.population = 1.0  # 1 triệu dân mặc định
+        country.gdp = 50.0  # 50 triệu GDP mặc định
+        country.treasury = 100.0
+        country.army_size = 10  # 10k quân mặc định
+        country.literacy = 0.3  # 30% mù chữ
+        
+        # Thêm vào dict
+        countries[tag] = country
+    
+    return countries
