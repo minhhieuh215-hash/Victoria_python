@@ -1,7 +1,0 @@
-﻿CHARACTERS = {
-	c:NVS ?= {
-		create_character = {
-			template = NVS_colin_campbell
-		}	
-	}
-}

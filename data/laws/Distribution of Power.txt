@@ -1,0 +1,276 @@
+==Distribution of Power==
+How political power is distributed. Determines who the Head of State is accountable to.
+{| class="mildtable sortable plainlist" width="100%"
+! width="20%" |Law
+! width="20%" |Requirements
+! class="unsortable" width="35%" |Effects
+! Interest group stance
+|- id="Autocracy"
+| {{iconbox|Autocracy|The Head of State's power is absolute and they are held accountable to no earthly power.|image=Law autocracy.png}}
+| {{icon|no}}{{law|Parliamentary Republic|w=28px}} enacted
+|
+* {{icon|authority}} {{green|+200}} Authority
+* {{icon|Legitimacy}} {{green|+120}} Legitimacy based on government clout
+* {{icon|Legitimacy}} {{green|+30}} Legitimacy from including the head of state in government
+* {{icon|Legitimacy}} {{red|+50%}} Legitimacy penalty from ideological incompatibility
+* {{icon|Aristocrats}} '''+50%''' Political strength of Aristocrats
+* {{icon|Officers}} '''+50%''' Political strength of Officers
+* {{icon|info}} Political parties will disappear
+|
+* {{icon|Industrialists|3=1}} {{red|oppose}}
+* {{icon|Intelligentsia|3=1}} {{red|oppose}}
+* {{icon|Landowners|3=1}} {{green|strongly endorse}}
+* {{icon|Petite Bourgeoisie|3=1}} {{red|oppose}}
+* {{icon|Trade Unions|3=1}} {{red|strongly oppose}}
+|- id="Technocracy"
+| {{iconbox|Technocracy|The nation is governed by an unelected council of men of reason and ability.|image=Law technocracy.png}}
+| {{technology|Central Archives|w=28px}} researched
+|
+* {{icon|authority}} {{green|+100}} Authority
+* [[File:Panel companies.png|24x24px]] {{green|+1}} Free company charters
+* [[File:Panel companies.png|24x24px]] {{green|+1}} Max number of  companies
+* {{icon|Legitimacy}} {{green|+120}} Legitimacy based on government clout
+* {{icon|Legitimacy}} {{green|+10}} Legitimacy from including the head of state in government
+* {{green|+2}} Government size allowance
+* {{icon|Legitimacy}} {{green|−10%}} Legitimacy penalty from ideological incompatibility
+* {{icon|Academics}} '''+33%''' Political strength of Academics
+* {{icon|Engineers}} '''+33%''' Political strength of Engineers
+* {{icon|Officers}} '''+33%''' Political strength of Officers
+* {{icon|info}} Replaces {{law|Elected Bureaucrats}} law with {{law|Appointed Bureaucrats}} law
+* {{icon|info}} Political parties will disappear
+|
+* {{icon|Industrialists|3=1}} '''neutral'''
+* {{icon|Intelligentsia|3=1}} '''neutral'''
+* {{icon|Landowners|3=1}} {{red|strongly oppose}}
+* {{icon|Petite Bourgeoisie|3=1}} {{red|oppose}}
+* {{icon|Trade Unions|3=1}} {{red|oppose}}
+|- id="Oligarchy"
+| {{iconbox|Oligarchy|The Head of State shares power and responsibility with a small group of powerful, unelected individuals.|image=Law oligarchy.png}}
+| 
+|
+* {{icon|authority}} {{green|+100}} Authority
+* {{icon|Legitimacy}} {{green|+120}} Legitimacy based on government clout
+* {{icon|Legitimacy}} {{green|+10}} Legitimacy from including the head of state in government
+* {{green|+2}} Government size allowance
+* {{icon|Legitimacy}} {{green|−10%}} Legitimacy penalty from ideological incompatibility
+* {{icon|Aristocrats}} '''+50%''' Political strength of Aristocrats
+* {{icon|Capitalists}} '''+25%''' Political strength of Capitalists
+* {{icon|Officers}} '''+50%''' Political strength of Officers
+* {{icon|info}} Political parties will disappear
+|
+* {{icon|Industrialists|3=1}} {{green|endorse}}
+* {{icon|Intelligentsia|3=1}} {{red|oppose}}
+* {{icon|Landowners|3=1}} {{green|endorse}}
+* {{icon|Petite Bourgeoisie|3=1}} {{red|oppose}}
+* {{icon|Trade Unions|3=1}} {{red|strongly oppose}}
+|- id="Landed Voting"
+| {{iconbox|Landed Voting|Those who own land or capital property are given a vote.|image=Law landed_voting.png}}
+|
+* {{technology|Democracy|w=28px}} researched
+* {{icon|no}}{{law|Chiefdom|w=28px}} enacted
+* {{icon|no}}{{law|Command Economy|w=28px}} enacted
+|
+* {{icon|authority}} {{green|+100}} Authority
+* {{icon|Legitimacy}} {{green|+100}} Legitimacy based on government clout
+* {{icon|Legitimacy}} {{green|+40}} Legitimacy based on votes
+* {{green|+1}} Government size allowance
+* {{icon|Legitimacy}} {{red|+20%}} Legitimacy penalty from ideological incompatibility
+* '''−30%''' Electoral confidence impact
+* {{icon|Aristocrats}} '''+100''' Political strength from the votes of Aristocrats
+* {{icon|Capitalists}} '''+50''' Political strength from the votes of Capitalists
+* {{icon|Clergymen}} '''+50''' Political strength from the votes of Clergymen
+* {{icon|Officers}} '''+50''' Political strength from the votes of Officers
+* {{icon|info}} Political parties will emerge
+|
+* {{icon|Industrialists|3=1}} '''neutral'''
+* {{icon|Intelligentsia|3=1}} '''neutral'''
+* {{icon|Landowners|3=1}} {{green|strongly endorse}}
+* {{icon|Petite Bourgeoisie|3=1}} {{red|oppose}}
+* {{icon|Trade Unions|3=1}} {{red|oppose}}
+|- id="Wealth Voting"
+| {{iconbox|Wealth Voting|Wealthy citizens are granted a vote. Men of more wealth are granted more votes.|image=Law wealth_voting.png}}
+|
+* {{technology|Democracy|w=28px}} researched
+* {{icon|no}}{{law|Chiefdom|w=28px}} enacted
+* {{icon|no}}{{law|Command Economy|w=28px}} enacted
+|
+* {{icon|authority}} {{green|+100}} Authority
+* '''+50''' Political strength per vote
+* '''+20''' Wealth threshold for voting
+* {{icon|Legitimacy}} {{green|+75}} Legitimacy based on government clout
+* {{icon|Legitimacy}} {{green|+65}} Legitimacy based on votes
+* {{green|+1}} Government size allowance
+* {{icon|Legitimacy}} {{red|+20%}} Legitimacy penalty from ideological incompatibility
+* '''−20%''' Electoral confidence impact
+* {{icon|info}} Political parties will emerge
+|
+* {{icon|Industrialists|3=1}} {{green|endorse}}
+* {{icon|Intelligentsia|3=1}} {{green|endorse}}
+* {{icon|Landowners|3=1}} '''neutral'''
+* {{icon|Petite Bourgeoisie|3=1}} '''neutral'''
+* {{icon|Trade Unions|3=1}} {{red|oppose}}
+|- id="Census Suffrage"
+| {{iconbox|Census Suffrage|Literate men of particular status are given a vote.|image=Law census_voting.png}}
+|
+* {{technology|Democracy|w=28px}} researched
+* {{icon|no}}{{law|Chiefdom|w=28px}} enacted
+* {{icon|no}}{{law|Command Economy|w=28px}} enacted
+|
+* {{icon|authority}} {{green|+50}} Authority
+* '''+50''' Political strength per vote, multiplied by pop literacy
+* '''+10''' Wealth threshold for voting
+* {{icon|Legitimacy}} {{green|+55}} Legitimacy based on government clout
+* {{icon|Legitimacy}} {{green|+85}} Legitimacy based on votes
+* {{green|+1}} Government size allowance
+* {{icon|Legitimacy}} {{red|+10%}} Legitimacy penalty from ideological incompatibility
+* '''−10%''' Electoral confidence impact
+* {{icon|info}} Political parties will emerge
+|
+* {{icon|Industrialists|3=1}} '''neutral'''
+* {{icon|Intelligentsia|3=1}} {{green|strongly endorse}}
+* {{icon|Landowners|3=1}} {{red|oppose}}
+* {{icon|Petite Bourgeoisie|3=1}} {{green|endorse}}
+* {{icon|Trade Unions|3=1}} '''neutral'''
+|- id="Universal Suffrage"
+| {{iconbox|Universal Suffrage|Every adult man is given an equal vote.|image=Law universal_suffrage.png}}
+|
+* {{technology|Egalitarianism|w=28px}} researched
+* {{icon|no}}{{law|Chiefdom|w=28px}} enacted
+* {{icon|no}}{{law|Command Economy|w=28px}} enacted
+|
+* '''+50''' Political strength per vote
+* {{icon|Legitimacy}} {{green|+25}} Legitimacy based on government clout
+* {{icon|Legitimacy}} {{green|+110}} Legitimacy based on votes
+* {{green|+1}} Government size allowance
+* {{icon|info}} Political parties will emerge
+|
+* {{icon|Industrialists|3=1}} {{red|strongly oppose}}
+* {{icon|Intelligentsia|3=1}} {{green|strongly endorse}}
+* {{icon|Landowners|3=1}} {{red|strongly oppose}}
+* {{icon|Petite Bourgeoisie|3=1}} {{red|oppose}}
+* {{icon|Trade Unions|3=1}} {{green|strongly endorse}}
+|- id="Anarchy"
+| {{iconbox|Anarchy|Local communities govern their own affairs and send representatives to serve limited terms on larger cooperative councils. With no formal hierarchies, central authority is difficult to exercise.|image=Law anarchy.png}}
+|
+* {{technology|Anarchism|w=28px}} researched
+* {{icon|yes}}{{law|Cooperative Ownership|w=28px}} enacted
+|
+* {{icon|authority}} {{red|−50%}} Authority
+* {{icon|Legitimacy}} {{green|+100}} Legitimacy based on government clout
+* {{green|+2}} Government size allowance
+* '''+1''' Universal pop political strength
+* '''−75%''' Political strength from wealth
+* {{icon|info}} Political parties will disappear
+|
+* {{icon|Industrialists|3=1}} {{red|strongly oppose}}
+* {{icon|Intelligentsia|3=1}} {{red|strongly oppose}}
+* {{icon|Landowners|3=1}} {{red|strongly oppose}}
+* {{icon|Petite Bourgeoisie|3=1}} {{red|strongly oppose}}
+* {{icon|Trade Unions|3=1}} {{green|endorse}}
+|
+|- id="Single-Party State"
+| {{iconbox|Single-Party State|The state is governed by a single legal political party, which has a monopoly on all political activity within the nation.|image=Law single party state.png}}
+|
+* {{technology|Political Agitation|w=28px}} researched
+* Any of:
+** {{icon|yes}}{{iconify|Ruler|role}}'s interest group belongs to a political party
+** {{icon|yes}} No political parties exist in the country
+|
+* {{icon|Authority}} {{green|+250}} Authority
+* '''+50''' Political strength per vote
+* {{icon|Legitimacy}} {{green|+100}} Legitimacy based on votes
+* {{icon|Legitimacy}} {{green|−25%}} Legitimacy penalty from ideological incompatibility
+* '''+20%''' Attraction of interest groups in {{iconify|government|political}}
+* '''−100%''' Electoral confidence impact
+* {{icon|info}} Sets {{iconify|Ruler|role}}'s party as only valid party and resets government accordingly
+* {{icon|info}} Political parties will emerge
+* {{icon|info}} Political parties will disappear
+|
+* {{icon|Industrialists|3=1}} '''neutral'''
+* {{icon|Intelligentsia|3=1}} '''neutral'''
+* {{icon|Landowners|3=1}} '''neutral'''
+* {{icon|Petite Bourgeoisie|3=1}} '''neutral'''
+* {{icon|Trade Unions|3=1}} '''neutral'''
+|
+|- id="Elder Council"
+| {{iconbox|Elder Council|The most venerated men have a say in the nation's governance.|image=Law elder_council.png}}
+|
+* {{icon|yes}} Is a decentralized nation
+* {{icon|yes}}{{law|Chiefdom|w=28px}} enacted
+|
+* {{icon|authority}} {{green|+200}} Authority
+* {{icon|Legitimacy}} {{green|+20}} Legitimacy
+* {{icon|Legitimacy}} {{green|+100}} Legitimacy based on government clout
+* {{green|+2}} Government size allowance
+* {{icon|Legitimacy}} {{green|−10%}} Legitimacy penalty from ideological incompatibility
+* {{icon|Aristocrats}} '''+50%''' Political strength of Aristocrats
+* {{icon|Clergymen}} '''+50%''' Political strength of Clergymen
+* {{icon|Officers}} '''+50%''' Political strength of Officers
+* {{icon|info}} Replace {{law|Elected Bureaucrats}} law with:
+** {{law|Hereditary Bureaucrats}} if has any variant of Monarchy
+** {{law|Appointed Bureaucrats}} otherwise
+* {{icon|info}} Political parties will disappear
+|
+|}
+
+{| class="mildtable sortable plainlist" width=100%
+|+ style="text-align:left;" | '''Variant laws'''
+! width=20% | Law
+! width=20% | Requirements
+! class="unsortable" width=35%" | Effects
+! width=25% | Base law
+|- id="Neo-Absolutism"
+| {{iconbox|Neo-Absolutism|The Head of State rules as an enlightened autocrat, with their rule facilitated by a modern, centralized state apparatus.|image=Law neo absolutism.png}}
+|
+* {{icon|yes}}{{law|Monarchy|w=28px}} enacted
+* {{icon|info}} Overrides {{law|Autocracy}} if all of:
+** {{icon|yes}} Is {{flag|Austria}}
+** {{icon|yes}} Has completed the journal entry ''[[Austrian content#Autocracy in the Age of Liberty|Autocracy in the Age of Liberty]]''
+|
+* {{icon|authority}} {{green|+250}} Authority
+* {{icon|Legitimacy}} {{green|+120}} Legitimacy based on government clout
+* {{icon|Legitimacy}} {{green|+30}} Legitimacy from including the head of state in government
+* {{icon|Legitimacy}} {{red|+50%}} Legitimacy penalty from ideological incompatibility
+* {{icon|Bureaucrats}} '''+50%''' Political strength of Bureaucrats
+* {{icon|Officers}} '''+50%''' Political strength of Officers
+* {{icon|info}} Political parties will disappear
+| {{law|Autocracy|w=36px}}
+|-
+|{{iconbox|Bakufu|Absolute power is vested in the Shōgun, who officially serves in the name of the Emperor.|image=Law bakufu.png}}
+|
+* Any of:
+** {{icon|yes}}{{law|Monarchy|w=28px}} enacted
+** {{icon|yes}}{{law|Social Monarchy|w=28px}} enacted
+* {{icon|info}} Overrides {{law|Autocracy}} if:
+** {{icon|yes}} Is {{flag|Japan}}
+***
+|
+* {{icon|authority}} {{green|+200}} Authority
+* {{icon|Legitimacy}} {{green|+120}} Legitimacy based on government clout
+* {{icon|Legitimacy}} {{green|+30}} Legitimacy from including the head of state in government
+* {{green|+1}} Government size allowance
+* {{icon|Legitimacy}} {{red|+50%}} Legitimacy penalty from ideological incompatibility
+* {{icon|Aristocrats}} '''+25%''' Political strength of Aristocrats
+* {{icon|Officers}} '''+50%''' Political strength of Officers
+* {{icon|Servicemen}} '''+25%''' Political strength of Servicemen
+* {{icon|info}} Political parties will disappear
+* {{icon|info}} The Shogun returns to the throne
+* {{icon|info}} If deactivated the Emperor returns to the throne
+|{{law|Autocracy|w=36px}}
+|- id="Organic Regulation"
+| {{iconbox|Organic Regulation|This country's government is constituted through a set of "organic regulations" imposed by the Great Powers. Its Head of State is appointed by representatives of the boyar oligarchy.|image=Law organic regulation.png}}
+|
+* {{icon|info}} Overrides {{law|Oligarchy}} if:
+** {{icon|yes}} Is a Romanian subject
+|
+* {{icon|authority}} {{green|+100}} Authority
+* {{icon|Legitimacy}} {{green|+120}} Legitimacy based on government clout
+* {{icon|Legitimacy}} {{green|+10}} Legitimacy from including the head of state in government
+* {{green|+2}} Government size allowance
+* {{icon|Legitimacy}} {{green|−10%}} Legitimacy penalty from ideological incompatibility
+* {{icon|Clerks}} '''+25%''' Political strength of Clerks
+* {{icon|Shopkeepers}} '''+50%''' Political strength of Shopkeepers
+* {{icon|Officers}} '''+25%''' Political strength of Officers
+* {{icon|info}} Political parties will disappear
+| {{law|Oligarchy|w=36px}}
+|}

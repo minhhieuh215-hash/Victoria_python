@@ -18,12 +18,10 @@ def load_state_history(provinces_dict):
             # Tách nội dung theo từ khóa "create_state" để dễ dàng lấy dữ liệu từng mảng
             blocks = content.split("create_state")
             
-            # Bỏ qua phần tử đầu tiên (vì nó là râu ria trước khi có create_state)
+            
             for block in blocks[1:]:
-                # Tìm chữ "country = c:TAG" (có thể có hoặc không có ngoặc kép)
                 country_match = re.search(r'country\s*=\s*\"?c:([A-Z0-9]+)\"?', block)
                 
-                # Tìm khối "owned_provinces = { ... }"
                 provinces_match = re.search(r"owned_provinces\s*=\s*\{([^}]+)\}", block)
 
                 if country_match and provinces_match:

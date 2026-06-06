@@ -68,17 +68,29 @@ LAWS = {
 
 
 # ── LOGIC FUNCTIONS ──────────────────────────────────────────────
-def apply_government_bonus(country):
+def apply_government_bonus(country, player_tag=None, game_state=None):
     gov = GOVERNMENT_TYPES.get(country.government, GOVERNMENT_TYPES["default"])
     country.tax_rate = max(0.05, min(0.40, 0.15 + gov["tax_bonus"]))
-    country.prestige += gov["prestige_gain"]
+    
+    prestige_gain = gov["prestige_gain"]
+    difficulty = getattr(game_state, 'difficulty', 'normal')
+    if player_tag and country.tag == player_tag:
+        if difficulty == 'easy':
+            prestige_gain *= 1.2
+        elif difficulty == 'hard':
+            prestige_gain *= 0.8
+    else:
+        if difficulty == 'hard':
+            prestige_gain *= 1.2
+            
+    country.prestige += prestige_gain
 
 
-def monthly_politics_tick(countries: dict, player_tag: str):
+def monthly_politics_tick(countries: dict, player_tag: str, game_state=None):
     for tag, country in countries.items():
         if country.is_colonizable:
             continue
-        apply_government_bonus(country)
+        apply_government_bonus(country, player_tag, game_state)
         # AI tự tăng quân nếu đủ giàu
         if tag != player_tag and country.treasury > 200 and random.random() < 0.05:
             country.army_size += 5

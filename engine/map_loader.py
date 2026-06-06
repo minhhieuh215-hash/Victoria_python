@@ -27,7 +27,7 @@ def load_sea_colors():
     file_path = "data/map_data/default.map"
 
     if not os.path.exists(file_path):
-        print(f"⚠️ Không tìm thấy file {file_path}!")
+        print(f"Không tìm thấy file {file_path}!")
         return sea_colors, lake_colors
 
     with open(file_path, "r", encoding="utf-8") as file:

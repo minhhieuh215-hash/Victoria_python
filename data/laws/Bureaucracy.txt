@@ -1,0 +1,61 @@
+== Bureaucracy==
+How your country is administered.
+{| class="mildtable sortable plainlist" width="100%"
+! width="20%" |Law
+! width="20%" |Requirements
+! class="unsortable" width="35%" |Effects
+! Interest group stance
+|- id="Hereditary Bureaucrats"
+| {{iconbox|Hereditary Bureaucrats|Bureaucrats hold their position through traditional inheritance, passing on the responsiblities to their children.|image=Law hereditary_bureaucrats.png}}
+| {{icon|no}}{{law|Council Republic|w=28px}} enacted
+|
+* {{icon|bureaucracy}} {{green|−25%}} Bureaucracy population cost multiplier
+* {{icon|Aristocrats}} '''+25%''' Political strength of Aristocrats
+* {{icon|Intelligentsia}} {{green|+50}} Intelligentsia attraction for {{icon|1=Aristocrats|3=Aristocrats}} employed in urban buildings
+|
+* {{icon|Intelligentsia|3=1}} {{red|oppose}}
+* {{icon|Petite Bourgeoisie|3=1}} {{red|oppose}}
+* {{icon|Landowners|3=1}} {{green|endorse}}
+|- id="Appointed Bureaucrats"
+| {{iconbox|Appointed Bureaucrats|Bureaucrats are appointed by rulers to serve the country's best interests in exchange for high wages.|image=Law appointed_bureaucrats.png}}
+|
+|
+* {{icon|money}} {{green|+25%}} Taxation capacity
+* {{icon|Bureaucrats}} '''+25%''' Political strength of Bureaucrats
+|
+* {{icon|Intelligentsia|3=1}} {{green|endorse}}
+* {{icon|Petite Bourgeoisie|3=1}} '''neutral'''
+* {{icon|Landowners|3=1}} '''neutral'''
+|- id="Elected Bureaucrats"
+| {{iconbox|Elected Bureaucrats|Local governors are elected by their constitutents, decentralizing power while making citizens easier to manage.|image=Law elected_bureaucrats.png}}
+|
+* {{icon|no}}{{law|Elder Council|w=28px}} enacted
+* {{icon|no}}{{law|Technocracy|w=28px}} enacted
+|
+* {{icon|bureaucracy}} {{green|−15%}} Bureaucracy institution cost multiplier
+* {{icon|Petite Bourgeoisie}} {{green|+50}} Petite Bourgeoisie attraction for {{icon|Bureaucrats|3=Bureaucrats}}
+|
+* {{icon|Intelligentsia|3=1}} '''neutral'''
+* {{icon|Petite Bourgeoisie|3=1}} {{green|endorse}}
+* {{icon|Landowners|3=1}} {{red|oppose}}
+|}
+
+{| class="mildtable sortable plainlist" width=100%
+|+ style="text-align:left;" | '''Variant laws'''
+! width=20% | Law
+! width=20% | Requirements
+! class="unsortable" width=35%" | Effects
+! width=25% | Base law
+|- id="Crownland Diets"
+| {{iconbox|Crownland Diets|Local governance is carried out by traditional assemblies elected from the ranks of the regional nobility.|image=Law crownland_diets.png}}
+|
+* {{icon|no}}{{law|Council Republic|w=28px}} enacted
+* {{icon|info}} Overrides {{law|Hereditary Bureaucrats}} if any of:
+** {{icon|yes}} Is {{flag|Austria}}
+** {{icon|yes}} Is an Austrian subject
+|
+* {{icon|bureaucracy}} {{green|−25%}} Bureaucracy population cost multiplier
+* {{icon|Aristocrats}} '''+10%''' Political strength of Aristocrats
+* {{icon|Intelligentsia}} {{green|+50}} Intelligentsia attraction for {{icon|1=Aristocrats|3=Aristocrats}}
+| {{law|Hereditary Bureaucrats|w=36px}}
+|}

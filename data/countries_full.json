@@ -1,15 +1,1928 @@
 {
-    "GBR": {"type": "recognized"},
-    "FRA": {"type": "recognized"},
-    "RUS": {"type": "recognized"},
-    "GER": {"type": "recognized"},
-    "AUS": {"type": "recognized"},
-    "PRU": {"type": "recognized"},
-    "USA": {"type": "recognized"},
-    "JAP": {"type": "unrecognized"},
-    "CHI": {"type": "unrecognized"},
-    "TUR": {"type": "unrecognized"},
-    "DAI": {"type": "unrecognized"},
-    "TEX": {"type": "unrecognized"},
-    "ECU": {"type": "unrecognized"}
+  "GER": {
+    "type": "recognized"
+  },
+  "GBR": {
+    "type": "recognized"
+  },
+  "SCA": {
+    "type": "recognized"
+  },
+  "RUS": {
+    "type": "recognized"
+  },
+  "FRA": {
+    "type": "recognized"
+  },
+  "PRU": {
+    "type": "recognized"
+  },
+  "WES": {
+    "type": "recognized"
+  },
+  "POM": {
+    "type": "recognized"
+  },
+  "AUS": {
+    "type": "recognized"
+  },
+  "USA": {
+    "type": "recognized"
+  },
+  "CSA": {
+    "type": "recognized"
+  },
+  "FSA": {
+    "type": "recognized"
+  },
+  "ASA": {
+    "type": "recognized"
+  },
+  "LOU": {
+    "type": "recognized"
+  },
+  "AGJ": {
+    "type": "recognized"
+  },
+  "AMZ": {
+    "type": "unrecognized"
+  },
+  "GRI": {
+    "type": "unrecognized"
+  },
+  "JAP": {
+    "type": "unrecognized"
+  },
+  "ITA": {
+    "type": "recognized"
+  },
+  "KUK": {
+    "type": "recognized"
+  },
+  "DEN": {
+    "type": "recognized"
+  },
+  "FIN": {
+    "type": "recognized"
+  },
+  "NOR": {
+    "type": "recognized"
+  },
+  "SWE": {
+    "type": "recognized"
+  },
+  "SCN": {
+    "type": "recognized"
+  },
+  "BEL": {
+    "type": "recognized"
+  },
+  "CAT": {
+    "type": "recognized"
+  },
+  "FLA": {
+    "type": "recognized"
+  },
+  "IRE": {
+    "type": "recognized"
+  },
+  "NET": {
+    "type": "recognized"
+  },
+  "POR": {
+    "type": "recognized"
+  },
+  "SCO": {
+    "type": "recognized"
+  },
+  "ENG": {
+    "type": "recognized"
+  },
+  "ULS": {
+    "type": "recognized"
+  },
+  "WLS": {
+    "type": "recognized"
+  },
+  "NAV": {
+    "type": "recognized"
+  },
+  "SPA": {
+    "type": "recognized"
+  },
+  "WLL": {
+    "type": "recognized"
+  },
+  "ANH": {
+    "type": "recognized"
+  },
+  "BAD": {
+    "type": "recognized"
+  },
+  "BAV": {
+    "type": "recognized"
+  },
+  "BRA": {
+    "type": "recognized"
+  },
+  "BRE": {
+    "type": "recognized"
+  },
+  "DZG": {
+    "type": "recognized"
+  },
+  "FRM": {
+    "type": "recognized"
+  },
+  "HAM": {
+    "type": "recognized"
+  },
+  "HAN": {
+    "type": "recognized"
+  },
+  "HES": {
+    "type": "recognized"
+  },
+  "HOL": {
+    "type": "recognized"
+  },
+  "LUB": {
+    "type": "recognized"
+  },
+  "LUX": {
+    "type": "recognized"
+  },
+  "MEC": {
+    "type": "recognized"
+  },
+  "NAS": {
+    "type": "recognized"
+  },
+  "OLD": {
+    "type": "recognized"
+  },
+  "SAX": {
+    "type": "recognized"
+  },
+  "WUR": {
+    "type": "recognized"
+  },
+  "LOM": {
+    "type": "recognized"
+  },
+  "LUC": {
+    "type": "recognized"
+  },
+  "MOD": {
+    "type": "recognized"
+  },
+  "PAP": {
+    "type": "recognized"
+  },
+  "PAR": {
+    "type": "recognized"
+  },
+  "PRA": {
+    "type": "recognized"
+  },
+  "SAR": {
+    "type": "recognized"
+  },
+  "SIC": {
+    "type": "recognized"
+  },
+  "TRE": {
+    "type": "recognized"
+  },
+  "TUS": {
+    "type": "recognized"
+  },
+  "VEN": {
+    "type": "recognized"
+  },
+  "BOH": {
+    "type": "recognized"
+  },
+  "KRA": {
+    "type": "recognized"
+  },
+  "CRI": {
+    "type": "unrecognized"
+  },
+  "EST": {
+    "type": "recognized"
+  },
+  "HUN": {
+    "type": "recognized"
+  },
+  "LIT": {
+    "type": "recognized"
+  },
+  "LAT": {
+    "type": "recognized"
+  },
+  "POL": {
+    "type": "recognized"
+  },
+  "GAL": {
+    "type": "recognized"
+  },
+  "SLV": {
+    "type": "recognized"
+  },
+  "SWI": {
+    "type": "recognized"
+  },
+  "TRS": {
+    "type": "recognized"
+  },
+  "UKR": {
+    "type": "recognized"
+  },
+  "CZH": {
+    "type": "recognized"
+  },
+  "ALB": {
+    "type": "recognized"
+  },
+  "BOS": {
+    "type": "recognized"
+  },
+  "BUL": {
+    "type": "recognized"
+  },
+  "CRE": {
+    "type": "recognized"
+  },
+  "CRO": {
+    "type": "recognized"
+  },
+  "CYP": {
+    "type": "recognized"
+  },
+  "GRE": {
+    "type": "recognized"
+  },
+  "ION": {
+    "type": "recognized"
+  },
+  "MOL": {
+    "type": "recognized"
+  },
+  "MON": {
+    "type": "recognized"
+  },
+  "ROM": {
+    "type": "recognized"
+  },
+  "SER": {
+    "type": "recognized"
+  },
+  "SLO": {
+    "type": "recognized"
+  },
+  "TUR": {
+    "type": "recognized"
+  },
+  "WAL": {
+    "type": "recognized"
+  },
+  "YUG": {
+    "type": "recognized"
+  },
+  "ABU": {
+    "type": "unrecognized"
+  },
+  "AFG": {
+    "type": "unrecognized"
+  },
+  "ARM": {
+    "type": "recognized"
+  },
+  "DAG": {
+    "type": "recognized"
+  },
+  "AZB": {
+    "type": "recognized"
+  },
+  "BUK": {
+    "type": "unrecognized"
+  },
+  "GEO": {
+    "type": "recognized"
+  },
+  "HDJ": {
+    "type": "unrecognized"
+  },
+  "IRQ": {
+    "type": "unrecognized"
+  },
+  "KHI": {
+    "type": "unrecognized"
+  },
+  "KOK": {
+    "type": "unrecognized"
+  },
+  "KAZ": {
+    "type": "unrecognized"
+  },
+  "MUG": {
+    "type": "unrecognized"
+  },
+  "NEJ": {
+    "type": "unrecognized"
+  },
+  "OMA": {
+    "type": "unrecognized"
+  },
+  "PER": {
+    "type": "unrecognized"
+  },
+  "JAB": {
+    "type": "unrecognized"
+  },
+  "YEM": {
+    "type": "unrecognized"
+  },
+  "MAH": {
+    "type": "unrecognized"
+  },
+  "KAT": {
+    "type": "unrecognized"
+  },
+  "ZAI": {
+    "type": "unrecognized"
+  },
+  "LAH": {
+    "type": "unrecognized"
+  },
+  "BHN": {
+    "type": "unrecognized"
+  },
+  "HND": {
+    "type": "unrecognized"
+  },
+  "AWA": {
+    "type": "unrecognized"
+  },
+  "BAS": {
+    "type": "unrecognized"
+  },
+  "BER": {
+    "type": "unrecognized"
+  },
+  "BHO": {
+    "type": "unrecognized"
+  },
+  "BIK": {
+    "type": "unrecognized"
+  },
+  "BUN": {
+    "type": "unrecognized"
+  },
+  "GWA": {
+    "type": "unrecognized"
+  },
+  "HYD": {
+    "type": "unrecognized"
+  },
+  "BGL": {
+    "type": "unrecognized"
+  },
+  "IND": {
+    "type": "unrecognized"
+  },
+  "JAI": {
+    "type": "unrecognized"
+  },
+  "JAS": {
+    "type": "unrecognized"
+  },
+  "JOD": {
+    "type": "unrecognized"
+  },
+  "KAL": {
+    "type": "unrecognized"
+  },
+  "KAS": {
+    "type": "unrecognized"
+  },
+  "KUT": {
+    "type": "unrecognized"
+  },
+  "LAD": {
+    "type": "unrecognized"
+  },
+  "MAK": {
+    "type": "unrecognized"
+  },
+  "MEW": {
+    "type": "unrecognized"
+  },
+  "MYS": {
+    "type": "unrecognized"
+  },
+  "NAG": {
+    "type": "unrecognized"
+  },
+  "NEP": {
+    "type": "unrecognized"
+  },
+  "ORI": {
+    "type": "unrecognized"
+  },
+  "PAN": {
+    "type": "unrecognized"
+  },
+  "SIK": {
+    "type": "unrecognized"
+  },
+  "SIN": {
+    "type": "unrecognized"
+  },
+  "TRA": {
+    "type": "unrecognized"
+  },
+  "ACE": {
+    "type": "unrecognized"
+  },
+  "BAL": {
+    "type": "unrecognized"
+  },
+  "BHU": {
+    "type": "unrecognized"
+  },
+  "LAN": {
+    "type": "unrecognized"
+  },
+  "BRU": {
+    "type": "unrecognized"
+  },
+  "BUR": {
+    "type": "unrecognized"
+  },
+  "CAM": {
+    "type": "unrecognized"
+  },
+  "CHI": {
+    "type": "unrecognized"
+  },
+  "DAI": {
+    "type": "unrecognized"
+  },
+  "JAV": {
+    "type": "unrecognized"
+  },
+  "KOR": {
+    "type": "unrecognized"
+  },
+  "LAO": {
+    "type": "unrecognized"
+  },
+  "LUA": {
+    "type": "unrecognized"
+  },
+  "CHP": {
+    "type": "unrecognized"
+  },
+  "VIE": {
+    "type": "unrecognized"
+  },
+  "JOH": {
+    "type": "unrecognized"
+  },
+  "SIA": {
+    "type": "unrecognized"
+  },
+  "CMI": {
+    "type": "unrecognized"
+  },
+  "TIB": {
+    "type": "unrecognized"
+  },
+  "MGL": {
+    "type": "unrecognized"
+  },
+  "XIN": {
+    "type": "unrecognized"
+  },
+  "PHI": {
+    "type": "colonial"
+  },
+  "MCH": {
+    "type": "unrecognized"
+  },
+  "CAL": {
+    "type": "recognized"
+  },
+  "CAN": {
+    "type": "colonial"
+  },
+  "CHE": {
+    "type": "unrecognized"
+  },
+  "COL": {
+    "type": "colonial"
+  },
+  "COS": {
+    "type": "recognized"
+  },
+  "CUB": {
+    "type": "colonial"
+  },
+  "DES": {
+    "type": "recognized"
+  },
+  "DOM": {
+    "type": "recognized"
+  },
+  "ELS": {
+    "type": "recognized"
+  },
+  "GUA": {
+    "type": "recognized"
+  },
+  "ALT": {
+    "type": "recognized"
+  },
+  "HAI": {
+    "type": "recognized"
+  },
+  "MEX": {
+    "type": "recognized"
+  },
+  "MTC": {
+    "type": "unrecognized"
+  },
+  "HON": {
+    "type": "recognized"
+  },
+  "NEN": {
+    "type": "recognized"
+  },
+  "NEW": {
+    "type": "colonial"
+  },
+  "NIC": {
+    "type": "recognized"
+  },
+  "PNM": {
+    "type": "recognized"
+  },
+  "QUE": {
+    "type": "colonial"
+  },
+  "HBC": {
+    "type": "colonial"
+  },
+  "ONT": {
+    "type": "colonial"
+  },
+  "NBS": {
+    "type": "colonial"
+  },
+  "NVS": {
+    "type": "colonial"
+  },
+  "TEX": {
+    "type": "recognized"
+  },
+  "UCA": {
+    "type": "recognized"
+  },
+  "ARG": {
+    "type": "recognized"
+  },
+  "BOL": {
+    "type": "recognized"
+  },
+  "BRZ": {
+    "type": "recognized"
+  },
+  "CHL": {
+    "type": "recognized"
+  },
+  "CLM": {
+    "type": "recognized"
+  },
+  "ECU": {
+    "type": "recognized"
+  },
+  "PEU": {
+    "type": "recognized"
+  },
+  "PRG": {
+    "type": "recognized"
+  },
+  "URU": {
+    "type": "recognized"
+  },
+  "VNZ": {
+    "type": "recognized"
+  },
+  "ISR": {
+    "type": "colonial"
+  },
+  "BYZ": {
+    "type": "recognized"
+  },
+  "ICL": {
+    "type": "recognized"
+  },
+  "ARA": {
+    "type": "unrecognized"
+  },
+  "UBD": {
+    "type": "recognized"
+  },
+  "BYE": {
+    "type": "recognized"
+  },
+  "PLC": {
+    "type": "recognized"
+  },
+  "GCO": {
+    "type": "recognized"
+  },
+  "JAN": {
+    "type": "recognized"
+  },
+  "BIC": {
+    "type": "colonial"
+  },
+  "BRI": {
+    "type": "recognized"
+  },
+  "PAT": {
+    "type": "decentralized"
+  },
+  "THL": {
+    "type": "decentralized"
+  },
+  "SLK": {
+    "type": "decentralized"
+  },
+  "TNG": {
+    "type": "decentralized"
+  },
+  "WIN": {
+    "type": "recognized"
+  },
+  "MAY": {
+    "type": "unrecognized"
+  },
+  "IBE": {
+    "type": "recognized"
+  },
+  "ORG": {
+    "type": "colonial"
+  },
+  "COM": {
+    "type": "decentralized"
+  },
+  "SEQ": {
+    "type": "unrecognized"
+  },
+  "DKT": {
+    "type": "decentralized"
+  },
+  "LKT": {
+    "type": "decentralized"
+  },
+  "NVJ": {
+    "type": "decentralized"
+  },
+  "ARP": {
+    "type": "decentralized"
+  },
+  "NZP": {
+    "type": "decentralized"
+  },
+  "ABS": {
+    "type": "decentralized"
+  },
+  "IRC": {
+    "type": "decentralized"
+  },
+  "JAM": {
+    "type": "recognized"
+  },
+  "BAH": {
+    "type": "recognized"
+  },
+  "PCO": {
+    "type": "recognized"
+  },
+  "MKT": {
+    "type": "unrecognized"
+  },
+  "NAH": {
+    "type": "unrecognized"
+  },
+  "GRN": {
+    "type": "recognized"
+  },
+  "ANL": {
+    "type": "recognized"
+  },
+  "CAS": {
+    "type": "recognized"
+  },
+  "SMI": {
+    "type": "unrecognized"
+  },
+  "MLT": {
+    "type": "recognized"
+  },
+  "PRM": {
+    "type": "unrecognized"
+  },
+  "HZJ": {
+    "type": "unrecognized"
+  },
+  "TRC": {
+    "type": "recognized"
+  },
+  "SIB": {
+    "type": "unrecognized"
+  },
+  "YAK": {
+    "type": "unrecognized"
+  },
+  "ASM": {
+    "type": "unrecognized"
+  },
+  "MNP": {
+    "type": "unrecognized"
+  },
+  "TOB": {
+    "type": "unrecognized"
+  },
+  "KLT": {
+    "type": "unrecognized"
+  },
+  "HTH": {
+    "type": "unrecognized"
+  },
+  "KRN": {
+    "type": "unrecognized"
+  },
+  "KHM": {
+    "type": "unrecognized"
+  },
+  "KHN": {
+    "type": "unrecognized"
+  },
+  "AIN": {
+    "type": "decentralized"
+  },
+  "EZO": {
+    "type": "unrecognized"
+  },
+  "QIA": {
+    "type": "unrecognized"
+  },
+  "FRS": {
+    "type": "unrecognized"
+  },
+  "YUN": {
+    "type": "unrecognized"
+  },
+  "YUE": {
+    "type": "unrecognized"
+  },
+  "OAX": {
+    "type": "decentralized"
+  },
+  "MCO": {
+    "type": "decentralized"
+  },
+  "TWT": {
+    "type": "unrecognized"
+  },
+  "AYM": {
+    "type": "unrecognized"
+  },
+  "WYU": {
+    "type": "decentralized"
+  },
+  "TPI": {
+    "type": "decentralized"
+  },
+  "PUE": {
+    "type": "unrecognized"
+  },
+  "NNV": {
+    "type": "unrecognized"
+  },
+  "NVL": {
+    "type": "decentralized"
+  },
+  "ATB": {
+    "type": "decentralized"
+  },
+  "CSC": {
+    "type": "decentralized"
+  },
+  "IRO": {
+    "type": "recognized"
+  },
+  "CTF": {
+    "type": "decentralized"
+  },
+  "SLS": {
+    "type": "decentralized"
+  },
+  "BNN": {
+    "type": "decentralized"
+  },
+  "MSC": {
+    "type": "unrecognized"
+  },
+  "SML": {
+    "type": "decentralized"
+  },
+  "UTE": {
+    "type": "decentralized"
+  },
+  "PWN": {
+    "type": "decentralized"
+  },
+  "APC": {
+    "type": "decentralized"
+  },
+  "BLF": {
+    "type": "decentralized"
+  },
+  "CCM": {
+    "type": "decentralized"
+  },
+  "ORN": {
+    "type": "decentralized"
+  },
+  "MUI": {
+    "type": "decentralized"
+  },
+  "SRB": {
+    "type": "recognized"
+  },
+  "YUC": {
+    "type": "recognized"
+  },
+  "RIO": {
+    "type": "recognized"
+  },
+  "PNI": {
+    "type": "recognized"
+  },
+  "CEY": {
+    "type": "unrecognized"
+  },
+  "BLH": {
+    "type": "unrecognized"
+  },
+  "NGF": {
+    "type": "recognized"
+  },
+  "SGF": {
+    "type": "recognized"
+  },
+  "OCC": {
+    "type": "recognized"
+  },
+  "TUV": {
+    "type": "unrecognized"
+  },
+  "COR": {
+    "type": "recognized"
+  },
+  "TNS": {
+    "type": "unrecognized"
+  },
+  "FER": {
+    "type": "unrecognized"
+  },
+  "IUS": {
+    "type": "recognized"
+  },
+  "NCA": {
+    "type": "recognized"
+  },
+  "DON": {
+    "type": "recognized"
+  },
+  "SYR": {
+    "type": "unrecognized"
+  },
+  "EOT": {
+    "type": "unrecognized"
+  },
+  "LEB": {
+    "type": "unrecognized"
+  },
+  "HNA": {
+    "type": "unrecognized"
+  },
+  "AHU": {
+    "type": "unrecognized"
+  },
+  "ZHI": {
+    "type": "unrecognized"
+  },
+  "SHN": {
+    "type": "unrecognized"
+  },
+  "GUI": {
+    "type": "unrecognized"
+  },
+  "GNG": {
+    "type": "unrecognized"
+  },
+  "SIH": {
+    "type": "unrecognized"
+  },
+  "SHA": {
+    "type": "unrecognized"
+  },
+  "XIB": {
+    "type": "unrecognized"
+  },
+  "TPG": {
+    "type": "unrecognized"
+  },
+  "GNI": {
+    "type": "decentralized"
+  },
+  "KUR": {
+    "type": "unrecognized"
+  },
+  "GLI": {
+    "type": "recognized"
+  },
+  "PAL": {
+    "type": "unrecognized"
+  },
+  "TRH": {
+    "type": "unrecognized"
+  },
+  "COB": {
+    "type": "recognized"
+  },
+  "MEI": {
+    "type": "recognized"
+  },
+  "WEI": {
+    "type": "recognized"
+  },
+  "SCW": {
+    "type": "recognized"
+  },
+  "HEK": {
+    "type": "recognized"
+  },
+  "LIP": {
+    "type": "recognized"
+  },
+  "SCM": {
+    "type": "recognized"
+  },
+  "MST": {
+    "type": "recognized"
+  },
+  "HOH": {
+    "type": "recognized"
+  },
+  "WLD": {
+    "type": "recognized"
+  },
+  "BHT": {
+    "type": "recognized"
+  },
+  "UOM": {
+    "type": "recognized"
+  },
+  "CIR": {
+    "type": "unrecognized"
+  },
+  "CHC": {
+    "type": "unrecognized"
+  },
+  "ASS": {
+    "type": "recognized"
+  },
+  "KLM": {
+    "type": "unrecognized"
+  },
+  "SCH": {
+    "type": "recognized"
+  },
+  "KZH": {
+    "type": "unrecognized"
+  },
+  "UZH": {
+    "type": "unrecognized"
+  },
+  "OZH": {
+    "type": "unrecognized"
+  },
+  "CAU": {
+    "type": "recognized"
+  },
+  "SAV": {
+    "type": "recognized"
+  },
+  "RHE": {
+    "type": "recognized"
+  },
+  "PRC": {
+    "type": "recognized"
+  },
+  "KRL": {
+    "type": "recognized"
+  },
+  "TAR": {
+    "type": "recognized"
+  },
+  "BKR": {
+    "type": "recognized"
+  },
+  "BRY": {
+    "type": "recognized"
+  },
+  "KMC": {
+    "type": "recognized"
+  },
+  "CKC": {
+    "type": "recognized"
+  },
+  "ALI": {
+    "type": "recognized"
+  },
+  "URL": {
+    "type": "recognized"
+  },
+  "KNT": {
+    "type": "recognized"
+  },
+  "UDM": {
+    "type": "recognized"
+  },
+  "CHV": {
+    "type": "recognized"
+  },
+  "MRD": {
+    "type": "recognized"
+  },
+  "MRI": {
+    "type": "recognized"
+  },
+  "TJI": {
+    "type": "recognized"
+  },
+  "UZB": {
+    "type": "recognized"
+  },
+  "KYR": {
+    "type": "recognized"
+  },
+  "PAU": {
+    "type": "recognized"
+  },
+  "EQT": {
+    "type": "recognized"
+  },
+  "CTR": {
+    "type": "recognized"
+  },
+  "MNG": {
+    "type": "recognized"
+  },
+  "BHI": {
+    "type": "recognized"
+  },
+  "CNW": {
+    "type": "recognized"
+  },
+  "FND": {
+    "type": "recognized"
+  },
+  "PBC": {
+    "type": "recognized"
+  },
+  "IQU": {
+    "type": "unrecognized"
+  },
+  "NPU": {
+    "type": "recognized"
+  },
+  "SPU": {
+    "type": "recognized"
+  },
+  "RSM": {
+    "type": "recognized"
+  },
+  "HRE": {
+    "type": "recognized"
+  },
+  "UNL": {
+    "type": "recognized"
+  },
+  "RHN": {
+    "type": "recognized"
+  },
+  "PLT": {
+    "type": "recognized"
+  },
+  "NCR": {
+    "type": "recognized"
+  },
+  "SCR": {
+    "type": "recognized"
+  },
+  "CLI": {
+    "type": "recognized"
+  },
+  "GRG": {
+    "type": "recognized"
+  },
+  "FLR": {
+    "type": "recognized"
+  },
+  "PAK": {
+    "type": "unrecognized"
+  },
+  "TIS": {
+    "type": "unrecognized"
+  },
+  "KAB": {
+    "type": "unrecognized"
+  },
+  "KAN": {
+    "type": "unrecognized"
+  },
+  "HER": {
+    "type": "unrecognized"
+  },
+  "CHT": {
+    "type": "unrecognized"
+  },
+  "MAI": {
+    "type": "unrecognized"
+  },
+  "KUN": {
+    "type": "unrecognized"
+  },
+  "ARB": {
+    "type": "unrecognized"
+  },
+  "BHW": {
+    "type": "unrecognized"
+  },
+  "TRM": {
+    "type": "decentralized"
+  },
+  "ABK": {
+    "type": "recognized"
+  },
+  "LUR": {
+    "type": "unrecognized"
+  },
+  "MAZ": {
+    "type": "unrecognized"
+  },
+  "BEI": {
+    "type": "unrecognized"
+  },
+  "KAF": {
+    "type": "unrecognized"
+  },
+  "LIM": {
+    "type": "recognized"
+  },
+  "GAR": {
+    "type": "unrecognized"
+  },
+  "PTA": {
+    "type": "unrecognized"
+  },
+  "ALW": {
+    "type": "unrecognized"
+  },
+  "NGA": {
+    "type": "decentralized"
+  },
+  "TIP": {
+    "type": "decentralized"
+  },
+  "KKI": {
+    "type": "decentralized"
+  },
+  "MGH": {
+    "type": "decentralized"
+  },
+  "COO": {
+    "type": "unrecognized"
+  },
+  "SHS": {
+    "type": "unrecognized"
+  },
+  "JHN": {
+    "type": "unrecognized"
+  },
+  "PUD": {
+    "type": "unrecognized"
+  },
+  "KOT": {
+    "type": "unrecognized"
+  },
+  "IDA": {
+    "type": "unrecognized"
+  },
+  "NAW": {
+    "type": "unrecognized"
+  },
+  "DHA": {
+    "type": "unrecognized"
+  },
+  "JUN": {
+    "type": "unrecognized"
+  },
+  "BHV": {
+    "type": "unrecognized"
+  },
+  "PLP": {
+    "type": "unrecognized"
+  },
+  "SAT": {
+    "type": "unrecognized"
+  },
+  "KHP": {
+    "type": "unrecognized"
+  },
+  "BAG": {
+    "type": "unrecognized"
+  },
+  "SUR": {
+    "type": "unrecognized"
+  },
+  "KNO": {
+    "type": "unrecognized"
+  },
+  "JEY": {
+    "type": "unrecognized"
+  },
+  "MYB": {
+    "type": "unrecognized"
+  },
+  "PTN": {
+    "type": "unrecognized"
+  },
+  "NAR": {
+    "type": "unrecognized"
+  },
+  "KHR": {
+    "type": "unrecognized"
+  },
+  "LBL": {
+    "type": "unrecognized"
+  },
+  "KPR": {
+    "type": "unrecognized"
+  },
+  "DIR": {
+    "type": "unrecognized"
+  },
+  "SWT": {
+    "type": "unrecognized"
+  },
+  "CAR": {
+    "type": "unrecognized"
+  },
+  "RAJ": {
+    "type": "unrecognized"
+  },
+  "MHR": {
+    "type": "unrecognized"
+  },
+  "GUJ": {
+    "type": "unrecognized"
+  },
+  "DRA": {
+    "type": "unrecognized"
+  },
+  "COC": {
+    "type": "unrecognized"
+  },
+  "ALK": {
+    "type": "colonial"
+  },
+  "BCE": {
+    "type": "colonial"
+  },
+  "MLD": {
+    "type": "unrecognized"
+  },
+  "BIH": {
+    "type": "unrecognized"
+  },
+  "ARK": {
+    "type": "unrecognized"
+  },
+  "IDS": {
+    "type": "recognized"
+  },
+  "ALD": {
+    "type": "unrecognized"
+  },
+  "CON": {
+    "type": "unrecognized"
+  },
+  "EGY": {
+    "type": "unrecognized"
+  },
+  "ETH": {
+    "type": "unrecognized"
+  },
+  "MAD": {
+    "type": "unrecognized"
+  },
+  "MAS": {
+    "type": "unrecognized"
+  },
+  "LIB": {
+    "type": "unrecognized"
+  },
+  "MOR": {
+    "type": "unrecognized"
+  },
+  "NAL": {
+    "type": "recognized"
+  },
+  "ORA": {
+    "type": "recognized"
+  },
+  "SAF": {
+    "type": "colonial"
+  },
+  "SOK": {
+    "type": "unrecognized"
+  },
+  "TRI": {
+    "type": "unrecognized"
+  },
+  "TRN": {
+    "type": "recognized"
+  },
+  "TUN": {
+    "type": "unrecognized"
+  },
+  "ZAN": {
+    "type": "unrecognized"
+  },
+  "ZUL": {
+    "type": "unrecognized"
+  },
+  "SIL": {
+    "type": "unrecognized"
+  },
+  "MTB": {
+    "type": "decentralized"
+  },
+  "MSH": {
+    "type": "decentralized"
+  },
+  "MNC": {
+    "type": "decentralized"
+  },
+  "MSK": {
+    "type": "decentralized"
+  },
+  "NAM": {
+    "type": "decentralized"
+  },
+  "HRO": {
+    "type": "decentralized"
+  },
+  "LZO": {
+    "type": "decentralized"
+  },
+  "TSW": {
+    "type": "decentralized"
+  },
+  "WBL": {
+    "type": "decentralized"
+  },
+  "KZM": {
+    "type": "decentralized"
+  },
+  "BMB": {
+    "type": "decentralized"
+  },
+  "KSN": {
+    "type": "decentralized"
+  },
+  "OVM": {
+    "type": "decentralized"
+  },
+  "CHK": {
+    "type": "decentralized"
+  },
+  "LND": {
+    "type": "decentralized"
+  },
+  "KBA": {
+    "type": "decentralized"
+  },
+  "MNB": {
+    "type": "decentralized"
+  },
+  "NYM": {
+    "type": "decentralized"
+  },
+  "HHE": {
+    "type": "decentralized"
+  },
+  "FTJ": {
+    "type": "unrecognized"
+  },
+  "BUG": {
+    "type": "unrecognized"
+  },
+  "ASH": {
+    "type": "unrecognized"
+  },
+  "YKA": {
+    "type": "decentralized"
+  },
+  "KON": {
+    "type": "unrecognized"
+  },
+  "LNG": {
+    "type": "decentralized"
+  },
+  "FNG": {
+    "type": "decentralized"
+  },
+  "BNG": {
+    "type": "decentralized"
+  },
+  "BST": {
+    "type": "decentralized"
+  },
+  "TKE": {
+    "type": "decentralized"
+  },
+  "BOB": {
+    "type": "decentralized"
+  },
+  "LGA": {
+    "type": "decentralized"
+  },
+  "HMB": {
+    "type": "decentralized"
+  },
+  "LBA": {
+    "type": "decentralized"
+  },
+  "BNY": {
+    "type": "unrecognized"
+  },
+  "ANK": {
+    "type": "unrecognized"
+  },
+  "ACH": {
+    "type": "unrecognized"
+  },
+  "KRG": {
+    "type": "unrecognized"
+  },
+  "RWD": {
+    "type": "unrecognized"
+  },
+  "BRD": {
+    "type": "unrecognized"
+  },
+  "MSI": {
+    "type": "decentralized"
+  },
+  "TRK": {
+    "type": "decentralized"
+  },
+  "LUO": {
+    "type": "decentralized"
+  },
+  "GGO": {
+    "type": "decentralized"
+  },
+  "SNG": {
+    "type": "decentralized"
+  },
+  "KKY": {
+    "type": "decentralized"
+  },
+  "WSG": {
+    "type": "unrecognized"
+  },
+  "GLD": {
+    "type": "unrecognized"
+  },
+  "MJT": {
+    "type": "unrecognized"
+  },
+  "DFR": {
+    "type": "unrecognized"
+  },
+  "ISQ": {
+    "type": "unrecognized"
+  },
+  "HOB": {
+    "type": "unrecognized"
+  },
+  "DAK": {
+    "type": "decentralized"
+  },
+  "ZND": {
+    "type": "decentralized"
+  },
+  "DFT": {
+    "type": "decentralized"
+  },
+  "DNK": {
+    "type": "decentralized"
+  },
+  "NUE": {
+    "type": "decentralized"
+  },
+  "TPS": {
+    "type": "decentralized"
+  },
+  "AWS": {
+    "type": "unrecognized"
+  },
+  "SHW": {
+    "type": "unrecognized"
+  },
+  "HAR": {
+    "type": "unrecognized"
+  },
+  "BRN": {
+    "type": "unrecognized"
+  },
+  "KFA": {
+    "type": "unrecognized"
+  },
+  "SDM": {
+    "type": "unrecognized"
+  },
+  "WLG": {
+    "type": "unrecognized"
+  },
+  "TGR": {
+    "type": "unrecognized"
+  },
+  "GJM": {
+    "type": "unrecognized"
+  },
+  "WLO": {
+    "type": "unrecognized"
+  },
+  "BGM": {
+    "type": "unrecognized"
+  },
+  "BOR": {
+    "type": "unrecognized"
+  },
+  "BGI": {
+    "type": "unrecognized"
+  },
+  "WAD": {
+    "type": "unrecognized"
+  },
+  "AIR": {
+    "type": "decentralized"
+  },
+  "MSN": {
+    "type": "unrecognized"
+  },
+  "OYO": {
+    "type": "unrecognized"
+  },
+  "BEN": {
+    "type": "unrecognized"
+  },
+  "CAY": {
+    "type": "decentralized"
+  },
+  "JLF": {
+    "type": "decentralized"
+  },
+  "FTR": {
+    "type": "unrecognized"
+  },
+  "KNG": {
+    "type": "decentralized"
+  },
+  "DAH": {
+    "type": "unrecognized"
+  },
+  "MOS": {
+    "type": "decentralized"
+  },
+  "KRT": {
+    "type": "unrecognized"
+  },
+  "SGU": {
+    "type": "unrecognized"
+  },
+  "TRZ": {
+    "type": "decentralized"
+  },
+  "KBU": {
+    "type": "decentralized"
+  },
+  "BND": {
+    "type": "decentralized"
+  },
+  "SRR": {
+    "type": "decentralized"
+  },
+  "SSU": {
+    "type": "decentralized"
+  },
+  "MDK": {
+    "type": "decentralized"
+  },
+  "HAU": {
+    "type": "unrecognized"
+  },
+  "BLE": {
+    "type": "decentralized"
+  },
+  "KRU": {
+    "type": "decentralized"
+  },
+  "KBD": {
+    "type": "decentralized"
+  },
+  "AYI": {
+    "type": "decentralized"
+  },
+  "EWE": {
+    "type": "decentralized"
+  },
+  "IBO": {
+    "type": "decentralized"
+  },
+  "DLA": {
+    "type": "decentralized"
+  },
+  "TBI": {
+    "type": "decentralized"
+  },
+  "AHG": {
+    "type": "decentralized"
+  },
+  "TUA": {
+    "type": "decentralized"
+  },
+  "OUA": {
+    "type": "decentralized"
+  },
+  "ADG": {
+    "type": "decentralized"
+  },
+  "BSS": {
+    "type": "decentralized"
+  },
+  "TIR": {
+    "type": "decentralized"
+  },
+  "IBL": {
+    "type": "decentralized"
+  },
+  "KSS": {
+    "type": "decentralized"
+  },
+  "GAO": {
+    "type": "decentralized"
+  },
+  "TIV": {
+    "type": "decentralized"
+  },
+  "SRA": {
+    "type": "decentralized"
+  },
+  "EQU": {
+    "type": "decentralized"
+  },
+  "BJA": {
+    "type": "decentralized"
+  },
+  "NBA": {
+    "type": "decentralized"
+  },
+  "SUD": {
+    "type": "unrecognized"
+  },
+  "SKM": {
+    "type": "decentralized"
+  },
+  "CHW": {
+    "type": "decentralized"
+  },
+  "LMW": {
+    "type": "decentralized"
+  },
+  "MKU": {
+    "type": "decentralized"
+  },
+  "SNA": {
+    "type": "decentralized"
+  },
+  "BTG": {
+    "type": "decentralized"
+  },
+  "XHO": {
+    "type": "decentralized"
+  },
+  "UYA": {
+    "type": "decentralized"
+  },
+  "ZIM": {
+    "type": "unrecognized"
+  },
+  "MAL": {
+    "type": "unrecognized"
+  },
+  "AFS": {
+    "type": "colonial"
+  },
+  "SAH": {
+    "type": "decentralized"
+  },
+  "TUG": {
+    "type": "unrecognized"
+  },
+  "AIT": {
+    "type": "unrecognized"
+  },
+  "GZA": {
+    "type": "unrecognized"
+  },
+  "MRV": {
+    "type": "decentralized"
+  },
+  "BRG": {
+    "type": "unrecognized"
+  },
+  "BMM": {
+    "type": "decentralized"
+  },
+  "MGB": {
+    "type": "unrecognized"
+  },
+  "HAW": {
+    "type": "unrecognized"
+  },
+  "NTU": {
+    "type": "decentralized"
+  },
+  "NTO": {
+    "type": "decentralized"
+  },
+  "KNK": {
+    "type": "decentralized"
+  },
+  "PPU": {
+    "type": "decentralized"
+  },
+  "HLA": {
+    "type": "decentralized"
+  },
+  "BLA": {
+    "type": "decentralized"
+  },
+  "BLG": {
+    "type": "unrecognized"
+  },
+  "KTI": {
+    "type": "unrecognized"
+  },
+  "FJI": {
+    "type": "decentralized"
+  },
+  "SKH": {
+    "type": "decentralized"
+  },
+  "MCR": {
+    "type": "decentralized"
+  },
+  "VNT": {
+    "type": "decentralized"
+  },
+  "NRU": {
+    "type": "decentralized"
+  },
+  "PLY": {
+    "type": "unrecognized"
+  },
+  "AOT": {
+    "type": "unrecognized"
+  },
+  "ULR": {
+    "type": "decentralized"
+  },
+  "NSW": {
+    "type": "colonial"
+  },
+  "WAS": {
+    "type": "colonial"
+  },
+  "SAS": {
+    "type": "colonial"
+  },
+  "UNT": {
+    "type": "unrecognized"
+  },
+  "NNG": {
+    "type": "decentralized"
+  },
+  "KAU": {
+    "type": "unrecognized"
+  },
+  "GML": {
+    "type": "decentralized"
+  },
+  "AST": {
+    "type": "colonial"
+  },
+  "NZL": {
+    "type": "colonial"
+  },
+  "TAS": {
+    "type": "colonial"
+  },
+  "DEI": {
+    "type": "colonial"
+  },
+  "SAK": {
+    "type": "unrecognized"
+  },
+  "PON": {
+    "type": "unrecognized"
+  },
+  "SMB": {
+    "type": "unrecognized"
+  },
+  "JMB": {
+    "type": "unrecognized"
+  },
+  "YOG": {
+    "type": "unrecognized"
+  },
+  "SRK": {
+    "type": "unrecognized"
+  },
+  "BTN": {
+    "type": "unrecognized"
+  },
+  "SEL": {
+    "type": "unrecognized"
+  },
+  "PRK": {
+    "type": "unrecognized"
+  },
+  "SUL": {
+    "type": "unrecognized"
+  },
+  "SLW": {
+    "type": "decentralized"
+  },
+  "TID": {
+    "type": "unrecognized"
+  },
+  "STG": {
+    "type": "unrecognized"
+  },
+  "BNJ": {
+    "type": "unrecognized"
+  },
+  "IDN": {
+    "type": "recognized"
+  },
+  "MGD": {
+    "type": "unrecognized"
+  },
+  "YUZ": {
+    "type": "unrecognized"
+  },
+  "PNS": {
+    "type": "unrecognized"
+  },
+  "WTI": {
+    "type": "decentralized"
+  },
+  "MRN": {
+    "type": "decentralized"
+  }
 }

@@ -1,0 +1,65 @@
+==Navy Model==
+Organization and doctrine of your naval forces.
+
+Note: Only active for countries with a coastal state.
+{| class="mildtable sortable plainlist" width="100%"
+! width="20%" |Law
+! width="20%" |Requirements
+! class="unsortable" width="35%" |Effects
+! Interest group stance
+|- id="Merchant Navy"
+| {{iconbox|Merchant Navy|The fleet is focused on the propagation and protection of overseas trade and supply.|image=Law merchant_navy.png}}
+|
+|
+* {{red|−10%}} Ship construction efficiency
+* {{green|+30%}} Supply ships construction efficiency
+* {{green|+30%}} Troopship construction efficiency
+* {{red|−10%}} Ship involvement generation
+|
+* {{icon|Armed Forces|3=1}} {{red|strongly oppose}}
+* {{icon|Industrialists|3=1}} {{green|endorse}}
+* {{icon|Petite Bourgeoisie|3=1}} {{red|strongly oppose}}
+* {{icon|Rural Folk|3=1}} {{green|endorse}}
+|- id="Jeune École"
+| {{iconbox|Jeune École|A naval model prioritizing the use of smaller, heavily armed ships to combat a larger enemy.|image=Law torpedos.png}}
+| {{technology|Jeune École|w=28px}} researched
+|
+* {{green|+25%}} Torpedo craft construction efficiency
+* {{green|+20%}} Protected cruiser construction efficiency
+* {{green|+20%}} Armored cruiser construction efficiency
+* {{green|+20%}} Light cruiser construction efficiency
+* {{green|+125}} Starting ship crew experience
+* {{green|−10%}} Navy goods cost
+* {{icon|Officers}} '''+10%''' Political strength of Officers
+|
+* {{icon|Armed Forces|3=1}} '''neutral'''
+* {{icon|Industrialists|3=1}} '''neutral'''
+* {{icon|Petite Bourgeoisie|3=1}} '''neutral'''
+* {{icon|Rural Folk|3=1}} '''neutral'''
+|- id="Capital Fleet"
+| {{iconbox|Capital Fleet|Focused on the construction and maintenance of a mighty battlefleet in order to impress and deter rivals.|image=Law capital fleet.png}}
+| {{technology|Military Drill|w=28px}} researched
+|
+* {{green|+20%}} Prestige from navy power projection
+* {{green|+25%}} Capital ships construction efficiency
+* {{green|+125}} Starting ship crew experience
+* {{green|+25%}} Naval administration hiring speed
+* {{icon|Officers}} '''+20%''' Political strength of Officers
+|
+* {{icon|Armed Forces|3=1}} {{green|strongly endorse}}
+* {{icon|Industrialists|3=1}} {{red|oppose}}
+* {{icon|Petite Bourgeoisie|3=1}} {{green|strongly endorse}}
+* {{icon|Rural Folk|3=1}} {{red|oppose}}
+|- id="Diplomatic Fleet"
+| {{iconbox|Diplomatic Fleet|Prioritizing long-range cruising in order to build and maintain a global diplomatic presence.|image=Law diplomatic_fleet.png}}
+| {{technology|Military Drill|w=28px}} researched
+|
+* {{green|+25%}} Cruisers construction efficiency
+* {{green|+20%}} Ship involvement generation
+* {{green|+10%}} Naval administration hiring speed
+|
+* {{icon|Armed Forces|3=1}} {{green|endorse}}
+* {{icon|Industrialists|3=1}} '''neutral'''
+* {{icon|Petite Bourgeoisie|3=1}} {{green|endorse}}
+* {{icon|Rural Folk|3=1}} '''neutral'''
+|}

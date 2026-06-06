@@ -14,28 +14,28 @@ from typing import Dict, Set, Optional, List
 
 # Map tên resource sang tên hiển thị + icon
 RESOURCE_DISPLAY = {
-    "bg_iron_mining":    ("Quặng sắt",   "⚙️"),
-    "bg_coal_mining":    ("Than đá",      "🪨"),
-    "bg_lead_mining":    ("Chì",          "🔩"),
-    "bg_gold_mining":    ("Vàng",         "🥇"),
-    "bg_copper_mining":  ("Đồng",         "🔶"),
-    "bg_sulfur_mining":  ("Lưu huỳnh",   "🟡"),
-    "bg_logging":        ("Gỗ",           "🌲"),
-    "bg_fishing":        ("Thủy sản",     "🐟"),
-    "bg_rye_farms":      ("Lúa mạch",     "🌾"),
-    "bg_wheat_farms":    ("Lúa mì",       "🌾"),
-    "bg_rice_farms":     ("Gạo",          "🍚"),
-    "bg_livestock_ranches": ("Chăn nuôi", "🐄"),
-    "bg_cotton_plantations": ("Bông",     "🌿"),
-    "bg_silk_plantations": ("Tơ lụa",    "🧵"),
-    "bg_coffee_plantations": ("Cà phê",  "☕"),
-    "bg_tea_plantations": ("Trà",         "🍵"),
-    "bg_tobacco_plantations": ("Thuốc lá","🍂"),
-    "bg_opium_plantations": ("Thuốc phiện","💊"),
-    "bg_sugar_plantations": ("Mía",       "🍬"),
-    "bg_rubber_plantations": ("Cao su",   "🟤"),
-    "bg_dye_plantations": ("Thuốc nhuộm", "🎨"),
-    "bg_oil_extraction": ("Dầu mỏ",       "🛢️"),
+    "bg_iron_mining":    ("Quặng sắt",      "⚙️"),
+    "bg_coal_mining":    ("Than đá",        "🪨"),
+    "bg_lead_mining":    ("Chì",            "🔩"),
+    "bg_gold_mining":    ("Vàng",           "🥇"),
+    "bg_copper_mining":  ("Đồng",           "🔶"),
+    "bg_sulfur_mining":  ("Lưu huỳnh",      "🟡"),
+    "bg_logging":        ("Gỗ",             "🌲"),
+    "bg_fishing":        ("Thủy sản",       "🐟"),
+    "bg_rye_farms":      ("Lúa mạch",       "🌾"),
+    "bg_wheat_farms":    ("Lúa mì",         "🌾"),
+    "bg_rice_farms":     ("Gạo",            "🍚"),
+    "bg_livestock_ranches": ("Chăn nuôi",   "🐄"),
+    "bg_cotton_plantations": ("Bông",       "🌿"),
+    "bg_silk_plantations": ("Tơ lụa",       "🧵"),
+    "bg_coffee_plantations": ("Cà phê",     "☕"),
+    "bg_tea_plantations": ("Trà",           "🍵"),
+    "bg_tobacco_plantations": ("Thuốc lá",  "🍂"),
+    "bg_opium_plantations": ("Thuốc phiện", "💊"),
+    "bg_sugar_plantations": ("Mía",         "🍬"),
+    "bg_rubber_plantations": ("Cao su",     "🟤"),
+    "bg_dye_plantations": ("Thuốc nhuộm",   "🎨"),
+    "bg_oil_extraction": ("Dầu mỏ",         "🛢️"),
 }
 
 
@@ -152,7 +152,6 @@ def load_state_resources(state_regions_folder: Optional[str] = None) -> Dict[str
     print(f"-> State resources: {len(all_states)} bang")
     return all_states
 
-
 # Cache toàn cục để không parse lại
 _color_to_state_cache: Dict[tuple, StateInfo] = {}
 _cache_built = False
@@ -182,7 +181,6 @@ def get_state_for_province(color: tuple,
             if color in state.province_colors:
                 return state
     return None
-
 
 def format_resources(state: StateInfo) -> list:
     """

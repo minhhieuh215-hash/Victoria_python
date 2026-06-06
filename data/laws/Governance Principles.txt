@@ -1,0 +1,162 @@
+== Governance Principles ==
+The foundational principles and authority by which your country is governed. Determines who the Head of State is. {{subject|Personal union}}, {{subject|colony}}, and {{subject|chartered company}} subjects cannot change their governance principle law.
+{| class="mildtable sortable plainlist" width="100%"
+! width="20%" |Law
+! width="20%" |Requirements
+! class="unsortable" width="35%" |Effects
+! Interest group stance
+|- id="Monarchy"
+| {{iconbox|Monarchy|A form of governance where an aristocratic dynasty represents the country's national identity and yields executive powers to the royal head of the dynasty.|image=Law monarchy.png}}
+| {{icon|no}}{{law|Anarchy|w=28px}} enacted
+|
+* {{icon|authority}} {{green|+200}} Authority
+* {{icon|Legitimacy}} {{green|+20}} Legitimacy from including the head of state in government
+* {{icon|Legitimacy}} {{red|+10%}} Legitimacy penalty from ideological incompatibility
+* {{icon|Aristocrats}} '''+25%''' Political strength of Aristocrats
+|
+* {{icon|Devout|3=1}} {{green|strongly endorse}}
+* {{icon|Industrialists|3=1}} '''neutral'''
+* {{icon|Intelligentsia|3=1}} '''neutral'''
+* {{icon|Landowners|3=1}} {{green|strongly endorse}}
+* {{icon|Petite Bourgeoisie|3=1}} {{green|endorse}}
+* {{icon|Trade Unions|3=1}} {{red|strongly oppose}} {{technology|Socialism|text=0}}<ref name="tu socialism" >Starts with no stance, and updated to this when {{technology|Socialism}} is researched</ref>
+|- id="Colonial Administration"
+| {{iconbox|Colonial Administration|The state is legally an administrative sub-division of a foreign power, possessing no sovereignty of its own. It is delegated powers with which to administer a given territory on the behalf of the metropole.|image=Law colonial_administration.png}}
+|
+* {{icon|no}}{{law|Anarchy|w=28px}} enacted
+* {{icon|yes}} Is a colonial or company-type country
+|
+* {{icon|authority}} {{green|+100}} Authority
+* {{icon|Legitimacy}} {{green|+10}} Legitimacy from including the head of state in government
+* {{icon|Legitimacy}} {{red|+20%}} Legitimacy penalty from ideological incompatibility
+* {{icon|Bureaucrats}} '''+100%''' Political strength of Bureaucrats
+* {{icon|Officers}} '''+100%''' Political strength of Officers
+|
+* {{icon|Devout|3=1}} '''neutral'''
+* {{icon|Industrialists|3=1}} '''neutral'''
+* {{icon|Intelligentsia|3=1}} '''neutral'''
+* {{icon|Landowners|3=1}} '''neutral'''
+* {{icon|Petite Bourgeoisie|3=1}} '''neutral'''
+* {{icon|Trade Unions|3=1}} '''neutral''' {{technology|Socialism|text=0}}<ref name="tu socialism" />
+|- id="Presidential Republic"
+| {{iconbox|Presidential Republic|A political system where power is held by the people and their elected representatives. Republics have an elected or nominated President as Head of State.|image=Law presidential_republic.png}}
+| {{technology|Democracy|w=28px}} researched
+|
+* {{icon|authority}} {{green|+100}} Authority
+* {{icon|Legitimacy}} {{green|+10}} Legitimacy based on votes
+* {{icon|Legitimacy}} {{green|+10}} Legitimacy from including the head of state in government
+* {{icon|Legitimacy}} {{red|+20%}} Legitimacy penalty from ideological incompatibility
+* When enacted:
+** All interest groups replace {{ideology|Constitutionalist}} ideology with {{ideology|Republican}}
+** All {{subject|crown land}} subjects become {{subject|puppets}}
+|
+* {{icon|Devout|3=1}} '''neutral'''
+* {{icon|Industrialists|3=1}} '''neutral'''
+* {{icon|Intelligentsia|3=1}} {{green|strongly endorse}}
+* {{icon|Landowners|3=1}} '''neutral'''
+* {{icon|Petite Bourgeoisie|3=1}} '''neutral'''
+* {{icon|Trade Unions|3=1}} '''neutral''' {{technology|Socialism|text=0}}<ref name="tu socialism" />
+|- id="Parliamentary Republic"
+| {{iconbox|Parliamentary Republic|A political system where power is held by the people and their elected representatives. The leader of the legislature acts as the Head of State and is referred to as Chancellor.|image=Law parliamentary_republic.png}}
+|
+* {{technology|Democracy|w=28px}} researched
+* {{icon|no}}{{law|Autocracy|w=28px}} enacted
+|
+* {{icon|Legitimacy}} {{green|+20}} Legitimacy based on votes
+* {{green|+1}} Government size allowance
+* When enacted:
+** All interest groups replace {{ideology|Constitutionalist}} ideology with {{ideology|Republican}}
+** All {{subject|crown land}} subjects become {{subject|puppets}}
+|
+* {{icon|Devout|3=1}} '''neutral'''
+* {{icon|Industrialists|3=1}} '''neutral'''
+* {{icon|Intelligentsia|3=1}} {{green|endorse}}
+* {{icon|Landowners|3=1}} '''neutral'''
+* {{icon|Petite Bourgeoisie|3=1}} '''neutral'''
+* {{icon|Trade Unions|3=1}} '''neutral''' {{technology|Socialism|text=0}}<ref name="tu socialism" />
+|- id="Theocracy"
+| {{iconbox|Theocracy|The government is ruled by a clergy and their interpretation of holy scripture. The Head of State is nominally the person of worship, though in practice a worldly representative selected by merit, status, or birth.|image=Law theocracy.png}}
+|
+* Any of:
+** {{icon|yes}}{{law|State Religion|w=28px}} enacted
+** {{icon|yes}}{{law|Millet System|w=28px}} enacted
+** {{icon|yes}}{{law|People of the Book|28px}} enacted
+|
+* {{icon|Devout}} '''+25%''' Devout political strength
+* {{icon|authority}} {{green|+200}} Authority
+* {{icon|Legitimacy}} {{green|+20}} Legitimacy from including the head of state in government
+* {{icon|Legitimacy}} {{red|+10%}} Legitimacy penalty from ideological incompatibility
+|
+* {{icon|Devout|3=1}} {{green|endorse}}
+* {{icon|Industrialists|3=1}} {{red|oppose}}
+* {{icon|Intelligentsia|3=1}} '''neutral'''
+* {{icon|Landowners|3=1}} {{green|endorse}}
+* {{icon|Petite Bourgeoisie|3=1}} {{green|endorse}}
+* {{icon|Trade Unions|3=1}} {{red|strongly oppose}} {{technology|Socialism|text=0}}<ref name="tu socialism" />
+|- id="Council Republic"
+| {{iconbox|Council Republic|A political system where workers elect delegates to local councils. Extends concepts of workplace organization to general governance.|image=Law council_republic.png}}
+|
+* {{technology|Socialism|w=28px}} researched
+* {{icon|no}}{{law|Hereditary Bureaucrats|w=28px}} enacted
+|
+* {{icon|Trade Unions}} '''+25%''' Trade Unions political strength
+* {{icon|Legitimacy}} {{green|+10}} Legitimacy based on votes
+* {{green|+1}} Government size allowance
+* {{icon|Legitimacy}} {{green|−10%}} Legitimacy penalty from ideological incompatibility
+* When enacted:
+** All interest groups replace {{ideology|Constitutionalist}} ideology with {{ideology|Republican}}
+** All {{subject|crown land}} subjects become {{subject|puppets}}
+|
+* {{icon|Devout|3=1}} {{red|strongly oppose}}
+* {{icon|Industrialists|3=1}} {{red|strongly oppose}}
+* {{icon|Intelligentsia|3=1}} {{red|oppose}}
+* {{icon|Landowners|3=1}} {{red|strongly oppose}}
+* {{icon|Petite Bourgeoisie|3=1}} {{red|oppose}}
+* {{icon|Trade Unions|3=1}} {{green|endorse}} {{technology|Socialism|text=0}}<ref name="tu socialism" />
+|
+|- id="Corporate State"
+| {{iconbox|Corporate State|A political system based around institutionalized collaboration between officially recognized corporate groups. The state serves as a forum for negotiation between different social classes.|image=Law corporate_state.png}}
+|
+* {{technology|Corporatism|w=28px}} researched
+|
+* {{icon|Petite Bourgeoisie}} '''+25%''' Petite Bourgeoisie political strength
+* {{icon|authority}} {{green|+100}} Authority
+* {{green|+2}} Government size allowance
+* {{icon|Legitimacy}} {{green|−25%}} Legitimacy penalty from ideological incompatibility
+* When enacted:
+** All interest groups replace {{ideology|Constitutionalist}} ideology with {{ideology|Republican}}
+** All {{subject|crown land}} subjects become {{subject|puppets}}
+|
+* {{icon|Devout|3=1}} '''neutral'''
+* {{icon|Industrialists|3=1}} {{red|oppose}}
+* {{icon|Intelligentsia|3=1}} '''neutral'''
+* {{icon|Landowners|3=1}} '''neutral'''
+* {{icon|Petite Bourgeoisie|3=1}} '''neutral'''
+* {{icon|Trade Unions|3=1}} {{red|strongly oppose}} {{technology|Socialism|text=0}}<ref name="tu socialism" />
+|
+|-
+|{{iconbox|Social Monarchy|A political system in which the state positions itself as the ultimate mediator between the nation's corporate groups. The monarchy is held to be a symbol of the country's national identity.|image=Law social_monarchy.png}}
+|
+* {{technology|Corporatism|w=28px}} researched
+|
+* {{icon|Petite Bourgeoisie}} '''+25%''' Petite Bourgeoisie political strength
+* {{icon|authority}} {{green|+100}} Authority
+* {{icon|Legitimacy}} {{green|+10}} Legitimacy from including the head of state in government
+* {{green|+1}} Government size allowance
+* {{icon|Legitimacy}} {{green|−10%}} Legitimacy penalty from ideological incompatibility
+|
+* {{icon|Devout|3=1}} '''neutral'''
+* {{icon|Industrialists|3=1}} {{red|oppose}}
+* {{icon|Intelligentsia|3=1}} '''neutral'''
+* {{icon|Landowners|3=1}} {{green|endorse}}
+* {{icon|Petite Bourgeoisie|3=1}} {{green|endorse}}
+* {{icon|Trade Unions|3=1}} {{red|strongly oppose}} {{technology|Socialism|text=0}}<ref name="tu socialism" />
+|
+|- id="Chiefdom"
+| {{iconbox|Chiefdom|A hierarchical pre-industrial political system based on kinship, with a warlord or elder of a prominent family at the head. It is incapable of efficient centralized control over entire states.|image=Law chiefdom.png}}
+| {{icon|yes}} Is a decentralized nation
+|
+* {{icon|authority}} {{green|+100}} Authority
+* {{icon|Legitimacy}} {{green|+20}} Legitimacy from including the head of state in government
+|
+|}

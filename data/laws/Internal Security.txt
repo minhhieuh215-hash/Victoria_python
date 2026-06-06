@@ -1,0 +1,100 @@
+==Internal Security==
+Keeping your own affairs in order.
+{| class="mildtable sortable plainlist" width="100%"
+! width="20%" |Law
+! width="20%" |Requirements
+! class="unsortable" width="35%" |Effects
+! Interest group stance
+|- id="No Home Affairs"
+| {{iconbox|No Home Affairs|The state relies upon conventional military and police forces to suppress unrest and uprisings.|image=Law no_home_affairs.png}}
+|
+| {{icon|no}}{{icon|home affairs}} Disables home affairs institution investment
+|
+* {{icon|Armed Forces|3=1}} {{red|oppose}}
+* {{icon|Intelligentsia|3=1}} '''neutral'''
+* {{icon|Petite Bourgeoisie|3=1}} {{red|oppose}}
+|- id="National Guard"
+| {{iconbox|National Guard|The state maintains an independent volunteer force of citizen-soldiers charged with upholding public order.|image=Law national_guard.png}}
+| {{technology|Law Enforcement|w=28px}} researched
+|
+* {{icon|Officers}} '''−25%''' Political strength of Officers
+* {{icon|home affairs}} Enables home affairs institution investment
+* {{icon|home affairs}} Home affairs institution additional effects per level:
+** {{icon|Petite Bourgeoisie}} '''+5%''' Petite Bourgeoisie political strength
+** {{iconify|mod={{green|−3%}} Political movement|activism|political}}
+** {{green|−10%}} Revolution progression speed
+** {{green|−10%}} Secession progression speed
+** {{iconify|mod={{green|−5%}}|Drought|harvest}} impact
+** {{iconify|mod={{green|−5%}}|Flood|harvest}} impact
+** {{iconify|mod={{green|−5%}}|Wildfire|harvest}} impact
+** {{iconify|mod={{green|−5%}}|Extreme Winds|harvest}} impact
+** {{iconify|mod={{green|+0.3%}}|Conscript|military}}ion rate
+** {{modifier type|1=country_coup_resistance_add = 0.5}}
+|
+* {{icon|Armed Forces|3=1}} {{green|endorse}}
+* {{icon|Intelligentsia|3=1}} '''neutral'''
+* {{icon|Petite Bourgeoisie|3=1}} {{green|endorse}}
+|- id="Secret Police"
+|
+{{iconbox|Secret Police|The state possesses a secret police bureau tasked with monitoring dissidents and investigating political crimes.|image=Law secret_police.png}}
+| {{technology|Central Archives|w=28px}} researched
+|
+* Unlocks ''Arrange Accident'' [[Character#Character interactions|character interaction]]
+* {{icon|Officers}} '''+25%''' Political strength of Officers
+* {{icon|home affairs}} Enables home affairs institution investment
+* {{icon|home affairs}} Home affairs institution additional effects per level:
+** {{iconify|amenability|political||0}} {{modifier type|1=country_amenability_add = 3}}
+** {{iconify|mod={{green|+5%}}|Support Separatism|Diplomacy}} strength
+** {{iconify|mod={{green|+5%}}|Support Separatism|Diplomacy}} resistance
+** {{iconify|mod='''−5%'''|Suppress|IG}}ion impact on political movement attraction
+** {{iconify|mod={{green|−5%}} Political movement|activism|political}}
+** {{green|−10%}} Revolution progression speed
+** {{green|−10%}} Secession progression speed
+** {{modifier type|1=country_coup_resistance_add = 0.75}}
+|
+* {{icon|Armed Forces|3=1}} {{green|endorse}}
+* {{icon|Intelligentsia|3=1}} {{red|strongly oppose}}
+* {{icon|Petite Bourgeoisie|3=1}} {{green|endorse}}
+|- id="Guaranteed Liberties"
+| {{iconbox|Guaranteed Liberties|The state's home affairs bureau is solely focused on addressing the grievances of the citizens, and is forbidden from investigating or arresting them without due cause.|image=Law guaranteed_liberties.png}}
+|
+* Any of:
+** {{icon|yes}}{{law|Protected Speech|w=28px}} enacted
+** {{icon|yes}}{{law|Right of Assembly|w=28px}} enacted
+|
+* {{icon|home affairs}} Enables home affairs institution investment
+* {{icon|home affairs}} Home affairs institution additional effects per level:
+** {{green|−10%}} Revolution progression speed
+** {{green|−10%}} Secession progression speed
+** {{icon|radical}} {{green|−5%}} Radicals from movements
+** {{icon|loyalist}} {{green|+5%}} Loyalists from movements
+** {{modifier type|1=country_coup_resistance_add = 0.5}}
+|
+* {{icon|Armed Forces|3=1}} {{red|strongly oppose}}
+* {{icon|Intelligentsia|3=1}} {{green|strongly endorse}}
+* {{icon|Petite Bourgeoisie|3=1}} {{red|strongly oppose}}
+|}
+
+{| class="mildtable sortable plainlist" width="100%"
+|+ style="text-align:left;" | '''Variant laws'''
+! width="20%" |Law
+! width="20%" |Requirements
+! class="unsortable" width="35%" |Effects
+! Base Law
+|- id="Secret Police"
+|{{iconbox|Shinsengumi|The state commissions an elite organization of swordsmen to protect government officials and police the capital.|image=Law shinsengumi.png}}
+|
+* {{technology|Law Enforcement|w=28px}} researched
+* {{icon|yes}}{{law|Bakufu|w=28px}} enacted
+* {{icon|yes}} Country has Japanese primary culture
+|
+* {{icon|no}}{{icon|home affairs}} Disables home affairs institution investment
+* Unlocks ''Arrange Accident'' [[Character#Character interactions|character interaction]]
+* {{iconify|amenability|political||0}} {{modifier type|1=country_amenability_add = 3}}
+* {{iconify|mod='''−10%'''|Suppress|IG}}ion impact on political movement attraction
+* {{iconify|mod={{green|−5%}} Political movement|activism|political}}
+* {{modifier type|1=country_coup_resistance_add = 0.75}}
+* {{icon|Officers}} '''+10%''' Political strength of Officers
+* {{icon|Shopkeepers}} '''+10%''' Political strength of Shopkeepers
+|{{law|secret police|w=36px}}
+|}

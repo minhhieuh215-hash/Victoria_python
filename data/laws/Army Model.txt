@@ -1,0 +1,99 @@
+==Army Model==
+How your army is organized and regulated.
+{| class="mildtable sortable plainlist" width="100%"
+! width="20%" |Law
+! width="20%" |Requirements
+! class="unsortable" width="35%" |Effects
+! Interest group stance
+|- id="Peasant Levies"
+| {{iconbox|Peasant Levies|The army's main force comes from conscripted infantry with zero to basic training.|image=Law peasant_levies.png}}
+| {{icon|no}} Does not lead a {{iconify|Military Treaty|power bloc}} power bloc
+|
+* {{icon|Military goods}} {{green|−10%}} Military goods cost
+* {{iconify|mod={{green|+25}}|Barracks|building}} max level
+* [[File:Military conscripts.png|24x24px]] {{green|+25}} Maximum conscription limit
+* {{iconify|mod={{green|+4%}}|Conscript|military}}ion rate
+* {{iconify|mod={{red|+10%}}|Morale|military}} loss
+* {{red|−25%}} Weekly unit experience gain for armies & navies
+* {{icon|Aristocrats}} '''+25%''' Political strength of Aristocrats
+* {{icon|Armed Forces}} {{green|+50}} Armed Forces attraction for {{icon|Aristocrats|3=Aristocrats}}
+* {{icon|officers}} Most Officers qualifications will originate from {{icon|Aristocrats|3=Aristocrats}}
+|
+* {{icon|Armed Forces|3=1}} {{red|oppose}}
+* {{icon|Landowners|3=1}} {{green|endorse}}
+* {{icon|Rural Folk|3=1}} {{red|oppose}}
+* {{icon|Trade Unions|3=1}} '''neutral'''
+|- id="Professional Army"
+| {{iconbox|Professional Army|The army consists of well-trained, professional regulars.|image=Law professional_army.png}}
+| {{technology|Military Drill|w=28px}} researched
+|
+* {{iconify|mod={{green|+100}}|Barracks|building}} max level
+* [[File:Military conscripts.png|24x24px]] {{green|+50}} Maximum conscription limit
+* {{iconify|mod={{green|+1%}}|Conscript|military}}ion rate
+* {{iconify|mod={{green|−10%}}|Morale|military}} loss
+* {{green|+100%}} Weekly unit experience gain for armies & navies
+* {{icon|Officers}} '''+50%''' Political strength of Officers
+* {{icon|Armed Forces}} {{green|+50}} Armed Forces attraction for {{icon|Servicemen|3=Servicemen}}
+* {{icon|Armed Forces}} {{red|x0.5}} Armed Forces base attraction if not discriminated and not Officers or Servicemen
+|
+* {{icon|Armed Forces|3=1}} {{green|strongly endorse}}
+* {{icon|Landowners|3=1}} '''neutral'''
+* {{icon|Rural Folk|3=1}} '''neutral'''
+* {{icon|Trade Unions|3=1}} {{red|oppose}}
+|- id="National Militia"
+| {{iconbox|National Militia|The standing army is small, but local militias can be activated to defend their homes.|image=Law national_militia.png}}
+| {{technology|Mandatory Service|w=28px}} researched
+|
+* {{iconify|mod={{green|+5}}|Barracks|building}} max level
+* [[File:Military conscripts.png|24x24px]] {{green|+100}} Maximum conscription limit
+* {{iconify|mod={{green|+5%}}|Conscript|military}}ion rate
+* {{iconify|mod={{green|−5%}}|Morale|military}} loss
+* {{iconify|mod='''+50%'''|Leverage|power bloc}} resistance
+* {{icon|Officers}} '''−25%''' Political strength of Officers
+|
+* {{icon|Armed Forces|3=1}} {{red|oppose}}
+* {{icon|Landowners|3=1}} '''neutral'''
+* {{icon|Rural Folk|3=1}} {{green|strongly endorse}}
+* {{icon|Trade Unions|3=1}} {{green|strongly endorse}}
+|- id="Mass Conscription"
+| {{iconbox|Mass Conscription|Large numbers of infantry conscripts can be activated as needed to supplement the professional army.|image=Law mass_conscription.png}}
+| {{technology|Enlistment Offices|w=28px}} researched
+|
+* {{iconify|mod={{green|+100}}|Barracks|building}} max level
+* [[File:Military conscripts.png|24x24px]] {{green|+100}} Maximum conscription limit
+* {{iconify|mod={{green|+3%}}|Conscript|military}}ion rate
+* {{iconify|mod={{red|+5%}}|Morale|military}} loss
+* {{green|+100%}} Training rate (scaled by building level)
+* {{icon|Officers}} '''+25%''' Political strength of Officers
+|
+* {{icon|Armed Forces|3=1}} {{green|endorse}}
+* {{icon|Landowners|3=1}} {{red|oppose}}
+* {{icon|Rural Folk|3=1}} {{red|oppose}}
+* {{icon|Trade Unions|3=1}} {{green|endorse}}
+|}
+
+{| class="mildtable sortable plainlist" width="100%"
+|+ style="text-align:left;" | '''Variant laws'''
+! width="20%" | Law
+! width="20%" | Requirements
+! class="unsortable" width="35%" | Effects
+! width="25%" | Base law
+|-
+|{{iconbox|Warrior Caste|Bearing arms is a privilege limited to an elite warrior strata. Commoners are barred from serving in combatant roles.|image=Law warrior_caste.png}}
+|
+*
+* {{icon|info}} Overrides {{law|Peasant levies}} if:
+** {{icon|yes}} Is a Japanese culture country
+***
+|
+* {{red|+25%}} Military wages
+* {{icon|Military goods}} {{green|−10%}} Military goods cost
+* {{iconify|mod={{green|+50}}|Barracks|building}} max level
+* [[File:Military conscripts.png|24x24px]] {{green|+10}} Maximum conscription limit
+* {{iconify|mod={{green|+1%}}|Conscript|military}}ion rate
+* {{iconify|mod={{green|−15%}}|Morale|military}} loss
+*{{icon|officers}} Officers qualifications limited to upper strata
+* {{icon|peasants}} Only peasants can be conscripted
+* {{icon|Officers}} '''+25%''' Political strength of Officers
+|{{law|Peasant Levies|w=36px}}
+|}

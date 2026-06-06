@@ -23,7 +23,7 @@ def load_vic3_fonts(base_dir: Optional[str] = None) -> dict:
 
     # ĐƯỜNG DẪN ĐÚNG: Victoria-code/data/fonts/
     font_dir = os.path.join(base_dir, "data", "fonts")
-    bold_path = os.path.join(font_dir, "EBGaramond-Bold.ttf")
+    bold_path = os.path.join(font_dir, "EBGaramond-SemiBold.ttf")
     reg_path = os.path.join(font_dir, "EBGaramond-Regular.ttf")
 
     print(f"Looking for fonts in: {font_dir}")

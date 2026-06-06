@@ -1,3 +1,5 @@
+import glob
+import json
 import os
 import re
 import colorsys
@@ -52,6 +54,76 @@ def load_countries():
                         current_tag = None # Reset để chờ lấy TAG nước tiếp theo
                         
     return countries
+
+
+def parse_country_types(base_dir=None):
+    """Đọc country_type từ country_definitions (decentralized, colonial, ...)."""
+    if base_dir is None:
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    folder = os.path.join(base_dir, "data", "common", "country_definitions")
+    result = {}
+    if not os.path.isdir(folder):
+        return result
+
+    for path in glob.glob(os.path.join(folder, "*.txt")):
+        try:
+            with open(path, "r", encoding="utf-8-sig") as f:
+                content = f.read()
+        except OSError:
+            continue
+
+        for match in re.finditer(r"([A-Z0-9]{2,4})\s*=\s*\{", content):
+            tag = match.group(1)
+            start_pos = match.end()
+            brace_count = 1
+            end_pos = start_pos
+            for i in range(start_pos, len(content)):
+                if content[i] == "{":
+                    brace_count += 1
+                elif content[i] == "}":
+                    brace_count -= 1
+                    if brace_count == 0:
+                        end_pos = i
+                        break
+            if end_pos <= start_pos:
+                continue
+            body = content[start_pos:end_pos]
+            if "dynamic_country_definition" in body:
+                continue
+            type_match = re.search(r"country_type\s*=\s*(\w+)", body)
+            country_type = type_match.group(1) if type_match else "recognized"
+            result[tag] = {"type": country_type}
+    return result
+
+
+def load_countries_full(base_dir=None, save=True):
+    """Load country types; luôn merge từ definitions để có đủ decentralized/colonial."""
+    if base_dir is None:
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    parsed = parse_country_types(base_dir)
+    full_path = os.path.join(base_dir, "data", "countries_full.json")
+    merged = dict(parsed)
+
+    if os.path.isfile(full_path):
+        try:
+            with open(full_path, "r", encoding="utf-8") as f:
+                raw = f.read().strip()
+                if raw:
+                    saved = json.loads(raw)
+                    for tag, info in saved.items():
+                        if tag not in merged:
+                            merged[tag] = info
+        except (json.JSONDecodeError, OSError):
+            pass
+
+    if save and len(merged) > 50:
+        try:
+            with open(full_path, "w", encoding="utf-8") as f:
+                json.dump(merged, f, indent=2)
+        except OSError:
+            pass
+    return merged
+
 
 # Code test thử xem có chạy mượt không
 if __name__ == "__main__":

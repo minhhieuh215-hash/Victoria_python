@@ -1,0 +1,139 @@
+==Caste Hegemony==
+Erasure of rights among members of society based on the British Indian Caste System.
+
+Note: Only active for countries with ''[[Profession#British_Indian_Caste_System|British Indian Caste System]]'' social hierarchy.
+{| class="mildtable sortable plainlist" width="100%"
+! width="20%" |Law
+! width="20%" |Requirements
+! class="unsortable" width="35%" |Effects
+! Interest group stance
+|- id="Caste System Enforced"
+| {{iconbox|Caste System Enforced|Caste hierarchy is legally enforced and prevents upward socioeconomic mobility.|image=Law social_hierarchy_enforced.png}}
+|
+|
+* {{icon|Landowners}} '''+25%''' Landowners political strength
+* {{icon|bureaucracy}} {{green|−25%}} Bureaucracy population cost multiplier
+{{tooltip|Caste modifiers|style=width:max-content; padding:5px; border-radius: 5px; margin:12px 0px 0px -25px;|
+* Brahmins
+** {{red|−50%}} Qualifications growth for same class professions
+** {{red|−80%}} Qualifications growth for other class professions
+** {{green|+80}} Minimum acceptance
+* Kshatriyas
+** {{red|−80%}} Qualifications growth for same class professions
+** {{red|−100%}} Qualifications growth for other class professions
+** {{green|+20}} Minimum acceptance
+** {{red|+79}} Maximum acceptance
+* Vaishyas
+** {{red|−80%}} Qualifications growth for same class professions
+** {{red|−100%}} Qualifications growth for other class professions
+** {{green|+20}} Minimum acceptance
+** {{red|+79}} Maximum acceptance
+* Shudras
+** {{red|−80%}} Qualifications growth for same class professions
+** {{red|−100%}} Qualifications growth for other class professions
+** {{red|+59}} Maximum acceptance
+* Dalit
+** {{red|−80%}} Qualifications growth for same class professions
+** {{red|−100%}} Qualifications growth for other class professions
+** {{red|+59}} Maximum acceptance
+}}
+* {{icon|info}} Pops will recalculate their interest group support
+|
+* {{icon|Armed Forces|3=1}} {{green|endorse}}
+* {{icon|Intelligentsia|3=1}} {{red|strongly oppose}}
+* {{icon|Landowners|3=1}} {{green|strongly endorse}}
+* {{icon|Petite Bourgeoisie|3=1}} {{red|oppose}}
+* {{icon|Rural Folk|3=1}} {{red|strongly oppose}}
+* {{icon|Trade Unions|3=1}} {{red|strongly oppose}}
+|- id="Caste System Codified"
+| {{iconbox|Caste System Codified|Caste hierarchy is recognized and used to restrict upward socioeconomic mobility.|image=Law social_hierarchy_codified.png}}
+|
+|
+* {{icon|Landowners}} '''+15%''' Landowners political strength
+* {{icon|bureaucracy}} {{green|−15%}} Bureaucracy population cost multiplier
+{{tooltip|Caste modifiers|style=width:max-content; padding:5px; border-radius: 5px; margin:12px 0px 0px -25px;|
+* Brahmins
+** {{red|−50%}} Qualifications growth for same class professions
+** {{red|−80%}} Qualifications growth for other class professions
+** {{green|+80}} Minimum acceptance
+* Kshatriyas
+** {{red|−80%}} Qualifications growth for same class professions
+** {{red|−10%}} Qualifications growth
+** {{green|+20}} Minimum acceptance
+** {{red|+79}} Maximum acceptance
+* Vaishyas
+** {{red|−80%}} Qualifications growth for same class professions
+** {{red|−10%}} Qualifications growth
+** {{green|+20}} Minimum acceptance
+** {{red|+79}} Maximum acceptance
+* Shudras
+** {{red|−80%}} Qualifications growth for same class professions
+** {{red|−20%}} Qualifications growth
+** {{red|+59}} Maximum acceptance
+* Dalit
+** {{red|−80%}} Qualifications growth for same class professions
+** {{red|−20%}} Qualifications growth
+** {{red|+59}} Maximum acceptance
+}}
+* {{icon|info}} Pops will recalculate their interest group support
+|
+* {{icon|Armed Forces|3=1}} {{green|endorse}}
+* {{icon|Intelligentsia|3=1}} {{red|oppose}}
+* {{icon|Landowners|3=1}} {{green|endorse}}
+* {{icon|Petite Bourgeoisie|3=1}} {{red|oppose}}
+* {{icon|Rural Folk|3=1}} {{red|oppose}}
+* {{icon|Trade Unions|3=1}} {{red|strongly oppose}}
+|- id="Caste Not Enforced"
+| {{iconbox|Caste Not Enforced|Socioeconomic mobility on the basis of caste is not legally restricted but discrimination may still persist.|image=Law social_hierarchy_not_enforced.png}}
+|
+|
+{{tooltip|Caste modifiers|style=width:max-content; padding:5px; border-radius: 5px; margin:12px 0px 0px -25px;|
+* Brahmins
+** {{green|+80}} Minimum acceptance
+* Kshatriyas
+** {{red|−5%}} Cultural acceptance
+* Vaishyas
+** {{red|−5%}} Cultural acceptance
+* Shudras
+** {{red|−10%}} Cultural acceptance
+* Dalit
+** {{red|−10%}} Cultural acceptance
+}}
+* {{icon|info}} Pops will recalculate their interest group support
+|
+* {{icon|Armed Forces|3=1}} '''neutral'''
+* {{icon|Intelligentsia|3=1}} '''neutral'''
+* {{icon|Landowners|3=1}} {{red|oppose}}
+* {{icon|Petite Bourgeoisie|3=1}} '''neutral'''
+* {{icon|Rural Folk|3=1}} '''neutral'''
+* {{icon|Trade Unions|3=1}} '''neutral'''
+|- id="Affirmative Action"
+| {{iconbox|Affirmative Action|Active measures to create an equitable socioeconomic situation, prioritizing previously marginalized groups.|image=Law affirmative_action.png}}
+| {{icon|yes}}{{law|Slavery Banned|w=28px}} enacted
+|
+* {{icon|radical}} {{red|+20%}} Radicalism increases for {{acceptance|Full Acceptance}} pops
+{{tooltip|Caste modifiers|style=width:max-content; padding:5px; border-radius: 5px; margin:12px 0px 0px -25px;|
+* Brahmins
+** No modifiers
+* Kshatriyas
+** {{green|+5%}} Education access
+** {{green|+5%}} Cultural acceptance
+* Vaishyas
+** {{green|+5%}} Education access
+** {{green|+5%}} Cultural acceptance
+* Shudras
+** {{green|+15%}} Education access
+** {{green|+15%}} Cultural acceptance
+* Dalit
+** {{green|+15%}} Education access
+** {{green|+15%}} Cultural acceptance
+}}
+* {{icon|info}} Pops will recalculate their interest group support
+|
+* {{icon|Armed Forces|3=1}} {{red|oppose}}
+* {{icon|Intelligentsia|3=1}} {{green|endorse}}
+* {{icon|Landowners|3=1}} {{red|strongly oppose}}
+* {{icon|Petite Bourgeoisie|3=1}} '''neutral'''
+* {{icon|Rural Folk|3=1}} '''neutral'''
+* {{icon|Trade Unions|3=1}} {{green|endorse}}
+|}

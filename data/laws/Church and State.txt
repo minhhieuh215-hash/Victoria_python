@@ -1,0 +1,171 @@
+==Church and State==
+The relationship between physical and spiritual governors.
+{| class="mildtable sortable plainlist" width="100%"
+! width="20%" |Law
+! width="20%" |Requirements
+! class="unsortable" width="35%" |Effects
+! Interest group stance
+|- id="State Religion"
+| {{iconbox|State Religion|The church is an official organ of the state. All minority religions are discriminated against.|image=Law state_religion.png}}
+|
+|
+* {{icon|Devout}} '''+30%''' Devout political strength
+* {{icon|authority}} {{green|+200}} Authority
+* '''+10%''' Wages for state religion Pops
+* '''−10%''' Wages for non-state religion Pops
+* {{icon|Devout}} {{green|×1.25}} Devout attraction for Pops that follow the State Religion
+** Additional {{green|×1.25}} if {{technology|Corporatism}}
+* {{green|+25}} Acceptance for pops with State Religion
+* '''+0''' Acceptance for pops with shared Religious Trait
+* {{red|−10}} Acceptance for pops with shared Religious Trait Group
+* {{red|−25}} Acceptance for pops with no shared Religious Trait
+* When enacted:
+** {{icon|info}} Pops recalculate their interest group support
+** If State Atheism was enacted before switching:
+*** {{iconify|Atheist|religion||0}} Resets state religion from Atheist to default religion
+*** {{icon|no}} Removes ''Anti-Religious Policies''
+|
+* {{icon|Devout|3=1}} {{green|strongly endorse}}
+* {{icon|Intelligentsia|3=1}} {{red|oppose}}
+|- id="Freedom of Conscience"
+| {{iconbox|Freedom of Conscience|The state has an official state religion but the people may choose what to believe. Only particularly exotic religions are discriminated against.|image=Law freedom_of_conscience.png}}
+|
+* {{technology|Rationalism|w=28px}} researched
+* {{icon|no}}{{law|Theocracy|w=28px}} enacted
+|
+* {{icon|Devout}} '''+15%''' Devout political strength
+* {{icon|authority}} {{green|+100}} Authority
+* '''+5%''' Wages for state religion Pops
+* '''−5%''' Wages for non-state religion Pops
+* {{icon|Devout}} {{green|×1.25}} Devout attraction for Pops that follow the State Religion
+** Additional {{green|×1.25}} if {{technology|Corporatism}}
+* {{green|+20}} Acceptance for pops with State Religion
+* {{green|+15}} Acceptance for pops with shared Religious Trait
+* {{green|+5}} Acceptance for pops with shared Religious Trait Group
+* '''+0''' Acceptance for pops with no shared Religious Trait
+* {{icon|no}} {{iconify|mod=No|conversion}} for {{acceptance|accepted}} pops
+* When enacted:
+** {{icon|info}} Pops recalculate their interest group support
+** If State Atheism was enacted before switching:
+*** {{iconify|Atheist|religion||0}} Resets state religion from Atheist to default religion
+*** {{icon|no}} Removes ''Anti-Religious Policies''
+|
+* {{icon|Devout|3=1}} '''neutral'''
+* {{icon|Intelligentsia|3=1}} {{green|endorse}}
+|- id="Total Separation"
+| {{iconbox|Total Separation|No church or faith may interfere in government functions. No religion may be discriminated against.|image=Law total_separation.png}}
+|
+* {{technology|Empiricism|w=28px}} researched
+* {{icon|no}}{{law|Theocracy|w=28px}} enacted
+* {{icon|no}} Does not lead a {{iconify|Religious Convocation|power bloc}} power bloc
+|
+* {{green|+15}} Acceptance for pops with State Religion
+* {{green|+15}} Acceptance for pops with shared Religious Trait
+* {{green|+15}} Acceptance for pops with shared Religious Trait Group
+* {{green|+15}} Acceptance for pops with no shared Religious Trait
+* {{icon|no}} {{iconify|mod=No|conversion}}
+* When enacted:
+** {{icon|info}} Pops recalculate their interest group support
+** If State Atheism was enacted before switching:
+*** {{iconify|Atheist|religion||0}} Resets state religion from Atheist to default religion
+*** {{icon|no}} Removes ''Anti-Religious Policies''
+|
+* {{icon|Devout|3=1}} {{red|strongly oppose}}
+* {{icon|Intelligentsia|3=1}} {{green|strongly endorse}}
+|- id="State Atheism"
+| {{iconbox|State Atheism|Religion is banned from public life, and the state advocates anti-religious policies. All religions face discrimination, and the clergy are allowed little to no role in society.|image=Law state atheism.png}}
+|
+* {{technology|Empiricism|w=28px}} researched
+* {{icon|no}}{{law|Theocracy|w=28px}} enacted
+* {{icon|no}}{{icon|Devout|3=1}} are not in {{iconify|government|political}}
+* {{icon|no}} Does not lead a {{iconify|Religious Convocation|power bloc}} power bloc
+|
+* {{icon|Devout}} '''−50%''' Devout political strength
+* {{icon|authority}} {{green|+200}} Authority
+* {{iconify|conversion|4=0}} {{green|+25%}} Conversion
+* {{icon|Devout}} {{red|×0.1}} Devout attraction
+* {{green|+15}} Acceptance for pops with State Religion
+* '''+0''' Acceptance for pops with shared Religious Trait
+* {{red|−5}} Acceptance for pops with shared Religious Trait group
+* {{red|−10}} Acceptance for pops with no shared Religious Trait
+* When enacted:
+** {{iconify|Atheist|religion||0}} Sets state religion to Atheist
+** {{iconify|Atheist|religion||0}} {{green|+10%}} of pops in {{iconify|incorporated|state status}} states convert to Atheist
+** {{icon|info}} Pops recalculate their interest group support
+** {{iconify|conversion|4=0}} Adds ''{{modifier|antireligious_policies}}'' for 10 years
+|
+* {{icon|Devout|3=1}} {{red|strongly oppose}}
+* {{icon|Intelligentsia|3=1}} '''neutral'''
+|}
+
+{| class="mildtable sortable plainlist" width=100%
+|+ style="text-align:left;" | '''Variant laws'''
+! width=20% | Law
+! width=20% | Requirements
+! class="unsortable" width=35%" | Effects
+! width=25% | Base law
+|-
+| {{iconbox|People of the Book|The state adheres to the principles of Islamic law. Adherents of other Abrahamic religions are recognized as Dimmi, exempting them from conscription and granting them legal autonomy in return for paying a religious tax.|image=Law people_of_the_book.png}}
+|
+* Any of:
+** {{icon|yes}}{{law|Monarchy|w=28px}} enacted
+** {{icon|yes}}{{law|Theocracy|w=28px}} enacted
+* {{icon|info}} Overrides {{law|State Religion|w=28px}} if:
+** {{icon|yes}} Is a {{icon|Sunni}}{{icon|Shiite}}{{icon|Ibadi}} Muslim country
+|
+* {{icon|Devout}} '''+30%''' Devout political strength
+* {{icon|authority}} {{green|+200}} Authority
+* {{iconify|conversion|4=0}} {{red|−50%}} Conversion
+* [[File:Military conscripts.png|24x24px]] {{red|−40%}} Conscriptable Batallions
+* {{icon|Devout}} {{green|×1.25}} Devout attraction for Pops that follow the State Religion
+** Additional {{green|×1.25}} if {{technology|Corporatism}}
+* {{green|+25}} Acceptance for pops with State Religion
+* {{green|+5}} Acceptance for pops with shared Religious Trait
+* {{green|+5}} Acceptance for pops with shared Religious Trait Group
+* {{red|−25}} Acceptance for pops with no shared Religious Trait
+{| class="mildtable plainlist"
+! colspan="5" | Heathen tax
+|-
+! Very low !! Low !! Medium !! High !! Very high
+|-
+| '''+0.4''' || '''+0.45''' || '''+0.5''' || '''+0.55''' || '''+0.6'''
+|}
+* When enacted:
+** {{icon|info}} Pops recalculate their interest group support
+** If State Atheism was enacted before switching:
+*** {{iconify|Atheist|religion||0}} Resets state religion from Atheist to default religion
+*** {{icon|no}} Removes ''Anti-Religious Policies''
+| {{law|State Religion|w=36px}}
+|-
+| {{iconbox|Millet System|The state upholds Sunni Islam as the official religion. Adherents of non-Muslim Abrahamic religions are granted a degree of legal autonomy.|image=Law millet_system.png}}
+|
+* Any of:
+** {{icon|yes}}{{law|Monarchy|w=28px}} enacted
+** {{icon|yes}}{{law|Theocracy|w=28px}} enacted
+* {{icon|info}} Overrides {{law|State Religion|w=28px}} if:
+** {{icon|yes}} Is {{flag|Turkey}}
+|
+* {{icon|Devout}} '''+30%''' Devout political strength
+* {{icon|authority}} {{green|+200}} Authority
+* {{iconify|conversion|4=0}} {{red|−50%}} Conversion
+* [[File:Military conscripts.png|24x24px]] {{red|−40%}} Conscriptable Batallions
+* {{icon|Devout}} {{green|×1.25}} Devout attraction for Pops that follow the State Religion
+** Additional {{green|×1.25}} if {{technology|Corporatism}}
+* {{green|+25}} Acceptance for pops with State Religion
+* {{green|+10}} Acceptance for pops with shared Religious Trait
+* {{green|+10}} Acceptance for pops with shared Religious Trait Group
+* {{red|−25}} Acceptance for pops with no shared Religious Trait
+{| class="mildtable plainlist"
+! colspan="5" | Heathen tax
+|-
+! Very low !! Low !! Medium !! High !! Very high
+|-
+| '''+0.4''' || '''+0.45''' || '''+0.5''' || '''+0.55''' || '''+0.6'''
+|}
+* When enacted:
+** {{icon|info}} Pops recalculate their interest group support
+** If State Atheism was enacted before switching:
+*** {{iconify|Atheist|religion||0}} Resets state religion from Atheist to default religion
+*** {{icon|no}} Removes ''Anti-Religious Policies''
+| {{law|State Religion|w=36px}}
+|}

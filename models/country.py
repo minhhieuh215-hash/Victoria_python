@@ -24,14 +24,21 @@ class Country:
         # Ngoại giao
         self.relations    = {}     # { TAG: int(-100..100) }
         self.at_war_with  = set()
-        self.allies       = set()  # Thêm allies
+        self.allies       = set()
+        self.trade_agreements      = set()
+        self.non_aggression_pacts  = set()
+        self.defense_pacts         = set()
+        self.expelled_diplomats    = set()
+        self.guarantees            = set()
+        self.power_bloc            = set()
+        self.subjects              = set()
+        self.leads_bloc            = False
 
         # Lịch sử
         self.year         = START_YEAR
         self.month        = START_MONTH
 
-        # Buildings - LƯU Ý: sẽ được quản lý qua states, không phải ở đây
-        # Nên để trống hoặc xóa
+        self.states       = {}   # { state_name: State }
         
         # Military
         self.armies = []  # List of Army objects
@@ -104,14 +111,33 @@ class Country:
         for state in states_dict.values():
             if state.owner == self.tag:
                 for building in state.buildings:
-                    if building.type == "farm":
+                    # Backward compatibility for old types
+                    if building.type == "farm" or building.type == "rye_farm":
                         self.production["grain"] += building.production
                         self.production["fruit"] += building.production * 0.2
-                    elif building.type == "mine":
-                        self.production["coal"] += building.production
-                        self.production["iron"] += building.production * 0.5
-                    elif building.type == "factory":
+                    elif building.type == "livestock_ranches":
+                        self.production["grain"] += building.production * 0.5
+                        self.production["fruit"] += building.production * 0.5
+                    elif building.type == "cotton_plantation":
                         self.production["fabric"] += building.production
+                    elif building.type == "vineyard":
+                        self.production["fruit"] += building.production * 1.5
+                    elif building.type == "mine" or building.type == "coal_mine":
+                        self.production["coal"] += building.production
+                    elif building.type == "iron_mine":
+                        self.production["iron"] += building.production
+                    elif building.type == "logging_camp":
+                        self.production["fabric"] += building.production * 0.5
+                    elif building.type == "factory" or building.type == "food_industry":
+                        self.production["grain"] += building.production * 0.5
+                        self.production["fruit"] += building.production * 0.5
+                    elif building.type == "textile_mill":
+                        self.production["clothes"] += building.production * 0.8
+                        self.production["fabric"] += building.production * 0.2
+                    elif building.type == "steel_mill":
+                        self.production["iron"] += building.production * 0.4
+                        self.production["coal"] += building.production * 0.2
+                    elif building.type == "arms_industry":
                         self.production["clothes"] += building.production * 0.3
     
     def update_pops_monthly(self):

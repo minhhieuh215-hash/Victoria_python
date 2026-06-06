@@ -1,7 +1,0 @@
-﻿CHARACTERS = {
-	c:NBS ?= {
-		create_character = {
-			template = NBS_archibald_campbell
-		}	
-	}
-}

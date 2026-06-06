@@ -9,5 +9,18 @@ class Province:
         self.is_lake: bool = False
         self.owner: str | None = None
         self.population = 0
-        self.terrain = "plains"
+        
+        # Seeded random terrain to keep it consistent
+        import random
+        rng = random.Random(province_id)
+        roll = rng.random()
+        if roll < 0.2:
+            self.terrain = "mountains"
+        elif roll < 0.3:
+            self.terrain = "desert"
+        elif roll < 0.4:
+            self.terrain = "hills"
+        else:
+            self.terrain = "plains"
+            
         self.neighbors = []

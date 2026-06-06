@@ -8,6 +8,122 @@ import os
 import re
 from typing import Dict, List, Optional, Any
 
+# ============ PART 0: LOCALIZATION LOADER ============
+LOCALIZATION_DICT = {
+    # Chuyến bay đầu tiên
+    "historical_events.1.t": "Chuyến bay đầu tiên",
+    "historical_events.1.d": "Thế giới chấn động trước tin tức về một chuyến bay thành công bằng động cơ phản lực/cánh nâng đầu tiên. Con người cuối cùng đã chinh phục bầu trời và mở ra kỷ nguyên hàng không mới!",
+    "historical_events.1.a": "Một thành tựu vĩ đại!",
+    
+    # Alaska
+    "alaska.1.t": "Thương vụ mua bán Alaska",
+    "alaska.1.d": "Đế quốc Nga đề xuất bán vùng lãnh thổ Alaska xa xôi và lạnh giá cho Hoa Kỳ. Đây là cơ hội mở rộng lãnh thổ chiến lược nhưng cũng đòi hỏi khoản chi phí không nhỏ.",
+    "alaska.1.a": "Đồng ý thương vụ này (-7.2M £, sở hữu Alaska)",
+    "alaska.1.b": "Từ chối đề xuất",
+    
+    "alaska.2.t": "Cơn sốt vàng Alaska",
+    "alaska.2.d": "Vàng đã được phát hiện ở Alaska! Hàng ngàn người đổ xô về phía bắc với hy vọng đổi đời, thúc đẩy kinh tế khu vực phát triển mạnh mẽ.",
+    "alaska.2.a": "Khai thác tài nguyên này!",
+    
+    "alaska.3.t": "Biên giới Alaska được phân định",
+    "alaska.3.d": "Biên giới giữa Alaska và Canada đã được phân định chính thức sau nhiều tranh chấp. Điều này mang lại sự ổn định cho cả hai nước.",
+    "alaska.3.a": "Tốt.",
+    
+    # Meiji Restoration
+    "meiji_restoration.1.t": "Minh Trị Duy Tân",
+    "meiji_restoration.1.d": "Nhật Bản tiến hành cải cách Minh Trị Duy Tân, xóa bỏ chế độ Mạc phủ, tập trung quyền lực vào Hoàng gia và thực hiện hiện đại hóa đất nước theo phương Tây.",
+    "meiji_restoration.1.a": "Bước vào kỷ nguyên mới",
+    
+    # 1848 / People's Springtime
+    "peoples_springtime.1.t": "Xuân của các dân tộc (1848)",
+    "peoples_springtime.1.d": "Làn sóng cách mạng tự do bùng phát khắp châu Âu. Người dân đòi hỏi các quyền tự do chính trị, hiến pháp và chấm dứt chế độ chuyên chế.",
+    "peoples_springtime.1.a": "Chúng ta phải lắng nghe nhân dân",
+    "peoples_springtime.1.b": "Đàn áp các cuộc nổi dậy!",
+}
+
+def load_all_localization():
+    global LOCALIZATION_DICT
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    loc_dir = os.path.join(base_dir, "data", "localization", "english")
+    if not os.path.exists(loc_dir):
+        print(f"⚠️ Không tìm thấy thư mục localization: {loc_dir}")
+        return
+        
+    pattern = re.compile(r'^\s*([\w\.\-\[\]]+):?\d*\s*"(.*)"')
+    file_count = 0
+    key_count = 0
+    
+    for root, dirs, files in os.walk(loc_dir):
+        for filename in files:
+            if not filename.endswith(".yml"):
+                continue
+            file_count += 1
+            filepath = os.path.join(root, filename)
+            try:
+                with open(filepath, 'r', encoding='utf-8-sig') as f:
+                    for line in f:
+                        if '#' in line:
+                            line = line.split('#')[0]
+                        m = pattern.match(line)
+                        if m:
+                            key = m.group(1).strip()
+                            val = m.group(2).strip()
+                            val = val.replace('\\"', '"').replace('\\n', '\n')
+                            # Chỉ ghi đè nếu chưa tồn tại (ưu tiên bản dịch tiếng Việt thủ công)
+                            if key not in LOCALIZATION_DICT:
+                                LOCALIZATION_DICT[key] = val
+                                key_count += 1
+            except Exception as e:
+                pass
+    print(f"✅ Đã nạp {key_count} từ khóa localization từ {file_count} tệp tin (.yml)")
+
+def translate_key(key: str, country_name="Đất nước") -> str:
+    if not key:
+        return ""
+    val = LOCALIZATION_DICT.get(key)
+    if val is not None:
+        return clean_loc_text(val, country_name)
+    
+    # Fallback cho các key chưa được dịch
+    if key.endswith(".t") or key.endswith("_t"):
+        parts = key.split(".")
+        return "Sự kiện: " + " ".join(parts[:-1]).replace("_", " ").title()
+    if key.endswith(".d") or key.endswith("_d"):
+        return "Tình hình đất nước đang có những chuyển biến quan trọng. Quyết định tiếp theo của bạn sẽ thay đổi tương lai."
+    if key.endswith(".a") or key.endswith("_a") or key.endswith(".b") or key.endswith("_b"):
+        return "Tiếp tục"
+    
+    return clean_loc_text(key, country_name)
+
+def clean_loc_text(text: str, country_name="Đất nước") -> str:
+    if not text:
+        return ""
+    text = text.replace("[SCOPE.gsInterestGroup('landowners_ig').GetName]", "Địa chủ")
+    text = text.replace("[SCOPE.gsInterestGroup('intelligentsia_ig').GetName]", "Trí thức")
+    text = text.replace("[SCOPE.gsInterestGroup('trade_unions_ig').GetName]", "Công nhân")
+    text = text.replace("[SCOPE.gsInterestGroup('devout_ig').GetName]", "Giáo hội")
+    text = text.replace("[SCOPE.gsInterestGroup('industrialists_ig').GetName]", "Tư bản")
+    text = text.replace("[SCOPE.gsInterestGroup('armed_forces_ig').GetName]", "Quân đội")
+    text = text.replace("[SCOPE.gsInterestGroup('petty_bourgeoisie_ig').GetName]", "Tầng lớp tiểu tư sản")
+    text = text.replace("[SCOPE.gsInterestGroup('rural_folk_ig').GetName]", "Nông dân")
+
+    text = text.replace("[SCOPE.gsInterestGroup('landowners_ig').GetNameNoFormatting]", "Địa chủ")
+    text = text.replace("[SCOPE.gsInterestGroup('intelligentsia_ig').GetNameNoFormatting]", "Trí thức")
+    text = text.replace("[SCOPE.gsInterestGroup('trade_unions_ig').GetNameNoFormatting]", "Công nhân")
+    text = text.replace("[SCOPE.gsInterestGroup('devout_ig').GetNameNoFormatting]", "Giáo hội")
+    
+    text = re.sub(r'\[ROOT\.GetCountry\.(GetName|GetAdjective)(NoFormatting)?\]', country_name, text)
+    text = re.sub(r'\[ROOT\.GetCountry\.(GetName|GetAdjective)\]', country_name, text)
+    
+    # Xóa các tag định dạng màu hoặc in đậm dạng #bold hoặc #!
+    text = text.replace("#bold", "").replace("#italic", "").replace("#!", "")
+    
+    # Xóa các thẻ ngoặc vuông còn sót lại
+    text = re.sub(r'\[[^\]]+\]', '', text)
+    
+    return text.strip()
+
+
 # ============ PART 1: RANDOM EVENTS ĐƠN GIẢN ============
 
 SIMPLE_EVENTS = [
@@ -23,11 +139,27 @@ SIMPLE_EVENTS = [
     },
     {
         "id": "harvest_bad",
-        "title": "🌧️ Mất mùa nghiêm trọng",
-        "desc": "Hạn hán tàn phá mùa màng, dân chúng đói kém.",
+        "title": "🌧️ Khủng hoảng Mất mùa",
+        "desc": "Thiên tai hạn hán nghiêm trọng hoành hành khắp cả nước, nông dân mất mùa, kho lương trống rỗng. Dân chúng kêu than khắp nơi.",
         "condition": lambda c: c.population > 1,
-        "effect": lambda c: setattr(c, "gdp", c.gdp * 0.97),
-        "effect_text": "GDP -3%",
+        "options": [
+            {
+                "name": "Mở kho thóc cứu trợ khẩn cấp",
+                "effect_desc": "Kho bạc -40£, Dân số không đổi",
+                "effect": lambda c: setattr(c, "treasury", max(0.0, c.treasury - 40))
+            },
+            {
+                "name": "Mặc kệ dòng đời đẩy đưa",
+                "effect_desc": "Dân số -3%, Uy tín -5",
+                "effect": lambda c: (setattr(c, "population", max(0.1, c.population * 0.97)), setattr(c, "prestige", max(0.0, c.prestige - 5)))
+            },
+            {
+                "name": "Trưng thu cưỡng chế thóc lúa",
+                "effect_desc": "Kho bạc +20£, Dân số -5%, Uy tín -15",
+                "effect": lambda c: (setattr(c, "treasury", c.treasury + 20), setattr(c, "population", max(0.1, c.population * 0.95)), setattr(c, "prestige", max(0.0, c.prestige - 15)))
+            }
+        ],
+        "effect_text": "Ứng phó với mất mùa",
         "weight": 6,
         "icon": "event_famine"
     },
@@ -186,19 +318,42 @@ class HistoricalEvent:
         
         return apply_event_effect(effect, country, game_state)
     
-    def to_dict(self):
+    def get_option_effect_desc(self, effect: dict) -> str:
+        results = []
+        if "prestige" in effect:
+            results.append(f"Uy tín {effect['prestige']:+d}")
+        if "treasury" in effect:
+            results.append(f"Kho bạc {effect['treasury']:+d}£")
+        if "population" in effect:
+            results.append(f"Dân số {effect['population']:+d}%")
+        if "tax_rate" in effect:
+            results.append(f"Thuế suất {effect['tax_rate']:+.0%}")
+        if "change_relations" in effect:
+            rel = effect["change_relations"]
+            results.append(f"Quan hệ với {rel['country']} {rel['value']:+d}")
+        return ", ".join(results) if results else "Không có ảnh hưởng trực tiếp"
+
+    def to_dict(self, country_name="Đất nước"):
         """Chuyển event thành dict để hiển thị trong UI"""
-        effect_text = "Tiếp tục"
-        if self.options and len(self.options) > 0:
-            effect_text = self.options[0].get("name", "Tiếp tục")
+        options_translated = []
+        for i, opt in enumerate(self.options):
+            name_key = opt.get("name", "Tiếp tục")
+            effect = opt.get("effect", {})
+            effect_desc = self.get_option_effect_desc(effect)
+            options_translated.append({
+                "index": i,
+                "name": translate_key(name_key, country_name),
+                "effect_desc": effect_desc
+            })
 
         return {
+            "type": "historical",
             "id": self.id,
-            "title": self.title,
-            "desc": self.desc,
-            "effect_text": effect_text,
+            "title": translate_key(self.title, country_name),
+            "desc": translate_key(self.desc, country_name),
             "icon": self.icon,
-            "options": self.options
+            "options": options_translated,
+            "event_obj": self
         }
 
 
@@ -284,7 +439,9 @@ def ensure_historical_events_loaded(game_state):
     if getattr(game_state, '_historical_events_loaded', False):
         return
     print("  -> Loading historical events...")
-    game_state.historical_events = load_historical_events("data/events")
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    event_folder = os.path.join(base_dir, "data", "events")
+    game_state.historical_events = load_historical_events(event_folder)
     game_state._historical_events_loaded = True
 
 
@@ -503,22 +660,25 @@ def check_events(country, game_state) -> Optional[dict]:
     Kiểm tra và trả về event ngẫu nhiên hoặc lịch sử.
     Xác suất 20% mỗi tháng.
     """
-    # 80% chance không có event
     if random.random() > 0.2:
         return None
     
-    # 30% chance là historical event (nếu có), 70% là simple event
-    use_historical = False
-    if hasattr(game_state, 'historical_events') and game_state.historical_events:
-        if random.random() < 0.3:
-            use_historical = True
+    ensure_historical_events_loaded(game_state)
     
+    use_historical = False
+    if game_state.historical_events and random.random() < 0.3:
+        use_historical = True
+        
+    try:
+        from engine.country_names import get_country_display_name
+        cname = get_country_display_name(country.tag, country.tag)
+    except:
+        cname = country.tag
+        
     if use_historical:
-        # Load historical events on demand the first time they are needed.
-        ensure_historical_events_loaded(game_state)
         for event in game_state.historical_events.values():
             if event.is_triggered(country, game_state):
-                return event.to_dict()
+                return event.to_dict(cname)
     
     # Fallback to simple events
     eligible = [e for e in SIMPLE_EVENTS if e["condition"](country)]
@@ -528,25 +688,42 @@ def check_events(country, game_state) -> Optional[dict]:
     weights = [e["weight"] for e in eligible]
     event = random.choices(eligible, weights=weights, k=1)[0]
     
-    return {
+    ret = {
+        "type": "simple",
         "id": event["id"],
         "title": event["title"],
         "desc": event["desc"],
-        "effect_text": event["effect_text"],
+        "effect_text": event.get("effect_text", ""),
         "icon": event.get("icon", "event_default")
     }
+    if "options" in event:
+        options_translated = []
+        for i, opt in enumerate(event["options"]):
+            options_translated.append({
+                "index": i,
+                "name": opt.get("name", "Lựa chọn"),
+                "effect_desc": opt.get("effect_desc", ""),
+                "effect": opt.get("effect")
+            })
+        ret["options"] = options_translated
+    return ret
 
 
 def apply_event(event: dict, country) -> str:
     """Áp dụng sự kiện vào quốc gia, trả về mô tả effect"""
-    # Tìm event trong SIMPLE_EVENTS
-    for e in SIMPLE_EVENTS:
-        if e["id"] == event["id"]:
-            try:
-                e["effect"](country)
-            except Exception as ex:
-                print(f"Error applying event effect: {ex}")
-            return e["effect_text"]
+    if not event:
+        return "Không có thay đổi"
+    event_id = event.get("id")
+    if event_id:
+        # Tìm event trong SIMPLE_EVENTS
+        for e in SIMPLE_EVENTS:
+            if e["id"] == event_id:
+                try:
+                    if "effect" in e:
+                        e["effect"](country)
+                except Exception as ex:
+                    print(f"Error applying event effect: {ex}")
+                return e.get("effect_text", "Sự kiện đã được áp dụng")
     
     return event.get("effect_text", "Sự kiện đã được áp dụng")
 
@@ -557,6 +734,6 @@ def init_events(game_state):
     """Khởi tạo hệ thống events cho game_state"""
     game_state.historical_events = {}
     game_state._historical_events_loaded = False
-    game_state.simple_events = SIMPLE_EVENTS
+    game_state.simple_events = []
     print(f"🎲 Hệ thống events sẵn sàng: {len(SIMPLE_EVENTS)} random events, historical events sẽ load khi cần")
     return game_state

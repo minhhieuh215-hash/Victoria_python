@@ -1,0 +1,334 @@
+==Citizenship==
+Extending the rights of citizenship, specifically those that are not the primary culture. The law governs both which POPs are considered [[acceptance|accepted]], and the effects for the POPs when they are not.
+{| class="mildtable sortable plainlist" width="100%"
+! width="20%" |Law
+! width="20%" |Requirements
+! class="unsortable" width="35%" |Effects
+! Interest group stance
+|- id="Subjecthood"
+| {{iconbox|Subjecthood|The state defines its people foremostly as subjects of a sovereign, making little effort to encourage any official nationality. Cultures are largely left to their own devices within their own communities.|image=Law subjecthood.png}}
+|
+* Any of:
+** {{icon|yes}}{{law|Monarchy}} enacted
+** {{icon|yes}}{{law|Theocracy}} enacted
+** {{icon|yes}}{{law|Colonial Administration}} enacted
+|
+* {{icon|authority}} {{green|+100}} Authority
+* {{red|−50%}} {{iconify|Support Separatism|Diplomacy}} strength
+* {{red|−50%}} {{iconify|Support Separatism|Diplomacy}} resistance
+* [[File:Assimilation.png|24x24px]] {{red|−25%}} Assimilation
+* {{green|+100}} Acceptance for pops with Primary Culture
+* {{green|+20}} Acceptance for pops with shared Heritage Trait
+* {{green|+15}} Acceptance for pops with shared Heritage Trait Group
+* '''+0''' Acceptance for pops with no shared Heritage Trait
+* {{green|+20}} Acceptance for pops with shared Language Trait
+* {{green|+15}} Acceptance for pops with shared Language Trait Group
+* '''+0''' Acceptance for pops with no shared Language Trait
+* {{green|+25}} Acceptance for pops with shared Tradition Trait
+* {{green|+30}} Acceptance for pops living in their homelands
+{{tooltip|Acceptance modifiers|style=width:max-content; padding:5px; border-radius: 5px; margin:12px 0px 0px -25px;|
+* [[File:Acceptance tier1.png|36px|link=Acceptance]] Violent Hostility
+** {{icon|radical}} {{red|+20%}} Radicalism increases
+** {{icon|no}} Cannot vote
+** '''−40%''' Political strength
+** '''−40%''' Wages
+** {{red|−50%}} Qualifications growth
+** {{icon|no}} Cannot work in military buildings
+** {{icon|no}} Cannot work {{icon|Upper Strata}} Upper or {{icon|Middle Strata|3=1}} jobs in government-funded buildings
+* [[File:Acceptance tier2.png|36px|link=Acceptance]] Cultural Erasure
+** {{icon|radical}} {{red|+10%}} Radicalism increases
+** {{icon|no}} Cannot vote
+** {{icon|yes}} {{iconify|assimilate|mod=Can}}
+** '''−30%''' Political strength
+** '''−30%''' Wages
+** {{red|−30%}} Qualifications growth
+** {{icon|no}} Cannot work {{icon|Upper Strata}} Upper or {{icon|Middle Strata|3=1}} jobs in government-funded buildings
+* [[File:Acceptance tier3.png|36px|link=Acceptance]] Open Prejudice
+** '''−25%''' Vote strength
+** {{icon|yes}} {{iconify|assimilate|mod=Can}}
+** '''−20%''' Political strength
+** '''−20%''' Wages
+** {{red|−10%}} Qualifications growth
+* [[File:Acceptance tier4.png|36px|link=Acceptance]] Second-class Citizen
+** {{icon|loyalist}} {{green|+5%}} Loyalism increases
+** {{icon|yes}} {{iconify|assimilate|mod=Can}}
+** '''−10%''' Political strength
+** '''−10%''' Wages
+* [[File:Acceptance tier5.png|36px|link=Acceptance]] Full Acceptance
+** {{icon|loyalist}} {{green|+10%}} Loyalism increases
+** {{icon|yes}} {{iconify|assimilate|mod=Can}}
+}}
+* {{icon|info}} Pops will recalculate their interest group support
+|
+* {{icon|Intelligentsia|3=1}} {{red|strongly oppose}}
+* {{icon|Landowners|3=1}} {{green|endorse}}
+* {{icon|Petite Bourgeoisie|3=1}} '''neutral'''
+* {{icon|Rural Folk|3=1}} {{green|endorse}}
+|- id="Ethnostate"
+| {{iconbox|Ethnostate|The state considers itself inextricably tied to a certain ethnicity, with other ethnicities barred from citizenship. All foreign cultures are discriminated against.|image=Law ethnostate.png}}
+| {{technology|Nationalism|w=28px}} researched
+|
+* {{icon|authority}} {{green|+200}} Authority
+* {{green|+50%}} {{iconify|Support Separatism|Diplomacy}} strength
+* {{red|−50%}} {{iconify|Support Separatism|Diplomacy}} resistance
+* '''+20''' Primary Culture fervor
+* {{green|+100}} Acceptance for pops with Primary Culture
+* {{green|+20}} Acceptance for pops with shared Heritage Trait
+* {{green|+10}} Acceptance for pops with shared Heritage Trait Group
+* {{red|−10}} Acceptance for pops with no shared Heritage Trait
+* {{green|+15}} Acceptance for pops with shared Language Trait
+* {{green|+5}} Acceptance for pops with shared Language Trait Group
+* '''+0''' Acceptance for pops with no shared Language Trait
+* {{green|+10}} Acceptance for pops with shared Tradition Trait
+{{tooltip|Acceptance modifiers|style=width:max-content; padding:5px; border-radius: 5px; margin:12px 0px 0px -25px;|
+* [[File:Acceptance tier1.png|36px|link=Acceptance]] Violent Hostility
+** {{icon|radical}} {{red|+33%}} Radicalism increases
+** {{icon|no}} Cannot vote
+** '''−50%''' Political strength
+** '''−50%''' Wages
+** {{red|−50%}} Qualifications growth
+** {{icon|no}} Cannot work in military buildings
+** {{icon|no}} Cannot work {{icon|Upper Strata}} Upper or {{icon|Middle Strata|3=1}} jobs in government-funded buildings
+* [[File:Acceptance tier2.png|36px|link=Acceptance]] Cultural Erasure
+** {{icon|radical}} {{red|+20%}} Radicalism increases
+** {{icon|no}} Cannot vote
+** {{icon|yes}} {{iconify|assimilate|mod=Can}}
+** {{iconify|Assimilation|mod='''+5%'''}}
+** '''−40%''' Political strength
+** '''−40%''' Wages
+** {{red|−30%}} Qualifications growth
+** {{icon|no}} Cannot work {{icon|Upper Strata}} Upper or {{icon|Middle Strata|3=1}} jobs in government-funded buildings
+* [[File:Acceptance tier3.png|36px|link=Acceptance]] Open Prejudice
+** {{icon|no}} Cannot vote
+** {{icon|yes}} {{iconify|assimilate|mod=Can}}
+** {{iconify|Assimilation|mod='''+15%'''}}
+** '''−30%''' Political strength
+** '''−25%''' Wages
+** {{red|−10%}} Qualifications growth
+* [[File:Acceptance tier4.png|36px|link=Acceptance]] Second-class Citizen
+** {{icon|loyalist}} {{green|+20%}} Loyalism increases
+** {{icon|radical}} {{green|−10%}} Radicalism increases
+** '''−50%''' Vote strength
+** {{icon|yes}} {{iconify|assimilate|mod=Can}}
+** '''−15%''' Political strength
+** '''−15%''' Wages
+* [[File:Acceptance tier5.png|36px|link=Acceptance]] Full Acceptance
+** {{icon|loyalist}} {{green|+33%}} Loyalism increases
+** {{icon|radical}} {{green|−20%}} Radicalism increases
+** {{icon|yes}} {{iconify|assimilate|mod=Can}}
+** '''+25%''' Political strength
+** '''+25%''' Wages
+}}
+* {{icon|info}} Pops will recalculate their interest group support
+|
+* {{icon|Intelligentsia|3=1}} {{red|strongly oppose}}
+* {{icon|Landowners|3=1}} '''neutral'''
+* {{icon|Petite Bourgeoisie|3=1}} {{green|endorse}}
+* {{icon|Rural Folk|3=1}} {{red|oppose}}
+|- id="National Supremacy"
+| {{iconbox|National Supremacy|The state defines its citizens by compliance with a certain national identity, which is held to be supreme over all others. Foreign cultures are discriminated against unless they share both heritage and language (or other customs).|image=Law national_supremacy.png}}
+|
+|
+* {{icon|authority}} {{green|+150}} Authority
+* {{green|+25%}} {{iconify|Support Separatism|Diplomacy}} strength
+* {{red|−25%}} {{iconify|Support Separatism|Diplomacy}} resistance
+* '''+15''' Primary Culture fervor
+* {{green|+100}} Acceptance for pops with Primary Culture
+* {{green|+40}} Acceptance for pops with shared Heritage Trait
+* {{green|+20}} Acceptance for pops with shared Heritage Trait Group
+* {{red|−10}} Acceptance for pops with no shared Heritage Trait
+* {{green|+30}} Acceptance for pops with shared Language Trait
+* {{green|+15}} Acceptance for pops with shared Language Trait Group
+* {{red|−5}} Acceptance for pops with no shared Language Trait
+* {{green|+15}} Acceptance for pops with shared Tradition Trait
+{{tooltip|Acceptance modifiers|style=width:max-content; padding:5px; border-radius: 5px; margin:12px 0px 0px -25px;|
+* [[File:Acceptance tier1.png|36px|link=Acceptance]] Violent Hostility
+** {{icon|radical}} {{red|+20%}} Radicalism increases
+** {{icon|no}} Cannot vote
+** '''−40%''' Political strength
+** '''−40%''' Wages
+** {{red|−50%}} Qualifications growth
+** {{icon|no}} Cannot work in military buildings
+** {{icon|no}} Cannot work {{icon|Upper Strata}} Upper or {{icon|Middle Strata|3=1}} jobs in government-funded buildings
+* [[File:Acceptance tier2.png|36px|link=Acceptance]] Cultural Erasure
+** {{icon|radical}} {{red|+10%}} Radicalism increases
+** {{icon|no}} Cannot vote
+** {{icon|yes}} {{iconify|assimilate|mod=Can}}
+** {{iconify|Assimilation|mod='''+5%'''}}
+** '''−30%''' Political strength
+** '''−30%''' Wages
+** {{red|−30%}} Qualifications growth
+** {{icon|no}} Cannot work {{icon|Upper Strata}} Upper or {{icon|Middle Strata|3=1}} jobs in government-funded buildings
+* [[File:Acceptance tier3.png|36px|link=Acceptance]] Open Prejudice
+** '''−50%''' Vote strength
+** {{icon|yes}} {{iconify|assimilate|mod=Can}}
+** {{iconify|Assimilation|mod='''+15%'''}}
+** '''−20%''' Political strength
+** '''−20%''' Wages
+** {{red|−10%}} Qualifications growth
+* [[File:Acceptance tier4.png|36px|link=Acceptance]] Second-class Citizen
+** {{icon|loyalist}} {{green|+10%}} Loyalism increases
+** '''−25%''' Vote strength
+** {{icon|yes}} {{iconify|assimilate|mod=Can}}
+** '''−10%''' Political strength
+** '''−10%''' Wages
+* [[File:Acceptance tier5.png|36px|link=Acceptance]] Full Acceptance
+** {{icon|loyalist}} {{green|+20%}} Loyalism increases
+** {{icon|radical}} {{green|−10%}} Radicalism increases
+** {{icon|yes}} {{iconify|assimilate|mod=Can}}
+** '''+20%''' Political strength
+** '''+20%''' Wages
+}}
+* {{icon|info}} Pops will recalculate their interest group support
+|
+* {{icon|Intelligentsia|3=1}} {{red|oppose}}
+* {{icon|Landowners|3=1}} '''neutral'''
+* {{icon|Petite Bourgeoisie|3=1}} {{green|strongly endorse}}
+* {{icon|Rural Folk|3=1}} '''Neutral'''
+|- id="Racial Segregation"
+| {{iconbox|Racial Segregation|The state considers citizenship rights to be tied to the concept of shared racial heritage. Foreign cultures of different heritage are discriminated against.|image=Law racial_segregation.png}}
+|
+|
+* {{icon|authority}} {{green|+100}} Authority
+* '''+10''' Primary Culture fervor
+* {{green|+100}} Acceptance for pops with Primary Culture
+* {{green|+60}} Acceptance for pops with shared Heritage Trait
+* {{green|+50}} Acceptance for pops with shared Heritage Trait Group
+* {{red|−20}} Acceptance for pops with no shared Heritage Trait
+* {{green|+30}} Acceptance for pops with shared Language Trait
+* {{green|+15}} Acceptance for pops with shared Language Trait Group
+* {{red|−5}} Acceptance for pops with no shared Language Trait
+* {{green|+20}} Acceptance for pops with shared Tradition Trait
+{{tooltip|Acceptance modifiers|style=width:max-content; padding:5px; border-radius: 5px; margin:12px 0px 0px -25px;|
+* [[File:Acceptance tier1.png|36px|link=Acceptance]] Violent Hostility
+** {{icon|no}} Cannot vote
+** '''−30%''' Political strength
+** '''−30%''' Wages
+** {{red|−50%}} Qualifications growth
+** {{icon|no}} Cannot work in military buildings
+** {{icon|no}} Cannot work {{icon|Upper Strata}} Upper or {{icon|Middle Strata|3=1}} jobs in government-funded buildings
+* [[File:Acceptance tier2.png|36px|link=Acceptance]] Cultural Erasure
+** {{icon|no}} Cannot vote
+** {{icon|yes}} {{iconify|assimilate|mod=Can}}
+** {{iconify|Assimilation|mod='''+5%'''}}
+** '''−20%''' Political strength
+** '''−20%''' Wages
+** {{red|−30%}} Qualifications growth
+** {{icon|no}} Cannot work {{icon|Upper Strata}} Upper or {{icon|Middle Strata|3=1}} jobs in government-funded buildings
+* [[File:Acceptance tier3.png|36px|link=Acceptance]] Open Prejudice
+** '''−25%''' Vote strength
+** {{icon|yes}} {{iconify|assimilate|mod=Can}}
+** {{iconify|Assimilation|mod='''+15%'''}}
+** '''−10%''' Political strength
+** '''−10%''' Wages
+** {{red|−10%}} Qualifications growth
+* [[File:Acceptance tier4.png|36px|link=Acceptance]] Second-class Citizen
+** {{icon|yes}} {{iconify|assimilate|mod=Can}}
+** '''+10%''' Political strength
+** '''+5%''' Wages
+* [[File:Acceptance tier5.png|36px|link=Acceptance]] Full Acceptance
+** {{icon|yes}} {{iconify|assimilate|mod=Can}}
+** '''+10%''' Political strength
+** '''+15%''' Wages
+}}
+* {{icon|info}} Pops will recalculate their interest group support
+|
+* {{icon|Intelligentsia|3=1}} '''neutral'''
+* {{icon|Landowners|3=1}} '''neutral'''
+* {{icon|Petite Bourgeoisie|3=1}} {{green|endorse}}
+* {{icon|Rural Folk|3=1}} {{green|endorse}}
+|- id="Cultural Exclusion"
+| {{iconbox|Cultural Exclusion|The state offers citizenship rights to people of all cultural identities, whilst considering a certain official identity to be paramount. Foreign cultures with nothing in common with your primary cultures are discriminated against.|image=Law cultural_exclusion.png}}
+|
+* Any of:
+** {{icon|yes}}{{law|Slavery Banned|w=28px}} enacted
+** {{icon|yes}}{{law|Debt Slavery|w=28px}} enacted
+** {{icon|yes}}{{law|Colonial Slavery|w=28px}} enacted
+|
+* {{icon|authority}} {{green|+50}} Authority
+* {{red|−25%}} {{iconify|Support Separatism|Diplomacy}} strength
+* {{green|+25%}} {{iconify|Support Separatism|Diplomacy}} resistance
+* '''+5''' Primary Culture fervor
+* {{green|+100}} Acceptance for pops with Primary Culture
+* {{green|+60}} Acceptance for pops with shared Heritage Trait
+* {{green|+50}} Acceptance for pops with shared Heritage Trait Group
+* {{green|+10}} Acceptance for pops with no shared Heritage Trait
+* {{green|+50}} Acceptance for pops with shared Language Trait
+* {{green|+25}} Acceptance for pops with shared Language Trait Group
+* {{green|+10}} Acceptance for pops with no shared Language Trait
+* {{green|+25}} Acceptance for pops with shared Tradition Trait
+{{tooltip|Acceptance modifiers|style=width:max-content; padding:5px; border-radius: 5px; margin:12px 0px 0px -25px;|
+* [[File:Acceptance tier1.png|36px|link=Acceptance]] Violent Hostility
+** {{icon|no}} Cannot vote
+** '''−30%''' Political strength
+** '''−30%''' Wages
+** {{red|−50%}} Qualifications growth
+** {{icon|no}} Cannot work {{icon|Upper Strata}} Upper or {{icon|Middle Strata|3=1}} jobs in government-funded buildings
+* [[File:Acceptance tier2.png|36px|link=Acceptance]] Cultural Erasure
+** '''−25%''' Vote strength
+** {{icon|yes}} {{iconify|assimilate|mod=Can}}
+** {{iconify|Assimilation|mod='''+5%'''}}
+** '''−20%''' Political strength
+** '''−20%''' Wages
+** {{red|−30%}} Qualifications growth
+* [[File:Acceptance tier3.png|36px|link=Acceptance]] Open Prejudice
+** {{icon|yes}} {{iconify|assimilate|mod=Can}}
+** {{iconify|Assimilation|mod='''+15%'''}}
+** '''−10%''' Political strength
+** '''−10%''' Wages
+** {{red|−10%}} Qualifications growth
+* [[File:Acceptance tier4.png|36px|link=Acceptance]] Second-class Citizen
+** {{icon|yes}} {{iconify|assimilate|mod=Can}}
+** '''+10%''' Political strength
+* [[File:Acceptance tier5.png|36px|link=Acceptance]] Full Acceptance
+** {{icon|yes}} {{iconify|assimilate|mod=Can}}
+** '''+10%''' Political strength
+** '''+5%''' Wages
+}}
+* {{icon|info}} Pops will recalculate their interest group support
+|
+* {{icon|Intelligentsia|3=1}} {{green|endorse}}
+* {{icon|Landowners|3=1}} '''neutral'''
+* {{icon|Petite Bourgeoisie|3=1}} '''neutral'''
+* {{icon|Rural Folk|3=1}} '''neutral'''
+|- id="Multiculturalism"
+| {{iconbox|Multiculturalism|The state upholds equal citizenship rights for people of all cultural identities, and makes no attempt to officially uphold a certain culture over others. No cultures are discriminated against.|image=Law multicultural.png}}
+|
+* {{technology|Human Rights|w=28px}} researched
+* {{icon|yes}}{{law|Slavery Banned|w=28px}} enacted
+|
+* {{red|−50%}} {{iconify|Support Separatism|Diplomacy}} strength
+* {{green|+50%}} {{iconify|Support Separatism|Diplomacy}} resistance
+* '''−10''' Primary Culture fervor
+* [[File:Assimilation.png|24x24px]] {{red|−25%}} Assimilation
+* {{green|+100}} Acceptance for pops with Primary Culture
+* {{green|+60}} Acceptance for pops with shared Heritage Trait
+* {{green|+50}} Acceptance for pops with shared Heritage Trait Group
+* {{green|+20}} Acceptance for pops with no shared Heritage Trait
+* {{green|+50}} Acceptance for pops with shared Language Trait
+* {{green|+30}} Acceptance for pops with shared Language Trait Group
+* {{green|+20}} Acceptance for pops with no shared Language Trait
+* {{green|+10}} Acceptance for pops with shared Tradition Trait
+{{tooltip|Acceptance modifiers|style=width:max-content; padding:5px; border-radius: 5px; margin:12px 0px 0px -25px;|
+* [[File:Acceptance tier1.png|36px|link=Acceptance]] Violent Hostility
+** '''−20%''' Wages
+* [[File:Acceptance tier2.png|36px|link=Acceptance]] Cultural Erasure
+** {{icon|yes}} {{iconify|assimilate|mod=Can}}
+** {{iconify|Assimilation|mod='''+5%'''}}
+** '''−10%''' Wages
+* [[File:Acceptance tier3.png|36px|link=Acceptance]] Open Prejudice
+** {{icon|yes}} {{iconify|assimilate|mod=Can}}
+** {{iconify|Assimilation|mod='''+15%'''}}
+** '''−5%''' Wages
+* [[File:Acceptance tier4.png|36px|link=Acceptance]] Second-class Citizen
+** {{icon|yes}} {{iconify|assimilate|mod=Can}}
+* [[File:Acceptance tier5.png|36px|link=Acceptance]] Full Acceptance
+** {{icon|yes}} {{iconify|assimilate|mod=Can}}
+}}
+* {{icon|info}} Pops will recalculate their interest group support
+|
+* {{icon|Intelligentsia|3=1}} {{red|strongly oppose}}
+* {{icon|Landowners|3=1}} {{red|oppose}}
+* {{icon|Petite Bourgeoisie|3=1}} {{red|oppose}}
+* {{icon|Rural Folk|3=1}} {{red|strongly oppose}}
+|}

@@ -30,8 +30,8 @@ def calculate_country_gdp(country):
 
 def calculate_tax_income(country):
     """Tính thu thuế hàng tháng"""
-    # Thuế dựa trên GDP và thuế suất
-    tax_from_gdp = country.gdp * country.tax_rate * 0.1
+    # Thuế dựa trên GDP và thuế suất (Tăng hệ số từ 0.1 lên 1.5 để tăng nguồn thu thực tế)
+    tax_from_gdp = country.gdp * country.tax_rate * 1.5
     
     # Thuế từ dân số giàu
     pop_tax = 0
@@ -45,11 +45,11 @@ def calculate_tax_income(country):
 
 def calculate_expenses(country, game_state=None):
     """Tính chi tiêu hàng tháng"""
-    # Chi phí quân đội
-    army_cost = country.army_size * 5
+    # Chi phí quân đội (Giảm hệ số từ 5 xuống 0.4 để giảm áp lực chi tiêu quân sự quá cao)
+    army_cost = country.army_size * 0.4
     
-    # Chi phí hành chính (dựa trên số bang)
-    admin_cost = len(country.states) * 2 if hasattr(country, 'states') else 10
+    # Chi phí hành chính (Giảm hệ số từ 2 xuống 0.4)
+    admin_cost = len(country.states) * 0.4 if hasattr(country, 'states') else 2.0
     
     # Chi phí duy trì công trình
     building_cost = 0
@@ -57,17 +57,25 @@ def calculate_expenses(country, game_state=None):
         for state in country.states.values():
             building_cost += sum(b.upkeep for b in state.buildings)
     
-    # Chi phí giáo dục (dựa trên literacy)
-    education_cost = country.literacy * 20
+    # Chi phí giáo dục (Giảm hệ số từ 20 xuống 5)
+    education_cost = country.literacy * 5
     
     return army_cost + admin_cost + building_cost + education_cost
 
 
-def update_population_growth(country):
+def update_population_growth(country, game_state=None):
     """Cập nhật tăng trưởng dân số"""
-    # Tăng trưởng cơ bản
+    # Tăng trưởng cơ bản tùy thuộc vào thời đại
     growth_rate = BASE_POP_GROWTH
-    
+    if game_state:
+        age = getattr(game_state, "current_age", "Age of Industrialisation")
+        if age == "Age of Revolution":
+            growth_rate = 0.001     # +0.1% mỗi tháng
+        elif age == "Age of Industrialisation":
+            growth_rate = 0.0015    # +0.15% mỗi tháng
+        elif age == "Age of Imperialism":
+            growth_rate = 0.002     # +0.2% mỗi tháng
+
     # Bonus từ lương thực
     if hasattr(country, 'production') and country.production.get('grain', 0) > 0:
         growth_rate += 0.0005
@@ -84,6 +92,7 @@ def update_population_growth(country):
     
     # Giới hạn dân số tối thiểu
     country.population = max(0.1, country.population)
+
 
 
 def update_market_prices(market, countries):
@@ -121,7 +130,7 @@ def update_market_prices(market, countries):
         market.prices[good] = market.prices[good] * 0.7 + target_price * 0.3
 
 
-def monthly_economy_tick(countries, market, player_tag=None):
+def monthly_economy_tick(countries, market, player_tag=None, game_state=None):
     """
     Xử lý kinh tế hàng tháng cho tất cả các nước
     
@@ -137,6 +146,20 @@ def monthly_economy_tick(countries, market, player_tag=None):
         
         # 2. Tính thu nhập và chi phí
         income = calculate_tax_income(country)
+        
+        # Áp dụng bổ trợ độ khó cho thuế suất
+        difficulty = getattr(game_state, 'difficulty', 'normal')
+        if tag == player_tag:
+            if difficulty == 'easy':
+                income *= 1.2
+            elif difficulty == 'hard':
+                income *= 0.8
+        else:
+            if difficulty == 'hard':
+                income *= 1.2
+            elif difficulty == 'easy':
+                income *= 0.9
+
         expense = calculate_expenses(country)
         net_change = income - expense
         
@@ -144,7 +167,7 @@ def monthly_economy_tick(countries, market, player_tag=None):
         country.treasury += net_change
         
         # 4. Cập nhật tăng trưởng dân số
-        update_population_growth(country)
+        update_population_growth(country, game_state)
         
         # 5. Tự động điều chỉnh thuế suất AI (nếu là AI và treasury thấp)
         if tag != player_tag and country.treasury < 50 and country.tax_rate < 0.25:
@@ -166,21 +189,43 @@ def monthly_economy_tick(countries, market, player_tag=None):
             country.production = {}
             for state in country.states.values():
                 for building in state.buildings:
-                    if building.type == "farm":
+                    if building.type == "farm" or building.type == "rye_farm":
                         country.production['grain'] = country.production.get('grain', 0) + building.production
                         country.production['fruit'] = country.production.get('fruit', 0) + building.production * 0.2
-                    elif building.type == "mine":
-                        country.production['coal'] = country.production.get('coal', 0) + building.production
-                        country.production['iron'] = country.production.get('iron', 0) + building.production * 0.5
-                    elif building.type == "factory":
+                    elif building.type == "livestock_ranches":
+                        country.production['grain'] = country.production.get('grain', 0) + building.production * 0.5
+                        country.production['fruit'] = country.production.get('fruit', 0) + building.production * 0.5
+                    elif building.type == "cotton_plantation":
                         country.production['fabric'] = country.production.get('fabric', 0) + building.production
+                    elif building.type == "vineyard":
+                        country.production['fruit'] = country.production.get('fruit', 0) + building.production * 1.5
+                    elif building.type == "mine" or building.type == "coal_mine":
+                        country.production['coal'] = country.production.get('coal', 0) + building.production
+                    elif building.type == "iron_mine":
+                        country.production['iron'] = country.production.get('iron', 0) + building.production
+                    elif building.type == "logging_camp":
+                        country.production['fabric'] = country.production.get('fabric', 0) + building.production * 0.5
+                    elif building.type == "factory" or building.type == "food_industry":
+                        country.production['grain'] = country.production.get('grain', 0) + building.production * 0.5
+                        country.production['fruit'] = country.production.get('fruit', 0) + building.production * 0.5
+                    elif building.type == "textile_mill":
+                        country.production['clothes'] = country.production.get('clothes', 0) + building.production * 0.8
+                        country.production['fabric'] = country.production.get('fabric', 0) + building.production * 0.2
+                    elif building.type == "steel_mill":
+                        country.production['iron'] = country.production.get('iron', 0) + building.production * 0.4
+                        country.production['coal'] = country.production.get('coal', 0) + building.production * 0.2
+                    elif building.type == "arms_industry":
                         country.production['clothes'] = country.production.get('clothes', 0) + building.production * 0.3
                     elif building.type == "university":
-                        # Đại học tăng literacy
-                        country.literacy = min(0.95, country.literacy + 0.001)
+                        country.literacy = min(0.95, country.literacy + 0.001 * building.level)
                     elif building.type == "barracks":
-                        # Doanh trại tăng quân đội
-                        country.army_size += 1
+                        country.army_size += 1 * building.level
+                    elif building.type == "port":
+                        country.prestige += 0.05 * building.level
+                    elif building.type == "railway":
+                        country.prestige += 0.1 * building.level
+                    elif building.type == "skyscraper":
+                        country.prestige += 0.2 * building.level
     
     # Cập nhật thị trường toàn cầu
     update_market_prices(market, countries)
@@ -200,6 +245,16 @@ def init_countries(countries_data, countries_full):
         dict: {TAG: Country}
     """
     from models.country import Country
+    import json, os, random
+    
+    # Tải dữ liệu lịch sử 1836
+    hist_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data", "historical_gdp.json")
+    historical = {}
+    try:
+        with open(hist_path, "r", encoding="utf-8") as f:
+            historical = json.load(f)
+    except:
+        pass
     
     countries = {}
     
@@ -211,14 +266,39 @@ def init_countries(countries_data, countries_full):
         # Tạo country object
         country = Country(tag, color, country_type)
         
-        # Set giá trị mặc định
-        country.population = 1.0  # 1 triệu dân mặc định
-        country.gdp = 50.0  # 50 triệu GDP mặc định
-        country.treasury = 100.0
-        country.army_size = 10  # 10k quân mặc định
-        country.literacy = 0.3  # 30% mù chữ
+        if tag in historical:
+            h = historical[tag]
+            country.gdp        = h.get("gdp", 50.0)
+            country.population = h.get("population", 2.0)
+            country.army_size  = h.get("army_size", 20)
+            country.treasury   = h.get("treasury", 100.0)
+            country.prestige   = h.get("prestige", 20.0)
+            country.literacy   = h.get("literacy", 0.25)
+        else:
+            # Giá trị mặc định ngẫu nhiên theo loại quốc gia
+            rng = random.Random(hash(tag) % (2**31))
+            if country_type in ("decentralized", "unrecognized"):
+                country.gdp        = rng.uniform(1, 15)
+                country.population = rng.uniform(0.2, 5.0)
+                country.army_size  = rng.randint(2, 20)
+                country.treasury   = rng.uniform(5, 50)
+                country.prestige   = rng.uniform(0, 10)
+                country.literacy   = rng.uniform(0.03, 0.12)
+            elif country_type == "colonial":
+                country.gdp        = rng.uniform(5, 40)
+                country.population = rng.uniform(0.5, 8.0)
+                country.army_size  = rng.randint(5, 35)
+                country.treasury   = rng.uniform(30, 120)
+                country.prestige   = rng.uniform(5, 20)
+                country.literacy   = rng.uniform(0.08, 0.25)
+            else:  # recognized
+                country.gdp        = rng.uniform(10, 80)
+                country.population = rng.uniform(0.5, 15.0)
+                country.army_size  = rng.randint(5, 60)
+                country.treasury   = rng.uniform(50, 250)
+                country.prestige   = rng.uniform(10, 40)
+                country.literacy   = rng.uniform(0.15, 0.50)
         
-        # Thêm vào dict
         countries[tag] = country
     
     return countries
