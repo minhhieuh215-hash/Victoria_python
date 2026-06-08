@@ -735,5 +735,9 @@ def init_events(game_state):
     game_state.historical_events = {}
     game_state._historical_events_loaded = False
     game_state.simple_events = []
-    print(f"🎲 Hệ thống events sẵn sàng: {len(SIMPLE_EVENTS)} random events, historical events sẽ load khi cần")
+    try:
+        import sys
+        sys.stdout.buffer.write((f"🎲 Hệ thống events sẵn sàng: {len(SIMPLE_EVENTS)} random events, historical events sẽ load khi cần\n").encode("utf-8"))
+    except Exception:
+        print("Events system ready:", len(SIMPLE_EVENTS), "random events; historical events load on demand")
     return game_state

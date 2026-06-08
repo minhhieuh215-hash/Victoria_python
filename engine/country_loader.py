@@ -6,53 +6,69 @@ import colorsys
 
 def load_countries():
     countries = {}
-    folder_path = "data/common/country_definitions"
+    folder_path = os.path.join("data", "common", "country_definitions")
+
+    if not os.path.isdir(folder_path):
+        return countries
 
     for filename in os.listdir(folder_path):
         if not filename.endswith(".txt"):
             continue
-            
-        with open(os.path.join(folder_path, filename), "r", encoding="utf-8") as file:
-            current_tag = None
-            
-            for line in file:
-                # Bỏ qua các dòng comment (bắt đầu bằng #)
-                line = line.split('#')[0].strip() 
-                if not line:
+        path = os.path.join(folder_path, filename)
+        try:
+            with open(path, "r", encoding="utf-8-sig") as f:
+                content = f.read()
+        except OSError:
+            continue
+
+        # Find all country blocks like TAG = { ... }
+        for match in re.finditer(r"([A-Z0-9]{2,4})\s*=\s*\{", content):
+            tag = match.group(1)
+            start_pos = match.end()
+            brace_count = 1
+            end_pos = start_pos
+            for i in range(start_pos, len(content)):
+                if content[i] == "{":
+                    brace_count += 1
+                elif content[i] == "}":
+                    brace_count -= 1
+                    if brace_count == 0:
+                        end_pos = i
+                        break
+            if end_pos <= start_pos:
+                continue
+            body = content[start_pos:end_pos]
+
+            # Try to find a color definition inside the block
+            # Support formats: color = { R G B }, color = hsv{ ... }, color = hsv360{ ... }
+            cm = re.search(r"color\s*=\s*(hsv360|hsv)?\s*\{\s*([0-9.]+)\s+([0-9.]+)\s+([0-9.]+)", body)
+            if not cm:
+                # maybe color on a single line with commas or without braces
+                cm = re.search(r"color\s*=\s*\{?\s*([0-9.]+)\s+([0-9.]+)\s+([0-9.]+)\s*\}?", body)
+                if cm:
+                    ctype = None
+                    v1, v2, v3 = float(cm.group(1)), float(cm.group(2)), float(cm.group(3))
+                else:
                     continue
-                    
-                # Bắt đầu một quốc gia mới (VD: GBR = { )
-                tag_match = re.match(r"^([A-Z0-9]{3})\s*=\s*\{", line)
-                if tag_match:
-                    current_tag = tag_match.group(1)
-                    continue
-                    
-                # Nếu đang ở trong block của 1 quốc gia và tìm thấy chữ "color"
-                if current_tag and "color" in line:
-                    # Regex này lấy ra hệ màu và 3 con số
-                    color_match = re.search(r"color\s*=\s*(hsv360|hsv)?\s*\{\s*([0-9.]+)\s+([0-9.]+)\s+([0-9.]+)", line)
-                    
-                    if color_match:
-                        color_type = color_match.group(1)
-                        v1 = float(color_match.group(2))
-                        v2 = float(color_match.group(3))
-                        v3 = float(color_match.group(4))
-                        
-                        # Chuyển đổi các hệ màu hsv/hsv360 về RGB chuẩn (0-255)
-                        if color_type == "hsv360":
-                            r, g, b = colorsys.hsv_to_rgb(v1/360.0, v2/100.0, v3/100.0)
-                            rgb = (int(r*255), int(g*255), int(b*255))
-                        elif color_type == "hsv":
-                            r, g, b = colorsys.hsv_to_rgb(v1, v2, v3)
-                            rgb = (int(r*255), int(g*255), int(b*255))
-                        else:
-                            # Nếu không có chữ hsv, nó là RGB thường
-                            rgb = (int(v1), int(v2), int(v3))
-                            
-                        # Lưu vào từ điển { "GBR": (252, 178, 229), "GER": (147, 130, 110) }
-                        countries[current_tag] = rgb
-                        current_tag = None # Reset để chờ lấy TAG nước tiếp theo
-                        
+            else:
+                ctype = cm.group(1)
+                v1, v2, v3 = float(cm.group(2)), float(cm.group(3)), float(cm.group(4))
+
+            # Convert to RGB 0-255
+            try:
+                if ctype == "hsv360":
+                    r, g, b = colorsys.hsv_to_rgb(v1 / 360.0, v2 / 100.0, v3 / 100.0)
+                    rgb = (int(r * 255), int(g * 255), int(b * 255))
+                elif ctype == "hsv":
+                    r, g, b = colorsys.hsv_to_rgb(v1, v2, v3)
+                    rgb = (int(r * 255), int(g * 255), int(b * 255))
+                else:
+                    rgb = (int(v1), int(v2), int(v3))
+            except Exception:
+                continue
+
+            countries[tag] = rgb
+
     return countries
 
 

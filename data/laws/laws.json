@@ -1,0 +1,151 @@
+{
+  "Governance Principles": {
+    "Monarchy": {
+      "desc": "Quyền lực tập trung vào quốc vương",
+      "effects": ["+200 Authority", "+10% Loyalists"],
+      "icon": "Monarchy.png"
+    },
+    "Presidential Republic": {
+      "desc": "Tổng thống là người đứng đầu nhà nước",
+      "effects": ["+10% Government building throughput", "-10% Authority"],
+      "icon": "Presidential Republic.png"
+    },
+    "Parliamentary Republic": {
+      "desc": "Quốc hội nắm quyền hành pháp",
+      "effects": ["+15% Research speed", "-5% Authority"],
+      "icon": "Parliamentary Republic.png"
+    },
+    "Theocracy": {
+      "desc": "Giáo hội nắm quyền cai trị",
+      "effects": ["+25% Clergy political strength", "+200 Authority"],
+      "icon": "Theocracy.png"
+    },
+    "Council Republic": {
+      "desc": "Công nhân và nông dân nắm quyền",
+      "effects": ["+20% Trade union political strength", "-25% Aristocrats political strength"],
+      "icon": "Council Republic.png"
+    },
+    "Corporate State": {
+      "desc": "Các tập đoàn nắm quyền",
+      "effects": ["+30% Industrialists political strength", "+10% Throughput for factories"],
+      "icon": "Corporate State.png"
+    }
+  },
+  "Distribution of Power": {
+    "Autocracy": {
+      "desc": "Toàn bộ quyền lực tập trung vào một người",
+      "effects": ["+300 Authority", "+25% Aristocrats political strength"],
+      "icon": "Autocracy.png"
+    },
+    "Oligarchy": {
+      "desc": "Một nhóm nhỏ nắm quyền",
+      "effects": ["+150 Authority", "+15% Aristocrats political strength"],
+      "icon": "Oligarchy.png"
+    },
+    "Landowner Voting": {
+      "desc": "Chỉ địa chủ mới có quyền bầu cử",
+      "effects": ["+50 Authority", "+20% Landowners political strength"],
+      "icon": "Landowner Voting.png"
+    },
+    "Wealth Voting": {
+      "desc": "Quyền bầu cử dựa trên tài sản",
+      "effects": ["+10% Capitalists political strength", "Tax waste -10%"],
+      "icon": "Wealth Voting.png"
+    },
+    "Universal Suffrage": {
+      "desc": "Mọi công dân đều có quyền bầu cử",
+      "effects": ["+50% Trade unions political strength", "-15% Aristocrats political strength"],
+      "icon": "Universal Suffrage.png"
+    },
+    "Single-Party State": {
+      "desc": "Chỉ một đảng duy nhất được phép hoạt động",
+      "effects": ["+100 Authority", "-25% Other interest groups clout"],
+      "icon": "Single-Party State.png"
+    },
+    "Anarchy": {
+      "desc": "Không có chính phủ trung ương",
+      "effects": ["-50% Tax capacity", "+50% Radicals"],
+      "icon": "Anarchy.png"
+    }
+  },
+  "Bureaucracy": {
+    "Hereditary Bureaucrats": {
+      "desc": "Quan chức cha truyền con nối",
+      "effects": ["+15% Aristocrats political strength", "-10% Tax capacity"],
+      "icon": "Hereditary Bureaucrats.png"
+    },
+    "Appointed Bureaucrats": {
+      "desc": "Quan chức do chính phủ bổ nhiệm",
+      "effects": ["+10% Tax capacity", "+5% Intelligentsia political strength"],
+      "icon": "Appointed Bureaucrats.png"
+    },
+    "Elected Bureaucrats": {
+      "desc": "Quan chức do dân bầu",
+      "effects": ["+20% Intelligentsia political strength", "-5% Tax waste"],
+      "icon": "Elected Bureaucrats.png"
+    }
+  },
+  "Army Model": {
+    "Peasant Levies": {
+      "desc": "Quân đội gồm nông dân được huy động",
+      "effects": ["-20% Army experience gain", "+100% Conscription rate"],
+      "icon": "Peasant Levies.png"
+    },
+    "Professional Army": {
+      "desc": "Quân đội chuyên nghiệp được huấn luyện bài bản",
+      "effects": ["+25% Army experience gain", "Barracks max level +1"],
+      "icon": "Professional Army.png"
+    },
+    "Mass Conscription": {
+      "desc": "Mọi công dân đều có nghĩa vụ quân sự",
+      "effects": ["+50% Conscription rate", "-10% Army experience gain"],
+      "icon": "Mass Conscription.png"
+    }
+  },
+  "Navy Model": {
+    "Merchant Navy": {
+      "desc": "Hải quân phục vụ thương mại",
+      "effects": ["-10% Ship construction efficiency", "+15% Trade route competitiveness"],
+      "icon": "Merchant Navy.png"
+    },
+    "Professional Navy": {
+      "desc": "Hải quân chuyên nghiệp",
+      "effects": ["+25% Navy experience gain", "+10% Naval invasion speed"],
+      "icon": "Professional Navy.png"
+    }
+  },
+  "Internal Security": {
+    "No Home Affairs": {
+      "desc": "Không có lực lượng an ninh nội bộ",
+      "effects": ["+10% Radicals", "-20% Law enforcement"],
+      "icon": "No Home Affairs.png"
+    },
+    "Local Police Force": {
+      "desc": "Cảnh sát địa phương",
+      "effects": ["-10% Radicals", "-5% Tax waste"],
+      "icon": "Local Police Force.png"
+    },
+    "Guaranteed Liberties": {
+      "desc": "Quyền tự do được bảo đảm",
+      "effects": ["-25% Radicals", "+50% Intelligentsia political strength"],
+      "icon": "Guaranteed Liberties.png"
+    },
+    "Secret Police": {
+      "desc": "Cảnh sát mật theo dõi mọi hoạt động",
+      "effects": ["-40% Radicals", "-20% Other interest groups clout"],
+      "icon": "Secret Police.png"
+    }
+  },
+  "Caste Hegemony": {
+    "Caste System Codified": {
+      "desc": "Hệ thống đẳng cấp được luật hóa",
+      "effects": ["+30% Landowners political strength", "-20% Social mobility"],
+      "icon": "Caste System.png"
+    },
+    "No Caste System": {
+      "desc": "Xóa bỏ hệ thống đẳng cấp",
+      "effects": ["+20% Social mobility", "-10% Landowners political strength"],
+      "icon": "No Caste System.png"
+    }
+  }
+}

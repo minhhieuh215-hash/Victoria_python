@@ -64,6 +64,12 @@ class Country:
         self.conscription = 0.0
         self.war_exhaustion = 0.0
 
+        # National Projects
+        self.active_project = None
+        self.project_progress = 0
+        self.project_time_needed = 0
+        self.completed_projects = []
+
     @property
     def is_colonizable(self):
         return self.country_type in ('decentralized', 'unrecognized')

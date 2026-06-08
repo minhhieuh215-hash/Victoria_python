@@ -26,10 +26,34 @@ def main():
     market = Market()
     countries_obj = init_countries(countries_data, countries_full)
 
+    # Filter countries: only keep those that own provinces in 1836, starting subjects, or special cases
     starting_subjects = {
         "GBR": ["CAN", "AST", "CEY"],
         "FRA": ["ALD"],
         "SPA": ["CUB"],
+    }
+    
+    starting_owners = set()
+    for prov in provinces.values():
+        owner = getattr(prov, 'owner', None)
+        if owner and owner not in ("SEA", "LAKE", "Không có / Đất trống"):
+            starting_owners.add(owner)
+            
+    for subj_list in starting_subjects.values():
+        for s in subj_list:
+            starting_owners.add(s)
+            
+    allowed_tags = starting_owners
+    
+    countries_obj = {tag: country for tag, country in countries_obj.items() if tag in allowed_tags}
+    countries_data = {tag: color for tag, color in countries_data.items() if tag in allowed_tags}
+    countries_full = {tag: info for tag, info in countries_full.items() if tag in allowed_tags}
+
+    starting_subjects = {
+        "GBR": ["CAN", "AST", "CEY","MKT"],
+        "FRA": ["ALD"],
+        "SPA": ["CUB"],
+        "USA": ["ITR"],
     }
     for overlord_tag, subject_tags in starting_subjects.items():
         if overlord_tag in countries_obj:

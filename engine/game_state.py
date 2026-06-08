@@ -110,6 +110,11 @@ class GameState:
                                 uni_count += b.level
                                 
             points_earned = (country.literacy * 5.0) + (uni_count * 2.0)
+            
+            # Project: Education Reform (+10% research speed)
+            if hasattr(country, 'completed_projects') and "education_reform" in country.completed_projects:
+                points_earned *= 1.10
+                
             country.research_points += points_earned
             
             base_cost = 100.0
@@ -153,6 +158,42 @@ class GameState:
                         "type": "simple",
                         "effect_text": "Tuyệt vời!"
                     })
+
+    def complete_project(self, tag, project_key):
+        """Hoàn thành dự án quốc gia và áp dụng hiệu ứng."""
+        country = self.countries.get(tag)
+        if not country:
+            return
+            
+        from engine.projects import ensure_project_attrs, PROJECTS
+        ensure_project_attrs(country)
+        
+        if project_key not in country.completed_projects:
+            country.completed_projects.append(project_key)
+            
+        country.active_project = None
+        country.project_progress = 0
+        country.project_time_needed = 0
+        
+        proj_data = PROJECTS.get(project_key)
+        if proj_data:
+            effects = proj_data.get("effects", {})
+            if "prestige" in effects:
+                country.prestige += effects["prestige"]
+            if "infrastructure" in effects:
+                country.infrastructure += effects["infrastructure"]
+            if "manpower" in effects:
+                country.army_size += int(effects["manpower"] / 1000) # Thêm quân số (k)
+                
+        if tag == self.player_tag:
+            proj_name = PROJECTS[project_key]["name"]
+            effects_desc = PROJECTS[project_key]["effects_desc"]
+            self.event_queue.append({
+                "title": "DỰ ÁN QUỐC GIA HOÀN THÀNH!",
+                "desc": f"Đất nước chúng ta đã hoàn thành xuất sắc dự án trọng điểm:\n\n★ {proj_name.upper()} ★\n\nHiệu ứng: {effects_desc}",
+                "type": "simple",
+                "effect_text": "Tuyệt vời!"
+            })
 
     def next_turn(self):
         """Tiến 1 tháng: kinh tế → chính trị → sự kiện."""
@@ -227,6 +268,50 @@ class GameState:
                             "effect_text": f"The the moi: {ui_lbl}"
                         }
                     country.enacting_law = None
+
+        # Ticking national projects and AI selection
+        import random
+        from engine.projects import ensure_project_attrs, PROJECTS
+        
+        for tag, country in self.countries.items():
+            ensure_project_attrs(country)
+            
+            # Progress active project
+            if country.active_project:
+                country.project_progress += 1
+                if country.project_progress >= country.project_time_needed:
+                    self.complete_project(tag, country.active_project)
+            
+            # AI starting projects
+            elif tag != self.player_tag and country.country_type not in ('decentralized', 'unrecognized', 'colonial'):
+                # Check if this AI country has a flag
+                import sys
+                ui = sys.modules.get('game_ui')
+                if ui and hasattr(ui, '_flags'):
+                    if tag not in ui._flags:
+                        continue
+                
+                # 2% chance per month to start a project
+                if random.random() < 0.02:
+                    avail = []
+                    for pk, p_data in PROJECTS.items():
+                        if pk in country.completed_projects:
+                            continue
+                        if country.treasury < p_data["cost"] + 100:  # Keep 100 reserve
+                            continue
+                        req = p_data.get("requirements", {})
+                        req_tech = req.get("tech")
+                        if req_tech and req_tech not in getattr(country, "technologies", []):
+                            continue
+                        req_gdp = req.get("gdp")
+                        if req_gdp and country.gdp < req_gdp:
+                            continue
+                        avail.append(pk)
+                    
+                    if avail:
+                        chosen = random.choice(avail)
+                        from engine.projects import start_project
+                        start_project(country, chosen)
 
         self.current_date.advance()
 
@@ -318,9 +403,18 @@ class GameState:
                             else:
                                 leader_country.relations[target_sway] = max(-100, rel_val - 10)
 
-            # Đấu trận: tính theo tương quan quân lực (bao gồm đồng minh)
-            power_a = c_a.army_size + sum(self.countries[t].army_size for t in war_info["allies_a"] if t in self.countries)
-            power_b = c_b.army_size + sum(self.countries[t].army_size for t in war_info["allies_b"] if t in self.countries)
+            # Đấu trận: tính theo tương quan quân lực (bao gồm đồng minh và bổ trợ dự án quốc gia)
+            def get_modified_power(tag, countries):
+                c = countries.get(tag)
+                if not c:
+                    return 0
+                base = c.army_size
+                if hasattr(c, 'completed_projects') and "military_mobilization" in c.completed_projects:
+                    base *= 1.20 # +20% combat bonus
+                return base
+
+            power_a = get_modified_power(tag_a, self.countries) + sum(get_modified_power(t, self.countries) for t in war_info["allies_a"])
+            power_b = get_modified_power(tag_b, self.countries) + sum(get_modified_power(t, self.countries) for t in war_info["allies_b"])
             power_a = max(power_a, 1)
             power_b = max(power_b, 1)
 

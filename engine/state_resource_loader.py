@@ -149,7 +149,11 @@ def load_state_resources(state_regions_folder: Optional[str] = None) -> Dict[str
 
             all_states[state_name] = info
 
-    print(f"-> State resources: {len(all_states)} bang")
+    try:
+        import sys
+        sys.stdout.buffer.write((f"-> State resources: {len(all_states)} bang\n").encode("utf-8"))
+    except Exception:
+        print("-> State resources:", len(all_states))
     return all_states
 
 # Cache toàn cục để không parse lại
@@ -164,7 +168,11 @@ def build_color_cache(state_resources: Dict[str, StateInfo]):
         for color in state.province_colors:
             _color_to_state_cache[color] = state
     _cache_built = True
-    print(f"-> Color cache: {len(_color_to_state_cache)} province colors đã index")
+    try:
+        import sys
+        sys.stdout.buffer.write((f"-> Color cache: {len(_color_to_state_cache)} province colors đã index\n").encode("utf-8"))
+    except Exception:
+        print("-> Color cache:", len(_color_to_state_cache), "province colors indexed")
 
 
 def get_state_for_province(color: tuple,

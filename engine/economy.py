@@ -18,6 +18,10 @@ def calculate_country_gdp(country):
     industrial_gdp = 0
     if hasattr(country, 'production'):
         industrial_gdp = sum(country.production.values()) * 2
+        
+    # Project: Industrial Subsidies (+10% industrial GDP)
+    if hasattr(country, 'completed_projects') and "industrial_subsidies" in country.completed_projects:
+        industrial_gdp *= 1.10
     
     # Bonus từ literacy (giáo dục)
     literacy_bonus = 1 + (country.literacy * 0.5)
@@ -25,7 +29,15 @@ def calculate_country_gdp(country):
     # Bonus từ công nghệ
     tech_bonus = 1 + (len(country.technologies) * 0.05)
     
-    return (base_gdp + industrial_gdp) * literacy_bonus * tech_bonus
+    # Project multipliers
+    project_mult = 1.0
+    if hasattr(country, 'completed_projects'):
+        if "transcontinental_railway" in country.completed_projects:
+            project_mult += 0.15
+        if "industrial_subsidies" in country.completed_projects:
+            project_mult += 0.08
+    
+    return (base_gdp + industrial_gdp) * literacy_bonus * tech_bonus * project_mult
 
 
 def calculate_tax_income(country):
@@ -40,7 +52,16 @@ def calculate_tax_income(country):
             if pop.type in ['aristocrats', 'capitalists']:
                 pop_tax += pop.size * country.tax_rate * 0.5
     
-    return tax_from_gdp + pop_tax
+    total_tax = tax_from_gdp + pop_tax
+    
+    # Project bonuses
+    if hasattr(country, 'completed_projects'):
+        if "agricultural_mechanization" in country.completed_projects:
+            total_tax *= 1.05 # +5% tax efficiency
+        if "suez_canal" in country.completed_projects:
+            total_tax += 300.0 # Suez/Panama Canal toll (+300 gold monthly)
+            
+    return total_tax
 
 
 def calculate_expenses(country, game_state=None):
@@ -82,6 +103,10 @@ def update_population_growth(country, game_state=None):
     
     # Bonus từ y tế (nếu có công nghệ)
     if 'medicine' in country.technologies:
+        growth_rate += 0.0005
+        
+    # Project: agricultural mechanization (+0.05% pop growth monthly)
+    if hasattr(country, 'completed_projects') and "agricultural_mechanization" in country.completed_projects:
         growth_rate += 0.0005
     
     # Phạt từ chiến tranh
@@ -140,6 +165,13 @@ def monthly_economy_tick(countries, market, player_tag=None, game_state=None):
     reports = {}
     
     for tag, country in countries.items():
+        from engine.projects import ensure_project_attrs
+        ensure_project_attrs(country)
+        
+        # Project: Education Reform (+0.05% monthly literacy growth)
+        if hasattr(country, 'completed_projects') and "education_reform" in country.completed_projects:
+            country.literacy = min(0.95, country.literacy + 0.0005)
+
         # 1. Cập nhật GDP
         old_gdp = country.gdp
         country.gdp = calculate_country_gdp(country)

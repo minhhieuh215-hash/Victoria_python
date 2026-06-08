@@ -1,0 +1,188 @@
+======================================================================
+              DANH SÁCH CỜ CÁC QUỐC GIA (ACTIVE FLAGS LIST)           
+======================================================================
+Tổng số quốc gia có cờ hoạt động: 178
+----------------------------------------------------------------------
+Cú pháp: [TAG] Tên quốc gia | Các phiên bản cờ
+----------------------------------------------------------------------
+[ABU] Abu Dhabi | default, subject_FRA, subject_GBR
+[ACE] Aceh | absolute_monarchy, default, dictatorship, republic, subject, theocracy
+[AIT] Constantine | default
+[ALD] Algiers | barbary, default, deylik, republic, subject, subject_FRA
+[ALK] Alaska | alyaska_republic, communist, default, russian_company, russian_crown
+[ANH] Anhalt | absolute_monarchy, default
+[ARG] Argentina | absolute_monarchy, communist, default, dictatorship, fascist, republic, subject, subject_SPA, subject_USA
+[ASH] Ashanti | absolute_monarchy, default, republic
+[AST] Australia | default, monarchy, subject, theocracy
+[AUS] Austria | absolute_monarchy, communist, default, dictatorship, fascist, republic, subject, theocracy
+[AWA] Awadh | absolute_monarchy, default, subject
+[BAD] Baden | absolute_monarchy, communist, default, oligarchy, republic
+[BAG] Bundelkhand | default, stripe
+[BAS] Central Provinces | default, subject
+[BAV] Bavaria | absolute_monarchy, communist, default, republic, subject_PRU, theocracy
+[BEL] Belgium | absolute_monarchy, communist, default, dictatorship, fascist, republic, subject
+[BER] Gujarat | default
+[BHU] Sikh Empire | default, subject, subject_GBR
+[BHV] Gujarat | default, republic, subject
+[BIC] East India Company | default, dictatorship, republic, subject
+[BIK] Rajputana | default, subject
+[BLA] Solomon Islands | default, republic, subject_FRA, subject_GBR
+[BLG] East Borneo | default, republic
+[BOL] Bolivia | communist, default, dictatorship, monarchy, subject, subject_SPA
+[BRA] Brunswick | absolute_monarchy, default, republic
+[BRE] Elbe | absolute_monarchy, communist, default, dictatorship, republic, subject, subject_PRU
+[BRU] North Borneo | absolute_monarchy, default, dictatorship, republic, subject, theocracy
+[BRZ] Brazil | communist, default, fascist, oligarchic_republic, republic, subject, subject_GBR, subject_USA
+[BUK] Bukhara | absolute_monarchy, communist, default, dictatorship, republic, soviet, subject, subject_GBR, theocracy
+[BUN] Bundelkhand | default, motto, motto_stripe, subject
+[BUR] Burma | absolute_monarchy, default, dictatorship, republic, subject, theocracy
+[CAL] California | default, ussr
+[CAM] Cambodia | communist, default, fascist, subject, subject_FRA
+[CAN] Canada | absolute_monarchy, communist, default, dictatorship, fascist, oligarchy, republic, subject, theocracy
+[CEY] Ceylon | default, subject, subject_GBR
+[CHC] Caucasian Imamate | default, imamate
+[CHI] Qing China | absolute_monarchy, communist, default, dictatorship, han_empire, republic, subject, theocracy
+[CHL] Chile | communist, default, fascist, monarchy, republic, subject
+[CHP] Laos | default, subject
+[CIR] Circassia | default, war
+[CLM] New Granada | communist, dictatorship, oligarchy, subject_MEX, subject_SPA
+[CMI] Chiang Mai | default, subject, subject_gold
+[COC] Travancore | default, subject, tricolor, tricolor_roundel
+[CON] Constantine | default
+[COO] East Bengal | default, roundel
+[CSA] Virginia | battle_flag, blood_stained, communist, default, stainless, subject_MEX, theocracy
+[CUB] Cuba | default, dictatorship, dictatorship (1), oligarchy, spa, spa (1), subject_USA
+[DAH] Dahomey | communist, default, republic, subject
+[DAI] Dai Nam | communist, default, fascist, republic, subject_FRA
+[DEI] Dutch East Indies | default, subject
+[DEN] Denmark | absolute_monarchy, canton, communist, default, fascist
+[DHA] Gujarat | default, red
+[ECU] Ecuador | communist, default, dictatorship, oligarchy, subject, subject_USA
+[EGY] Egypt | absolute_monarchy, default, dictatorship, republic, subject, subject_GBR
+[FIN] Grand Duchy of Finland | default, fascist, subject, subject_RUS
+[FJI] Fiji | default, subject
+[FRA] France | absolute_monarchy, bourbon, communist, communist_canton, default, dictatorship, fascist, military, second_empire, subject, theocracy
+[FRM] Hesse | absolute_monarchy, communist, default, dictatorship, subject
+[GAR] Agra | default
+[GBR] Great Britain | coa, coa_france, coa_scotland, communist, communist_canton, default, dictatorship, dictatorship_uk, fascist, republic, scotland, theocracy, uk, uk_coa, uk_coa_france, uk_scotland_coa, uk_scotland_coa_france, uk_white_ensign, white_ensign
+[GER] Germany | austrian, bavarian, ddr, default, dictatorship, fascist, hannover, iron_cross, modern, nihilist, saxon, saxon_monarchist, spartakist, wurttemberg
+[GRE] Greece | absolute_monarchy, default, fascist, republic
+[GWA] Malwa | default, princely, republic, subject
+[HAI] Haiti | communist, default, empire, monarchy, republic, subject, subject_SPA, subject_USA
+[HAM] Elbe | absolute_monarchy, default, dictatorship, monarchy, subject, subject_PRU
+[HAN] Hannover | absolute_monarchy, communist, default, republic, subject, subject_GBR, subject_PRU, subject_gold
+[HAR] Oromia | default, subject
+[HBC] Hudson's Bay Company | communist, default, monarchy, subject
+[HDJ] Hedjaz | default, republic, subject, subject_GBR
+[HES] Hesse | absolute_monarchy, communist, default, oligarchy, republic, subject, subject_PRU
+[HOL] Schleswig Holstein | communist, default, oligarchy, republic, subject_DEN
+[HYD] Hyderabad | absolute_monarchy, default, princely, republic, subject
+[IDA] Gujarat | default, sun
+[IND] British India | default, subject
+[ION] Ionian Islands | default, subject
+[ITA] Italy | communist, default, dictatorship, fascist, luccan, modenan, papal, parmesan, republic, sicilian, tuscan
+[JAI] Rajputana | default, subject
+[JAP] Tokugawa Shogunate | absolute_monarchy, default, dictatorship, fascist, republic, rising_sun, subject, theocracy, tokugawa, tokugawa_late, usa
+[JAS] Rajputana | default, subject
+[JHN] Bundelkhand | default, stripe
+[JOD] Rajputana | default, subject
+[JOH] Malaya | absolute_monarchy, default, dictatorship, republic, subject, theocracy
+[JUN] Gujarat | default, subject, tricolor
+[KAF] Kabul | default, muslim
+[KAL] Kalat | default, republic, subject, subject_green, theocracy
+[KHI] Khiva | absolute_monarchy, default, republic, subject, subject_GBR, theocracy
+[KOK] Fergana | dictatorship, monarchy, republic, subject, subject_GBR
+[KOR] Korea | communist, default, joseon, subject, subject_CHI
+[KOT] Rajputana | default, subject
+[KTI] East Borneo | default, subject, subject_GBR
+[KUT] Gujarat | default, princely, subject
+[LAN] West Borneo | default, subject, subject_GBR
+[LIB] Liberia | default, dictatorship
+[LUA] Laos | default, subject
+[LUB] Schleswig Holstein | absolute_monarchy, communist, dictatorship, oligarchy, republic
+[LUC] Emilia | communist, default, republic, subject_FRA
+[MAD] Madagascar | default, republic, subject_FRA
+[MAK] Baluchistan | default, republic, theocracy
+[MAS] Oran | default
+[MEC] Mecklenburg | absolute_monarchy, communist, default, oligarchy, republic, subject, subject_PRU
+[MEW] Rajputana | default, subject
+[MEX] Mexico | absolute_monarchy, communist, default, dictatorship, subject, subject_USA
+[MJT] Somaliland | default, subject
+[MLD] Ceylon | default, merchant
+[MNP] Assam | default, stripes
+[MOD] Emilia | communist, default, republic, subject
+[MOL] Moldavia | communist, default, subject, subject_TUR
+[MON] Montenegro | communist, default, dictatorship, kingdom_absolute, kingdom_constitutional, principality_absolute, principality_constitutional, republic, theocracy
+[MOR] Morocco | absolute_monarchy, default, subject, subject_gold
+[MUG] Mughal Empire | absolute_monarchy, default, subject, subject_GBR
+[MYB] Orissa | bicolor, default, republic
+[MYS] Mysore | default, dictatorship, princely, theocracy
+[NAG] Central Provinces | default
+[NAR] Orissa | default
+[NAS] Nassau | absolute_monarchy, default, republic, subject_PRU
+[NAW] Gujarat | default, republic, subject
+[NBS] New Brunswick | default, subject, subject_FRA
+[NEJ] Nejd | default, subject, subject_GBR
+[NEP] Nepal | default, subject
+[NET] Netherlands | default, dictatorship, fascist, princes_flag, republic, subject
+[NOR] Norway | canton, communist, default, fascist
+[NRU] Nauru | default, subject, subject_GBR
+[NVS] New Brunswick | default, subject
+[NYM] Tanganyika | centralized
+[OLD] Hannover | civil_flag, coa, communist, default, oligarchy, subject, subject_PRU
+[OMA] Oman | merchant, subject, subject_GBR
+[ONT] Ontario | default, republic, secessionist, subject
+[ORA] Vrystaat | default, subject_GBR, voortrekker
+[ORG] Oregon | communist, default, subject, subject_GBR
+[PAN] Khalsa Raj | absolute_monarchy, default, dictatorship, republic, subject, subject_GBR, theocracy
+[PAP] Papal States | communist, default, fascist, theocracy
+[PAR] Paraguay | absolute_monarchy, absolute_monarchy_subject, communist, default, dictatorship, republic
+[PER] Persia | absolute_monarchy, default, dictatorship, fascist, republic, subject, subject_GBR, theocracy
+[PHI] Philippines | default, dictatorship, fascist, subject, war
+[PLP] Gujarat | default, subject, tricolor
+[PLY] Tahiti | communist, default
+[POR] Portugal | absolute_monarchy, absolute_monarchy_uk, anarchist, communist, default, dictatorship, fascist, republic, subject, uk
+[PPU] Eastern New Guinea | default, subject, subject_GBR
+[PRG] Bajo Paraguay | communist, default, dictatorship, monarchy, oligarchy, subject
+[PRU] Prussia | absolute_monarchy, communist, default, fascist, republic, subject, teutonic_order
+[PTA] Hill Punjab | default, simple, tricolor
+[PTN] Orissa | default, stripes
+[PUD] Madras | default, green, stripes
+[QUE] Quebec | default, secessionist, subject, subject_FRA
+[RUS] Russia | absolute_monarchy, default, dictatorship, fascist, imperial, nihilist, oligarchy, republic, soviet_technocracy, soviet_union, theocracy
+[SAF] Cape Colony | coa, communist, default, ensign, fascist, modern
+[SAR] Sardinia-Piedmont | canton, communist, default, republic, subject, subject_GBR
+[SAS] South Australia | default, subject
+[SAX] Saxony | absolute_monarchy, communist, default, republic, subject_PRU
+[SER] Serbia | absolute_monarchy, default, subject, subject_TUR
+[SIA] Siam | absolute_monarchy, default, dictatorship, republic, subject, subject_gold, theocracy
+[SIC] Two Sicilies | communist, default, dictatorship, republic, subject
+[SIK] Sikh Empire | default, republic, subject
+[SIL] Sierra Leone | default, republic, subject, subject_west_africa
+[SIN] Sindh | default, republic, theocracy
+[SPA] Spain | anarchist, communist, default, dictatorship, falangist, republic, republic_2, republic_3, subject, subject_GBR, theocracy
+[SUB] Overlord Canton Helper Flags | CSA_canton_saltire, CSA_canton_stars, SWE_union_mark, UNT_canton_black, USA_canton_star
+[SWE] Sweden | absolute_monarchy, canton, communist, default, fascist, norway, theocracy, theocracy_canton, union_mark_canton
+[SWI] Switzerland | communist, default, dictatorship, fascist, subject
+[TAS] Victoria | default, subject
+[TEX] Texas | Bonnie_Blue, absolute_monarchy, communist, default, merchant, oligarchy, subject, subject_MEX, subject_SPA, subject_USA
+[TIB] Tibet | default, republic, subject
+[TNG] Tonga | default, republic, theocracy
+[TRA] Transylvania | default, subject
+[TRI] Tripoli | TUR, default
+[TRN] Transvaal | boer_state, default, subject_GBR, trek
+[TUR] Ottoman Empire | default, dictatorship, monarchy, republic, republic_subject, subject, subject_GBR, theocracy
+[TUS] Tuscany | communist, default, republic, subject
+[UBD] United Baltic States | default, governorate
+[UCA] Central America | communist, default, dictatorship, subject, subject_SPA, subject_USA
+[UNT] North Island | default, subject
+[URU] Uruguay | absolute_monarchy, communist, default, dictatorship, monarchy, subject, subject_BRZ, subject_SPA, subject_USA
+[USA] United States | coa, communist, default, dictatorship, fascist, state_of_california, state_of_michigan, technocracy
+[VNT] Vanuatu | default, subject, subject_FRA, subject_GBR
+[VNZ] Venezuela | absolute_monarchy, communist, dictatorship, monarchy, oligarchy, republic, subject, subject_SPA, subject_USA
+[WAL] Wallachia | default, subject
+[WAS] Western Australia | default, subject
+[WUR] Württemberg | absolute_monarchy, communist, default, oligarchy, republic, subject_PRU
+----------------------------------------------------------------------
+Ghi chú: Chỉ nạp cờ của các quốc gia tồn tại năm 1836 và các trường hợp đặc biệt.
+======================================================================

@@ -5005,3 +5005,47 @@ IDS = {
 	cultures = { panjabi sindi }
 	capital = STATE_PUNJAB
 }
+
+MAP = {
+	color = { 34 139 34 }
+
+	country_type = decentralized
+
+	tier = principality
+
+	cultures = { mapuche }
+	capital = STATE_PATAGONIA
+}
+
+NIM = {
+	color = { 180 100 40 }
+
+	country_type = decentralized
+
+	tier = principality
+
+	cultures = { nez_perce }
+	capital = STATE_IDAHO
+}
+
+PNK = {
+	color = { 120 80 160 }
+
+	country_type = decentralized
+
+	tier = principality
+
+	cultures = { paiute }
+	capital = STATE_IDAHO
+}
+
+ITR = {
+	color = { 120 80 160 }
+
+	country_type = unrecognized
+
+	tier = principality
+
+	cultures = { cherokee, siouan }
+	capital = STATE_OKLAHOMA
+}

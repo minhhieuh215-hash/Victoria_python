@@ -29,6 +29,7 @@ MAP_MODE_POLITICAL = 0
 MAP_MODE_COUNTRY_NAMES = 1
 MAP_MODE_PROVINCE_NAMES = 2
 MAP_MODE_EPIDEMIC = 3
+C_DECENTRALIZED_BEIGE = (196, 180, 148)
 
 current_map_mode = MAP_MODE_POLITICAL
 country_name_surface = None
@@ -44,6 +45,7 @@ show_diplomacy = False
 show_build_panel = False
 show_politics_panel = False
 show_war_panel = False
+show_projects_panel = False
 diplomacy_selected_tag = None
 _province_to_state_fast = {}  # fast lookup: province_color -> State object
 countries_full = {}
@@ -52,6 +54,7 @@ _diplo_list_scroll = 0         # scroll offset for diplomacy country list
 _leaderboard_open = False      # collapsible leaderboard state
 _leaderboard_scroll = 0        # scroll offset for country leaderboard
 _profile_tag = None            # selected country for profile panel
+_focus_country_tag = None      # country requested by UI to center on map
 _profile_scroll = 0           # scroll offset for profile panel
 _state_resources = None
 
@@ -80,7 +83,6 @@ def draw_button(screen, fonts, rect, text_str, bg_color, border_color, text_colo
         screen.blit(s, s.get_rect(center=rect.center))
     return hover
 
-
 # ── Flag helpers ────────────────────────────────────
 def load_flags(base_dir):
     global _flags
@@ -91,12 +93,36 @@ def load_flags(base_dir):
         parts = fn[:-4].split("_")
         if len(parts) < 2 or parts[0].lower() != "flag": continue
         tag  = parts[1].upper()
+        
+        # Only load flags for active countries or special sub canton flags
+        if tag != "SUB" and game_state_ref and tag not in game_state_ref.countries:
+            continue
+            
         mode = "_".join(parts[2:]) or "default"
         try:
             img = pygame.image.load(os.path.join(d,fn)).convert_alpha()
             _flags.setdefault(tag, {})[mode] = img
         except: pass
     print(f"Flags: {len(_flags)} quoc gia")
+
+def wrap_text(text, font, max_width):
+    """Wrap text thành nhiều dòng, trả về list các dòng."""
+    if not text:
+        return []
+    words = text.split()
+    lines = []
+    current_line = []
+    for word in words:
+        test_line = ' '.join(current_line + [word])
+        if font.size(test_line)[0] <= max_width:
+            current_line.append(word)
+        else:
+            if current_line:
+                lines.append(' '.join(current_line))
+            current_line = [word]
+    if current_line:
+        lines.append(' '.join(current_line))
+    return lines
 
 _ranks = {}
 _leaderboard_row_held = False
@@ -117,6 +143,28 @@ _law_scroll = 0
 def load_laws_from_txt(base_dir):
     global PARSED_LAWS
     PARSED_LAWS = {}
+    
+    # THÊM ĐOẠN NÀY: Đọc từ JSON trước
+    json_path = os.path.join(base_dir, "data", "laws", "laws.json")
+    if os.path.exists(json_path):
+        try:
+            with open(json_path, "r", encoding="utf-8") as f:
+                laws_data = json.load(f)
+            
+            for category, laws in laws_data.items():
+                for law_name, law_info in laws.items():
+                    PARSED_LAWS[law_name] = {
+                        "category": category,
+                        "desc": law_info.get("desc", ""),
+                        "requirements": [],  # JSON không có requirements, để trống
+                        "effects": law_info.get("effects", [])
+                    }
+            print(f"✅ Loaded {len(PARSED_LAWS)} laws from laws.json")
+            return  # Thoát hàm, không cần parse txt nữa
+        except Exception as e:
+            print(f"⚠️ Error loading laws.json: {e}, falling back to txt parsing...")
+    
+    # ===== PHẦN CODE CŨ (GIỮ NGUYÊN ĐỂ FALLBACK) =====
     d = os.path.join(base_dir, "data", "laws")
     if not os.path.exists(d):
         print(f"Laws directory not found: {d}")
@@ -160,12 +208,12 @@ def load_laws_from_txt(base_dir):
                     if not line:
                         continue
                         
-                    if cell_idx == 2: # Requirements cell
+                    if cell_idx == 2:
                         clean_req = re.sub(r"\{\{[^|]+\|([^|}]+)[^}]*\}\}", r"\1", line)
                         clean_req = clean_req.replace("'''", "").replace("''", "").strip()
                         if clean_req and not clean_req.startswith("image="):
                             reqs.append(clean_req)
-                    elif cell_idx == 3: # Effects cell
+                    elif cell_idx == 3:
                         if line.startswith("*"):
                             clean_eff = line[1:].strip()
                             clean_eff = re.sub(r"\{\{[^|]+\|([^|}]+)[^}]*\}\}", r"\1", clean_eff)
@@ -191,7 +239,7 @@ def load_laws_from_txt(base_dir):
         except Exception as e:
             print(f"Error parsing law file {fn}: {e}")
             
-    print(f"Parsed {len(PARSED_LAWS)} laws dynamically.")
+    print(f"Parsed {len(PARSED_LAWS)} laws dynamically from txt files.")
 
 def load_ranks(base_dir):
     global _ranks
@@ -299,13 +347,31 @@ REGIME_SIGNATURE_LAWS = {
 }
 
 def resolve_law_icon_fn(law_id):
-    fn = f"{law_id}.png"
-    if os.path.exists(os.path.join("data", "laws", fn)):
-        return fn
-    clean = law_id.lower().replace(" ", "_")
-    fn = f"Law_{clean}.png"
-    if os.path.exists(os.path.join("data", "laws", fn)):
-        return fn
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    laws_dir = os.path.join(base_dir, "data", "laws")
+    
+    # Danh sách các định dạng tên file có thể
+    candidates = [
+        f"{law_id}.png",
+        law_id.replace(" ", "_") + ".png",
+        law_id.lower().replace(" ", "_") + ".png",
+        "Law_" + law_id.replace(" ", "_") + ".png",
+        "Law_" + law_id.lower().replace(" ", "_") + ".png",
+        law_id.replace(" ", "") + ".png",
+        law_id.lower().replace(" ", "") + ".png",
+    ]
+    
+    for fn in candidates:
+        if os.path.exists(os.path.join(laws_dir, fn)):
+            return fn
+    
+    # Nếu không tìm thấy, thử tìm bất kỳ file nào chứa tên luật
+    try:
+        for f in os.listdir(laws_dir):
+            if f.endswith(".png") and law_id.lower() in f.lower():
+                return f
+    except:
+        pass
     return None
 
 def get_sol_icon_name(sol_val):
@@ -444,6 +510,24 @@ def get_flag(tag, mode="default", size=(72,48), overlord=None, game_state=None):
         return scaled
     return None
 
+def draw_flag_or_tag(screen, fonts, tag, rect, game_state=None, mode="default"):
+    fl = get_flag(tag, mode, size=(rect.width, rect.height), game_state=game_state)
+    if fl:
+        screen.blit(fl, rect.topleft)
+    else:
+        raw_c = (game_state.countries_data.get(tag, [100, 100, 100])
+                 if game_state and hasattr(game_state, "countries_data") else [100, 100, 100])
+        base = _rgb_color(raw_c)
+        pygame.draw.rect(screen, base, rect, border_radius=3)
+        pygame.draw.rect(screen, (0, 0, 0), rect, 1, border_radius=3)
+        label = str(tag or "?")[:3].upper()
+        label_s = fonts["sm"].render(label, True, C_WHITE)
+        shadow_s = fonts["sm"].render(label, True, (0, 0, 0))
+        label_rect = label_s.get_rect(center=rect.center)
+        screen.blit(shadow_s, (label_rect.x + 1, label_rect.y + 1))
+        screen.blit(label_s, label_rect.topleft)
+    pygame.draw.rect(screen, C_BORDER, rect, 1, border_radius=3)
+
 def avail_modes(tag):
     entry = _flags.get(tag, {})
     if not entry:
@@ -475,9 +559,10 @@ def generate_state_border_mask(original_image, color_to_province):
             state_lut[rgb[0]*65536 + rgb[1]*256 + rgb[2]] = hash(state.name) % (2**32) or 1
 
     if _cached_u32_map is None:
-        _cached_u32_map = (arr[:,:,0].astype(np.uint32)*65536 +
-                           arr[:,:,1].astype(np.uint32)*256 +
-                           arr[:,:,2].astype(np.uint32))
+        # Build 32-bit keys safely using uint32 shifts to satisfy static type checkers
+        _cached_u32_map = ((arr[:, :, 0].astype(np.uint32) << np.uint32(16)) |
+                           (arr[:, :, 1].astype(np.uint32) << np.uint32(8)) |
+                           arr[:, :, 2].astype(np.uint32))
     state_map = state_lut[_cached_u32_map]
 
     mask = np.zeros((h, w), dtype=bool)
@@ -503,9 +588,10 @@ def generate_province_border_mask(original_image, color_to_province, countries_d
 
     global _cached_u32_map
     if _cached_u32_map is None:
-        _cached_u32_map = (arr[:,:,0].astype(np.uint32)*65536 +
-                           arr[:,:,1].astype(np.uint32)*256 +
-                           arr[:,:,2].astype(np.uint32))
+        # Use bit shifts with uint32 constants to avoid mixing numpy arrays and Python literals
+        _cached_u32_map = ((arr[:, :, 0].astype(np.uint32) << np.uint32(16)) |
+                           (arr[:, :, 1].astype(np.uint32) << np.uint32(8)) |
+                           arr[:, :, 2].astype(np.uint32))
     owner_map = owner_lut[_cached_u32_map]
 
     mask = np.zeros((h, w), dtype=bool)
@@ -585,15 +671,28 @@ def generate_political_map(original_image, color_to_province, countries_data, co
     active_war_info = None
     player_is_side_a = True
     player_war_pair = None
+    subject_to_overlord = {}
     if game_state_ref:
-        p_tag = game_state_ref.player_tag
-        if p_tag and game_state_ref.player_country and game_state_ref.player_country.at_war_with:
-            for pair, w_info in game_state_ref.active_wars.items():
-                if p_tag in pair:
-                    active_war_info = w_info
-                    player_is_side_a = (pair[0] == p_tag)
-                    player_war_pair = pair
-                    break
+        p_tag = getattr(game_state_ref, "player_tag", None)
+        # Safely obtain mappings or fallback to empty dicts to avoid iterating None
+        active_wars_map = getattr(game_state_ref, "active_wars", {}) or {}
+        countries_map = getattr(game_state_ref, "countries", {}) or {}
+
+        if p_tag and getattr(game_state_ref, "player_country", None) and getattr(game_state_ref.player_country, "at_war_with", False):
+            for pair, w_info in active_wars_map.items():
+                # pair might not be iterable in malformed data; guard against TypeError
+                try:
+                    if p_tag in pair:
+                        active_war_info = w_info
+                        player_is_side_a = (pair[0] == p_tag)
+                        player_war_pair = pair
+                        break
+                except TypeError:
+                    continue
+
+        for tag, country in countries_map.items():
+            for subj in getattr(country, 'subjects', set()):
+                subject_to_overlord[subj] = tag
 
     for rgb, prov in color_to_province.items():
         if getattr(prov,"is_sea",False):
@@ -604,7 +703,7 @@ def generate_political_map(original_image, color_to_province, countries_data, co
             owner = getattr(prov,"owner",None)
             if mode == MAP_MODE_EPIDEMIC and game_state_ref:
                 infected_color = None
-                for d_name, epi in game_state_ref.active_epidemics.items():
+                for d_name, epi in getattr(game_state_ref, "active_epidemics", {}).items():
                     if prov.id in epi["provinces"]:
                         template = epi.get("template")
                         if template:
@@ -643,20 +742,25 @@ def generate_political_map(original_image, color_to_province, countries_data, co
                     nr, ng, nb = C_LAND_EMPTY
             else:
                 # Normal coloring
-                if owner and owner in countries_data:
-                    v = countries_data[owner]
-                    nr,ng,nb = int(v[0]),int(v[1]),int(v[2])
+                if countries_full.get(owner, {}).get("type") == "decentralized":
+                    nr, ng, nb = C_DECENTRALIZED_BEIGE
+                elif owner and owner in countries_data:
+                    # Nếu là subject thì dùng màu overlord
+                    actual_owner = subject_to_overlord.get(owner, owner)
+                    v = countries_data.get(actual_owner, countries_data[owner])
+                    nr, ng, nb = int(v[0]), int(v[1]), int(v[2])
                 else:
-                    nr,ng,nb = C_LAND_EMPTY
+                    nr, ng, nb = C_LAND_EMPTY
 
         k = rgb[0]*65536+rgb[1]*256+rgb[2]
         lut_r[k]=nr; lut_g[k]=ng; lut_b[k]=nb; in_lut[k]=True
 
     global _cached_u32_map
     if _cached_u32_map is None:
-        _cached_u32_map = (arr[:,:,0].astype(np.uint32)*65536 +
-                           arr[:,:,1].astype(np.uint32)*256   +
-                           arr[:,:,2].astype(np.uint32))
+        # Compose u32 keys using bit shifts (R<<16 | G<<8 | B)
+        _cached_u32_map = ((arr[:, :, 0].astype(np.uint32) << np.uint32(16)) |
+                           (arr[:, :, 1].astype(np.uint32) << np.uint32(8)) |
+                           arr[:, :, 2].astype(np.uint32))
     u32 = _cached_u32_map
     mask = in_lut[u32]
     result = np.stack([
@@ -707,11 +811,19 @@ def generate_political_map(original_image, color_to_province, countries_data, co
         state_borders &= ~coast_mask
         
         # Tô màu đồng bộ, đẹp mắt và sắc nét
-        result[state_borders] = np.array([90, 85, 80], dtype=np.uint8)      # Viền bang (xám nhạt mảnh)
-        result[national_border] = np.array([35, 35, 35], dtype=np.uint8)    # Viền quốc gia đất liền (tối rõ nét)
-        result[coast_mask] = np.array([30, 30, 30], dtype=np.uint8)         # Đường bờ biển (tối rõ nét)
-
-    result = (result * 0.9).astype(np.uint8)
+        result[state_borders] = (result[state_borders] * 0.65).astype(np.uint8)
+        
+        # Viền quốc gia — đen đậm
+        result[national_border] = np.array([15, 13, 12], dtype=np.uint8)
+        result[coast_mask] = np.array([20, 18, 16], dtype=np.uint8)
+        
+        # Dày viền quốc gia sang 4 hướng
+        nat_dilated = national_border.copy()
+        nat_dilated[:-1, :] |= national_border[1:, :]
+        nat_dilated[:, :-1] |= national_border[:, 1:]
+        nat_dilated[1:, :] |= national_border[:-1, :]
+        nat_dilated[:, 1:] |= national_border[:, :-1]
+        result[nat_dilated] = np.array([15, 13, 12], dtype=np.uint8)   # Đường bờ biển (tối rõ nét)
 
     print("-> Hoan tat!")
     return pygame.surfarray.make_surface(result.transpose(1,0,2))
@@ -842,7 +954,7 @@ def generate_country_name_map(original_image, color_to_province, countries_data,
             if not prov:
                 continue
             owner = getattr(prov, "owner", None)
-            if owner and owner not in ("SEA", "LAKE", "Không có / Đất trống"):
+            if owner and owner not in ("SEA", "LAKE", "Không có / Đất trống") and owner in countries_data:
                 country_pixels.setdefault(owner, []).append((x, y))
 
     link_dist = max(24, min(map_w, map_h) // 90)
@@ -860,7 +972,7 @@ def generate_country_name_map(original_image, color_to_province, countries_data,
         _country_centers[owner] = (landmasses[0]["cx"], landmasses[0]["cy"])
 
         max_area = max(m["area"] for m in landmasses)
-        min_show = max(8, int(max_area * 0.015))
+        min_show = max(8, int(max_area * 0.03))
 
         for mass in landmasses:
             if mass["area"] < min_show:
@@ -883,6 +995,16 @@ def generate_country_name_map(original_image, color_to_province, countries_data,
     reg_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "fonts", "EBGaramond-Regular.ttf")
 
     labels.sort(key=lambda x: x[3], reverse=True)
+
+    from collections import Counter
+    tag_label_count = Counter()
+    MAX_LABELS_PER_TAG = 3
+    filtered_labels = []
+    for lb in labels:
+        if tag_label_count[lb[0]] < MAX_LABELS_PER_TAG:
+            filtered_labels.append(lb)
+            tag_label_count[lb[0]] += 1
+    labels = filtered_labels
 
     for owner, cx, cy, area, angle in labels:
         font_size = 18 + int(50 * ((area - min_area) / (max_area - min_area + 1)) ** 0.3)
@@ -1024,8 +1146,8 @@ def generate_state_level_map(original_image, color_to_province, game_state):
         lut_s[k] = sid; lut_c[k] = cid
         in_lut[k] = True
 
-    u32 = (arr[:, :, 0].astype(np.uint32) * 65536 +
-           arr[:, :, 1].astype(np.uint32) * 256 +
+    u32 = ((arr[:, :, 0].astype(np.uint32) << np.uint32(16)) |
+           (arr[:, :, 1].astype(np.uint32) << np.uint32(8)) |
            arr[:, :, 2].astype(np.uint32))
     mask = in_lut[u32]
     result = np.stack([
@@ -1521,74 +1643,65 @@ def draw_law_tooltip(screen, fonts, law_name, mx, my, sw, sh):
     data = PARSED_LAWS.get(law_name)
     if not data:
         return
+
+    import re
         
-    tx, ty_t = mx + 15, my + 15
-    tw, th_t = 360, 220
+    # Tính kích thước tooltip dựa trên nội dung
+    tw = 380
+    desc_lines = wrap_text(data.get("desc", ""), fonts["sm"], tw - 24)
+    reqs = data.get("requirements", [])
+    effects = data.get("effects", [])
     
+    # Tính chiều cao cần
+    line_h = 18
+    th = 50 + len(desc_lines) * line_h + 10
+    if reqs:
+        th += 30 + line_h
+    if effects:
+        th += 30 + min(3, len(effects)) * line_h
+    
+    # Điều chỉnh vị trí
+    tx, ty = mx + 15, my + 15
     if tx + tw > sw:
         tx = mx - tw - 15
-    if ty_t + th_t > sh:
-        ty_t = my - th_t - 15
-        
-    panel(screen, tx, ty_t, tw, th_t, 255)
-    pygame.draw.rect(screen, C_GOLD, (tx, ty_t, tw, th_t), 1, border_radius=4)
+    if ty + th > sh:
+        ty = my - th - 15
     
-    text(screen, fonts, "med", law_name.upper(), tx + 12, ty_t + 10, C_GOLD)
+    # Vẽ khung tooltip
+    panel(screen, tx, ty, tw, th, 255)
+    pygame.draw.rect(screen, C_GOLD, (tx, ty, tw, th), 1, border_radius=4)
     
-    desc = data.get("desc", "")
-    desc_words = desc.split(" ")
-    desc_lines = []
-    curr = []
-    for w in desc_words:
-        test = " ".join(curr + [w])
-        if fonts["sm"].size(test)[0] <= tw - 24:
-            curr.append(w)
-        else:
-            desc_lines.append(" ".join(curr))
-            curr = [w]
-    if curr:
-        desc_lines.append(" ".join(curr))
-        
-    dy_t = ty_t + 35
-    for d_line in desc_lines[:2]:
-        text(screen, fonts, "sm", d_line, tx + 12, dy_t, C_WHITE)
-        dy_t += 14
-        
-    # Requirements
-    reqs = data.get("requirements", [])
+    # Tiêu đề luật
+    text(screen, fonts, "med", law_name.upper(), tx + 12, ty + 10, C_GOLD)
+    
+    # Mô tả
+    dy = ty + 38
+    for line in desc_lines[:4]:
+        text(screen, fonts, "sm", line, tx + 12, dy, C_WHITE)
+        dy += line_h
+    
+    # Yêu cầu
     if reqs:
-        dy_t += 4
-        req_str = ", ".join(reqs)
-        req_words = req_str.split(" ")
-        req_lines = []
-        curr_r = []
-        for w in req_words:
-            test = " ".join(curr_r + [w])
-            if fonts["sm"].size(test)[0] <= tw - 24:
-                curr_r.append(w)
-            else:
-                req_lines.append(" ".join(curr_r))
-                curr_r = [w]
-        if curr_r:
-            req_lines.append(" ".join(curr_r))
-            
-        text(screen, fonts, "sm", "Yêu cầu:", tx + 12, dy_t, (180, 220, 255))
-        dy_t += 14
-        for r_line in req_lines[:2]:
-            text(screen, fonts, "sm", f"  • {r_line}", tx + 12, dy_t, (150, 200, 255))
-            dy_t += 14
-        
-    # Effects
-    effects = data.get("effects", [])
+        dy += 4
+        text(screen, fonts, "sm", "Yêu cầu:", tx + 12, dy, (180, 220, 255))
+        dy += line_h
+        for req in reqs[:2]:
+            clean_req = re.sub(r'\{\{[^|]+\|([^}]+)[^}]*\}\}', r'\1', req)
+            text(screen, fonts, "sm", f"• {clean_req[:35]}", tx + 16, dy, (150, 200, 255))
+            dy += line_h
+    
+    # Hiệu ứng
     if effects:
-        dy_t += 4
-        text(screen, fonts, "sm", "Hiệu ứng:", tx + 12, dy_t, C_GOLD_DIM)
-        dy_t += 14
+        dy += 4
+        text(screen, fonts, "sm", "Hiệu ứng:", tx + 12, dy, C_GREEN)
+        dy += line_h
         for eff in effects[:3]:
-            if len(eff) > 50:
-                eff = eff[:47] + "..."
-            text(screen, fonts, "sm", f" • {eff}", tx + 12, dy_t, C_GREEN)
-            dy_t += 14
+            clean_eff = re.sub(r'\{\{[^|]+\|([^}]+)[^}]*\}\}', r'\1', eff)
+            clean_eff = clean_eff.replace("'''", "").replace("''", "")
+            if len(clean_eff) > 42:
+                clean_eff = clean_eff[:39] + "..."
+            text(screen, fonts, "sm", f"• {clean_eff}", tx + 16, dy, C_GREY)
+            dy += line_h
 
 CATEGORY_DISPLAY = {
     "Governance Principles": "Nguyên tắc Cai trị (Governance Principles)",
@@ -1600,9 +1713,319 @@ CATEGORY_DISPLAY = {
     "Navy Model": "Mô hình Hải quân (Navy Model)"
 }
 
+
 def draw_politics_panel(screen, fonts, game_state):
-    """Vẽ bảng chọn chế độ chính trị và luật pháp."""
+    """Vẽ bảng luật pháp dạng 3 cột: Power Structure | Economy | Human Rights"""
     global show_politics_panel, _selected_law_category, _law_scroll
+    sw, sh = screen.get_size()
+    panel_w, panel_h = 1150, 660
+    panel_x = (sw - panel_w) // 2
+    panel_y = (sh - panel_h) // 2
+
+    # Icons cho từng luật
+    LAW_ICONS = {
+        "Governance Principles": "👑",
+        "Distribution of Power": "⚖️",
+        "Citizenship": "🗺️",
+        "Church and State": "⛪",
+        "Bureaucracy": "📋",
+        "Army Model": "⚔️",
+        "Navy Model": "⚓",
+        "Internal Security": "🛡️",
+        "Economic System": "🏭",
+        "Trade Policy": "🚢",
+        "Taxation": "💰",
+        "Land Reform": "🌾",
+        "Colonization": "🌍",
+        "Policing": "🔒",
+        "Education System": "📚",
+        "Health System": "⚕️",
+        "Free Speech": "📢",
+        "Labor Rights": "🔨",
+        "Children's Rights": "👶",
+        "Rights of Women": "⚡",
+        "Welfare": "🏠",
+        "Migration": "🚶",
+        "Slavery": "⛓️",
+        "Labor Associations": "🤝",
+    }
+
+    # Màu cho từng giá trị luật
+    LAW_COLORS = {
+        # Đỏ - lạc hậu/độc tài
+        "Autocracy": (200, 70, 70),
+        "Debt Slavery": (200, 70, 70),
+        "Serfdom": (200, 70, 70),
+        "Child Labor Allowed": (200, 70, 70),
+        "No Freedom of Speech": (180, 80, 80),
+        "No Workers' Rights": (180, 80, 80),
+        "No Health System": (180, 80, 80),
+        "No Schools": (180, 80, 80),
+        "No Social Security": (180, 80, 80),
+        "Legacy Slavery": (200, 70, 70),
+        # Xanh - tiến bộ
+        "Universal Suffrage": (80, 180, 100),
+        "Multiculturalism": (80, 180, 100),
+        "Slavery Banned": (80, 180, 100),
+        "Women's Suffrage": (80, 180, 100),
+        "Public Schools": (80, 180, 100),
+        "Public Health Insurance": (80, 180, 100),
+        "Workers' Protections": (80, 180, 100),
+        "Protected Speech": (80, 180, 100),
+        "Legalized Unions": (80, 180, 100),
+        # Vàng - trung lập/quý tộc
+        "Monarchy": (212, 175, 55),
+        "Oligarchy": (180, 150, 60),
+        "Professional Army": (180, 160, 80),
+        "Mercantilism": (180, 160, 80),
+        "Free Trade": (150, 200, 120),
+    }
+
+    panel(screen, panel_x, panel_y, panel_w, panel_h, 250)
+
+    # Header gradient effect
+    pygame.draw.rect(screen, (35, 28, 20), (panel_x, panel_y, panel_w, 45), border_radius=6)
+    pygame.draw.rect(screen, C_GOLD, (panel_x, panel_y, panel_w, panel_h), 2, border_radius=6)
+    pygame.draw.line(screen, C_GOLD_DIM, (panel_x, panel_y + 45), (panel_x + panel_w, panel_y + 45), 1)
+
+    text(screen, fonts, "title", "⚖  CHÍNH TRỊ VÀ LUẬT PHÁP", panel_x + 20, panel_y + 12, C_GOLD)
+
+    country = game_state.player_country
+    if not country:
+        return False
+
+    if not hasattr(country, "active_laws") or not country.active_laws:
+        country.active_laws = {
+            "Governance Principles": "Monarchy",
+            "Distribution of Power": "Autocracy",
+            "Citizenship": "National Supremacy",
+            "Church and State": "State Religion",
+            "Bureaucracy": "Appointed Bureaucrats",
+            "Army Model": "Professional Army",
+            "Navy Model": "Merchant Navy",
+            "Internal Security": "No Home Affairs",
+            "Economic System": "Traditionalism",
+            "Trade Policy": "Mercantilism",
+            "Taxation": "Land-Based Taxation",
+            "Land Reform": "Serfdom",
+            "Colonization": "No Colonial Affairs",
+            "Policing": "Local Police Force",
+            "Education System": "No Schools",
+            "Health System": "No Health System",
+            "Free Speech": "No Freedom of Speech",
+            "Labor Rights": "No Workers' Rights",
+            "Children's Rights": "Child Labor Allowed",
+            "Rights of Women": "Legal Guardianship",
+            "Welfare": "No Social Security",
+            "Migration": "Closed Borders",
+            "Slavery": "Debt Slavery",
+            "Labor Associations": "Guild System"
+        }
+
+    mx, my = pygame.mouse.get_pos()
+
+    # Nút đóng
+    close_btn = pygame.Rect(panel_x + panel_w - 35, panel_y + 8, 28, 28)
+    if draw_button(screen, fonts, close_btn, "X", (120, 40, 40), C_GOLD, C_WHITE, (mx, my), "med"):
+        if pygame.mouse.get_pressed()[0]:
+            pygame.time.wait(200)
+            return True
+
+    columns = [
+        {
+            "title": "👑  Cơ cấu Quyền lực",
+            "color": (180, 140, 60),
+            "laws": ["Governance Principles", "Distribution of Power", "Citizenship",
+                     "Church and State", "Bureaucracy", "Army Model", "Navy Model", "Internal Security"]
+        },
+        {
+            "title": "💰  Kinh tế",
+            "color": (80, 160, 100),
+            "laws": ["Economic System", "Trade Policy", "Taxation", "Land Reform",
+                     "Colonization", "Policing", "Education System", "Health System"]
+        },
+        {
+            "title": "👥  Nhân quyền",
+            "color": (100, 150, 200),
+            "laws": ["Free Speech", "Labor Rights", "Children's Rights", "Rights of Women",
+                     "Welfare", "Migration", "Slavery", "Labor Associations"]
+        }
+    ]
+
+    col_w = (panel_w - 80) // 3
+    col_y_start = panel_y + 95
+    row_h = 56
+
+    for col_idx, col_data in enumerate(columns):
+        cx = panel_x + 20 + col_idx * (col_w + 20)
+
+        # Header cột
+        hdr_rect = pygame.Rect(cx, col_y_start - 30, col_w, 28)
+        pygame.draw.rect(screen, (30, 38, 50), hdr_rect, border_radius=4)
+        # Viền màu theo cột
+        pygame.draw.rect(screen, col_data["color"], hdr_rect, 1, border_radius=4)
+        text(screen, fonts, "med", col_data["title"], cx + 8, col_y_start - 27, col_data["color"])
+
+        for row_idx, law_cat in enumerate(col_data["laws"]):
+            y = col_y_start + row_idx * row_h
+            law_name = country.active_laws.get(law_cat, "—")
+            icon = LAW_ICONS.get(law_cat, "▪")
+
+            row_rect = pygame.Rect(cx, y, col_w, row_h - 4)
+            hover = row_rect.collidepoint(mx, my)
+
+            if hover:
+                pygame.draw.rect(screen, (50, 65, 80), row_rect, border_radius=5)
+                pygame.draw.rect(screen, col_data["color"], row_rect, 1, border_radius=5)
+            else:
+                pygame.draw.rect(screen, (25, 32, 42), row_rect, border_radius=5)
+                pygame.draw.rect(screen, (55, 50, 42), row_rect, 1, border_radius=5)
+
+            # Icon + tên category nhỏ
+            text(screen, fonts, "sm", f"{icon} {law_cat}", cx + 8, y + 6, (130, 130, 140))
+
+            # Separator line
+            pygame.draw.line(screen, (55, 55, 65), (cx + 8, y + 24), (cx + col_w - 8, y + 24), 1)
+
+            # Tên luật đang active — to, màu theo loại
+            law_color = LAW_COLORS.get(law_name, C_WHITE)
+            law_display = law_name if len(law_name) <= 26 else law_name[:23] + "..."
+            text(screen, fonts, "med", law_display, cx + 8, y + 28, law_color)
+
+            if hover and pygame.mouse.get_pressed()[0]:
+                _selected_law_category = law_cat
+                _law_scroll = 0
+                pygame.time.wait(200)
+
+    # Footer — thông tin chế độ hiện tại
+    footer_y = panel_y + panel_h - 42
+    pygame.draw.line(screen, C_GOLD_DIM, (panel_x + 10, footer_y), (panel_x + panel_w - 10, footer_y), 1)
+    gov = getattr(country, 'government', 'default').replace('_', ' ').title()
+    prestige = getattr(country, 'prestige', 0)
+    literacy = getattr(country, 'literacy', 0) * 100
+    text(screen, fonts, "sm", f"Chế độ: {gov}", panel_x + 20, footer_y + 8, C_GOLD_DIM)
+    text(screen, fonts, "sm", f"Uy tín: {prestige:.0f}  |  Học vấn: {literacy:.1f}%", panel_x + 280, footer_y + 8, C_GREY)
+    text(screen, fonts, "sm", "Click vào luật để cải cách", panel_x + panel_w - 220, footer_y + 8, (100, 120, 140))
+
+    # Modal chọn luật
+    if _selected_law_category:
+        category = _selected_law_category
+        laws_in_cat = []
+        for law_name, law_data in PARSED_LAWS.items():
+            if law_data.get("category", "").lower() == category.lower():
+                laws_in_cat.append(law_name)
+
+        if not laws_in_cat:
+            default_laws = {
+                "Governance Principles": ["Monarchy", "Presidential Republic", "Parliamentary Republic", "Theocracy", "Council Republic"],
+                "Distribution of Power": ["Autocracy", "Oligarchy", "Wealth Voting", "Universal Suffrage", "Single-Party State"],
+                "Citizenship": ["National Supremacy", "Racial Segregation", "Cultural Exclusion", "Multiculturalism"],
+                "Church and State": ["State Religion", "Freedom of Conscience", "Total Separation"],
+                "Bureaucracy": ["Hereditary Bureaucrats", "Appointed Bureaucrats", "Elected Bureaucrats"],
+                "Army Model": ["Peasant Levies", "Professional Army", "Mass Conscription"],
+                "Navy Model": ["Merchant Navy", "Capital Fleet", "Diplomatic Fleet"],
+                "Internal Security": ["No Home Affairs", "National Guard", "Secret Police"],
+                "Economic System": ["Traditionalism", "Agrarianism", "Interventionism", "Laissez-Faire", "Command Economy"],
+                "Trade Policy": ["Mercantilism", "Protectionism", "Free Trade"],
+                "Taxation": ["Land-Based Taxation", "Per-Capita Taxation", "Proportional Taxation", "Graduated Taxation"],
+                "Land Reform": ["Serfdom", "Tenant Farmers", "Commercialized Agriculture", "Homesteading"],
+                "Colonization": ["No Colonial Affairs", "Colonial Exploitation", "Frontier Colonization"],
+                "Policing": ["No Police", "Local Police Force", "Dedicated Police Force"],
+                "Education System": ["No Schools", "Religious Schools", "Private Schools", "Public Schools"],
+                "Health System": ["No Health System", "Charity Hospitals", "Private Health Insurance", "Public Health Insurance"],
+                "Free Speech": ["No Freedom of Speech", "Censorship", "Right of Assembly", "Protected Speech"],
+                "Labor Rights": ["No Workers' Rights", "Workplace Safety Regulations", "Regulatory Bodies", "Workers' Protections"],
+                "Children's Rights": ["Child Labor Allowed", "Compulsory Primary School", "Restricted Child Labor"],
+                "Rights of Women": ["Legal Guardianship", "Women in the Workplace", "Women's Suffrage"],
+                "Welfare": ["No Social Security", "Poor Laws", "Old Age Pension"],
+                "Migration": ["Closed Borders", "Migration Controls", "No Migration Controls"],
+                "Slavery": ["Debt Slavery", "Legacy Slavery", "Slavery Banned"],
+                "Labor Associations": ["Guild System", "Labor Movement Banned", "Legalized Unions", "Workplace Councils"]
+            }
+            laws_in_cat = default_laws.get(category, ["Law 1", "Law 2"])
+
+        mw, mh = 520, 420
+        mx_pos = (sw - mw) // 2
+        my_pos = (sh - mh) // 2
+
+        dim_surf = pygame.Surface((sw, sh), pygame.SRCALPHA)
+        dim_surf.fill((0, 0, 0, 200))
+        screen.blit(dim_surf, (0, 0))
+
+        panel(screen, mx_pos, my_pos, mw, mh, 255)
+        pygame.draw.rect(screen, C_GOLD, (mx_pos, my_pos, mw, mh), 2, border_radius=6)
+        pygame.draw.rect(screen, (35, 28, 20), (mx_pos, my_pos, mw, 44), border_radius=6)
+
+        icon = LAW_ICONS.get(category, "⚖")
+        text(screen, fonts, "title", f"{icon}  CẢI CÁCH: {category.upper()}", mx_pos + 16, my_pos + 12, C_GOLD)
+        pygame.draw.line(screen, C_GOLD_DIM, (mx_pos, my_pos + 44), (mx_pos + mw, my_pos + 44), 1)
+
+        close_rect = pygame.Rect(mx_pos + mw - 35, my_pos + 8, 28, 28)
+        if draw_button(screen, fonts, close_rect, "X", (120, 40, 40), C_GOLD, C_WHITE, (mx, my), "med"):
+            if pygame.mouse.get_pressed()[0]:
+                _selected_law_category = None
+                pygame.time.wait(150)
+
+        list_x = mx_pos + 16
+        list_y = my_pos + 54
+        list_w = mw - 32
+        row_h_law = 46
+        max_visible = (mh - 70) // row_h_law
+
+        if len(laws_in_cat) > max_visible:
+            up_rect = pygame.Rect(list_x + list_w - 24, list_y, 22, 22)
+            down_rect = pygame.Rect(list_x + list_w - 24, list_y + max_visible * row_h_law - 22, 22, 22)
+            if draw_button(screen, fonts, up_rect, "▲", (45, 38, 30), C_GOLD, C_WHITE, (mx, my), "sm"):
+                if pygame.mouse.get_pressed()[0] and _law_scroll > 0:
+                    _law_scroll -= 1
+                    pygame.time.wait(80)
+            if draw_button(screen, fonts, down_rect, "▼", (45, 38, 30), C_GOLD, C_WHITE, (mx, my), "sm"):
+                if pygame.mouse.get_pressed()[0] and _law_scroll < len(laws_in_cat) - max_visible:
+                    _law_scroll += 1
+                    pygame.time.wait(80)
+
+        visible_laws = laws_in_cat[_law_scroll:_law_scroll + max_visible]
+        for idx, law_name in enumerate(visible_laws):
+            item_y = list_y + idx * row_h_law
+            row_rect = pygame.Rect(list_x, item_y, list_w - 28, row_h_law - 4)
+
+            is_active = (country.active_laws.get(category) == law_name)
+            hover_row = row_rect.collidepoint(mx, my)
+            law_col = LAW_COLORS.get(law_name, C_WHITE)
+
+            if is_active:
+                pygame.draw.rect(screen, (20, 55, 30), row_rect, border_radius=5)
+                pygame.draw.rect(screen, C_GOLD, row_rect, 2, border_radius=5)
+                # Checkmark
+                text(screen, fonts, "med", "✓", row_rect.right - 24, item_y + 12, C_GOLD)
+            elif hover_row:
+                pygame.draw.rect(screen, (45, 58, 72), row_rect, border_radius=5)
+                pygame.draw.rect(screen, C_GOLD_DIM, row_rect, 1, border_radius=5)
+            else:
+                pygame.draw.rect(screen, (30, 26, 22), row_rect, border_radius=5)
+                pygame.draw.rect(screen, (60, 54, 46), row_rect, 1, border_radius=5)
+
+            text(screen, fonts, "med", law_name, row_rect.x + 12, item_y + 8, law_col if not is_active else C_GOLD)
+
+            law_data = PARSED_LAWS.get(law_name, {})
+            desc = law_data.get("desc", "")
+            if len(desc) > 55:
+                desc = desc[:52] + "..."
+            if desc:
+                text(screen, fonts, "sm", desc, row_rect.x + 12, item_y + 28, C_GREY)
+
+            if hover_row and pygame.mouse.get_pressed()[0] and not is_active:
+                country.active_laws[category] = law_name
+                _selected_law_category = None
+                update_regime_from_laws(country)
+                pygame.time.wait(200)
+                break
+
+    return False
+
+def draw_projects_panel(screen, fonts, game_state):
+    """Vẽ bảng Dự án Quốc gia (National Projects)."""
+    global show_projects_panel
     sw, sh = screen.get_size()
     panel_w, panel_h = 1000, 530
     panel_x = (sw - panel_w) // 2
@@ -1611,275 +2034,156 @@ def draw_politics_panel(screen, fonts, game_state):
     panel(screen, panel_x, panel_y, panel_w, panel_h, 250)
     pygame.draw.rect(screen, C_GOLD, (panel_x, panel_y, panel_w, panel_h), 2, border_radius=6)
     
-    text(screen, fonts, "med", "CHÍNH TRỊ VÀ LUẬT PHÁP (POLITICS & LAWS)", panel_x + 20, panel_y + 12, C_GOLD)
+    text(screen, fonts, "med", "DỰ ÁN QUỐC GIA (NATIONAL PROJECTS)", panel_x + 20, panel_y + 12, C_GOLD)
     
     country = game_state.player_country
     if not country:
         return False
         
-    # Initialize active_laws if not present or empty
-    if not hasattr(country, "active_laws") or not country.active_laws:
-        gov = country.government
-        gov_principle = "Monarchy"
-        dist_power = "Autocracy"
-        if gov == "republic":
-            gov_principle = "Presidential Republic"
-            dist_power = "Universal Suffrage"
-        elif gov == "dictatorship":
-            gov_principle = "Presidential Republic"
-            dist_power = "Autocracy"
-        elif gov == "theocracy":
-            gov_principle = "Theocracy"
-            dist_power = "Autocracy"
-        elif gov == "communist":
-            gov_principle = "Council Republic"
-            dist_power = "Universal Suffrage"
-        elif gov == "fascist":
-            gov_principle = "Corporate State"
-            dist_power = "Single-Party State"
-        
-        country.active_laws = {
-            "Governance Principles": gov_principle,
-            "Distribution of Power": dist_power,
-            "Bureaucracy": "Appointed Bureaucrats",
-            "Internal Security": "No Home Affairs",
-            "Caste Hegemony": "Caste System Codified",
-            "Army Model": "Professional Army",
-            "Navy Model": "Merchant Navy"
-        }
-        # Populate country.laws compatibility mapping
-        for category, law_name in country.active_laws.items():
-            for l in PARSED_LAWS.keys():
-                if PARSED_LAWS[l].get("category") == category:
-                    country.laws[l] = (l == law_name)
-                    
-    cur_gov = country.government
-    cur_label = GOVT_LABELS.get(cur_gov, cur_gov) or "Mac dinh"
-    text(screen, fonts, "sm", f"Chính thể: {cur_label.upper()} | Quốc gia: {country.tag}", panel_x + 380, panel_y + 15, (180, 220, 255))
+    # Đảm bảo thuộc tính tồn tại
+    from engine.projects import ensure_project_attrs, PROJECTS, start_project, cancel_project
+    ensure_project_attrs(country)
     
     mx, my = pygame.mouse.get_pos()
+    m_clicked = pygame.mouse.get_pressed()[0]
     
     # Nút đóng
     close_btn = pygame.Rect(panel_x + panel_w - 35, panel_y + 8, 28, 28)
     if draw_button(screen, fonts, close_btn, "X", (120, 40, 40), C_GOLD, C_WHITE, (mx, my), "med"):
-        if pygame.mouse.get_pressed()[0]:
+        if m_clicked:
             pygame.time.wait(200)
-            return True  # Close panel
+            return True # Close panel
             
-    columns = [
-        {
-            "title": "Cơ cấu Quyền lực (Power Structure)",
-            "categories": ["Governance Principles", "Distribution of Power"]
-        },
-        {
-            "title": "Kinh tế & Hành chính (Economy & Admin)",
-            "categories": ["Bureaucracy", "Internal Security", "Caste Hegemony"]
-        },
-        {
-            "title": "Hệ thống Quân sự (Military System)",
-            "categories": ["Army Model", "Navy Model"]
-        }
-    ]
+    # Vẽ lưới 2 hàng x 3 cột cho 6 dự án
+    proj_keys = list(PROJECTS.keys())
+    col_w = 295
+    row_h = 195
+    col_gap = 20
+    row_gap = 15
     
-    col_y_start = panel_y + 55
-    col_w = 300
-    col_gap = 25
-    
-    hovered_tooltip_law = None
-    modal_open = (_selected_law_category is not None)
-    
-    # Render the 3 Columns
-    for col_idx, col_data in enumerate(columns):
-        cx = panel_x + 25 + col_idx * (col_w + col_gap)
+    for idx, pk in enumerate(proj_keys):
+        col = idx % 3
+        row = idx // 3
         
-        # Column title
-        text(screen, fonts, "med", col_data["title"], cx, col_y_start, C_GOLD)
-        pygame.draw.line(screen, C_BORDER, (cx, col_y_start + 24), (cx + col_w, col_y_start + 24), 1)
+        card_x = panel_x + 35 + col * (col_w + col_gap)
+        card_y = panel_y + 80 + row * (row_h + row_gap)
         
-        y = col_y_start + 35
-        for category in col_data["categories"]:
-            active_law = country.active_laws.get(category)
-            if not active_law:
-                fallbacks = {
-                    "Governance Principles": "Monarchy",
-                    "Distribution of Power": "Autocracy",
-                    "Bureaucracy": "Appointed Bureaucrats",
-                    "Internal Security": "No Home Affairs",
-                    "Caste Hegemony": "Caste System Codified",
-                    "Army Model": "Professional Army",
-                    "Navy Model": "Merchant Navy"
+        p_data = PROJECTS[pk]
+        
+        # Kiểm tra trạng thái dự án
+        is_completed = (pk in country.completed_projects)
+        is_active = (country.active_project == pk)
+        
+        # Kiểm tra yêu cầu
+        req = p_data.get("requirements", {})
+        req_tech = req.get("tech")
+        has_tech = True
+        if req_tech:
+            has_tech = (req_tech in getattr(country, "technologies", []))
+            
+        req_gdp = req.get("gdp")
+        has_gdp = True
+        if req_gdp:
+            has_gdp = (country.gdp >= req_gdp)
+            
+        req_met = has_tech and has_gdp
+        has_money = (country.treasury >= p_data["cost"])
+        
+        # Vẽ khung card
+        card_bg = (34, 30, 28)
+        card_border = C_BORDER
+        if is_active:
+            card_border = C_GOLD
+        elif is_completed:
+            card_border = C_GREEN
+            
+        pygame.draw.rect(screen, card_bg, (card_x, card_y, col_w, row_h), border_radius=4)
+        pygame.draw.rect(screen, card_border, (card_x, card_y, col_w, row_h), 1, border_radius=4)
+        
+        # Tiêu đề
+        title_color = C_GOLD if not is_completed else C_GREY
+        text(screen, fonts, "med", p_data["name"], card_x + 15, card_y + 12, title_color)
+        
+        # Mô tả (tự động xuống dòng đơn giản)
+        desc_words = p_data["desc"].split()
+        line1, line2 = "", ""
+        for w in desc_words:
+            if len(line1) + len(w) < 28:
+                line1 += w + " "
+            else:
+                line2 += w + " "
+        text(screen, fonts, "sm", line1.strip(), card_x + 15, card_y + 40, C_WHITE)
+        text(screen, fonts, "sm", line2.strip(), card_x + 15, card_y + 58, C_WHITE)
+        
+        # Hiệu ứng
+        text(screen, fonts, "sm", f"Hiệu ứng: {p_data['effects_desc']}", card_x + 15, card_y + 80, (180, 220, 255))
+        
+        # Chi phí & Thời gian
+        text(screen, fonts, "sm", f"Chi phí: {p_data['cost']:,} Gold | {p_data['time']} lượt", card_x + 15, card_y + 102, C_GREY)
+        
+        # Yêu cầu
+        req_text = "Yêu cầu: "
+        if not req_tech and not req_gdp:
+            req_text += "Không"
+            req_color = C_WHITE
+        else:
+            req_parts = []
+            if req_tech:
+                tech_names = {
+                    "steam_engine": "Động cơ hơi nước",
+                    "railway": "Đường sắt",
+                    "medicine": "Y học",
+                    "education": "Giáo dục",
+                    "bureaucracy": "Hành chính",
+                    "nationalism": "Dân tộc"
                 }
-                active_law = fallbacks.get(category, "Monarchy")
-                country.active_laws[category] = active_law
+                tech_disp = tech_names.get(req_tech, req_tech)
+                req_parts.append(f"{tech_disp} ({'Có' if has_tech else 'Chưa'})")
+            if req_gdp:
+                req_parts.append(f"GDP > {req_gdp}M ({'Đạt' if has_gdp else 'Chưa'})")
+            req_text += ", ".join(req_parts)
+            req_color = C_GREEN if req_met else C_RED
+            
+        text(screen, fonts, "sm", req_text, card_x + 15, card_y + 124, req_color)
+        
+        # Vẽ nút / Trạng thái
+        btn_rect = pygame.Rect(card_x + 15, card_y + 150, col_w - 30, 30)
+        
+        if is_completed:
+            # Vẽ badge hoàn thành
+            pygame.draw.rect(screen, (25, 45, 30), btn_rect, border_radius=4)
+            pygame.draw.rect(screen, C_GREEN, btn_rect, 1, border_radius=4)
+            text(screen, fonts, "sm", "ĐÃ HOÀN THÀNH", card_x + 90, card_y + 156, C_GREEN)
+        elif is_active:
+            # Vẽ thanh tiến trình và nút hủy
+            bar_w = col_w - 90
+            pygame.draw.rect(screen, C_BORDER, (card_x + 15, card_y + 160, bar_w, 10), border_radius=3)
+            pct = country.project_progress / country.project_time_needed
+            w = int(bar_w * max(0.0, min(1.0, pct)))
+            if w > 0:
+                pygame.draw.rect(screen, C_GOLD, (card_x + 15, card_y + 160, w, 10), border_radius=3)
                 
-            box_r = pygame.Rect(cx, y, col_w, 120)
+            text(screen, fonts, "sm", f"{country.project_progress}/{country.project_time_needed}T", card_x + bar_w + 22, card_y + 156, C_WHITE)
             
-            # Hover / click checks only if modal is not open
-            hover = False
-            if not modal_open:
-                hover = box_r.collidepoint(mx, my)
-                
-            bg_col = (50, 42, 34) if hover else (32, 28, 24)
-            border_col = C_GOLD if hover else C_BORDER
-            
-            pygame.draw.rect(screen, bg_col, box_r, border_radius=6)
-            pygame.draw.rect(screen, border_col, box_r, 1, border_radius=6)
-            
-            # Category display name
-            disp_name = CATEGORY_DISPLAY.get(category, category)
-            text(screen, fonts, "sm", disp_name, cx + 10, y + 8, C_GOLD_DIM)
-            
-            # Active Law Name & Icon
-            icon_fn = resolve_law_icon_fn(active_law)
-            icon_img = get_law_icon(icon_fn) if icon_fn else None
-            if icon_img:
-                scaled_icon = pygame.transform.smoothscale(icon_img, (32, 32))
-                screen.blit(scaled_icon, (cx + 10, y + 32))
-                law_text_x = cx + 50
-            else:
-                law_text_x = cx + 12
-                
-            text(screen, fonts, "med", active_law, law_text_x, y + 36, C_WHITE)
-            
-            # Subtitle / Effect preview or enactment progress
-            enacting = getattr(country, 'enacting_law', None)
-            if enacting and enacting["category"] == category:
-                progress_text = f"Cai cach: {enacting['law_name']} ({3 - enacting['turns_left']}/3 luot)"
-                text(screen, fonts, "sm", progress_text, cx + 12, y + 74, (255, 180, 50))
-                # Draw a nice progress bar
-                bar_w = col_w - 24
-                bar_x = cx + 12
-                bar_y = y + 95
-                pygame.draw.rect(screen, (50, 40, 30), (bar_x, bar_y, bar_w, 8), border_radius=4)
-                done_w = int(bar_w * (3 - enacting["turns_left"]) / 3.0)
-                if done_w > 0:
-                    pygame.draw.rect(screen, (255, 180, 50), (bar_x, bar_y, done_w, 8), border_radius=4)
-            else:
-                law_data = PARSED_LAWS.get(active_law)
-                eff_text = ""
-                if law_data:
-                    effs = law_data.get("effects", [])
-                    eff_text = effs[0] if effs else law_data.get("desc", "")
-                if len(eff_text) > 42:
-                    eff_text = eff_text[:39] + ".."
-                text(screen, fonts, "sm", eff_text, cx + 12, y + 74, C_GREY)
-            
-            if hover:
-                hovered_tooltip_law = active_law
-                if pygame.mouse.get_pressed()[0]:
-                    _selected_law_category = category
-                    _law_scroll = 0
-                    pygame.time.wait(150)
-                    
-            y += 120 + 15
-            
-    # Draw Choices Modal Overlay if active
-    if _selected_law_category:
-        category = _selected_law_category
-        laws_in_cat = [name for name, d in PARSED_LAWS.items() if d.get("category") == category]
-        
-        mw, mh = 640, 480
-        mx_pos = (sw - mw) // 2
-        my_pos = (sh - mh) // 2
-        
-        # Overlay back shadow to dim underlying controls
-        dim_surf = pygame.Surface((sw, sh), pygame.SRCALPHA)
-        dim_surf.fill((0, 0, 0, 100))
-        screen.blit(dim_surf, (0, 0))
-        
-        panel(screen, mx_pos, my_pos, mw, mh, 255)
-        pygame.draw.rect(screen, C_GOLD, (mx_pos, my_pos, mw, mh), 2, border_radius=6)
-        
-        text(screen, fonts, "med", f"CẢI CÁCH LUẬT: {category.upper()}", mx_pos + 20, my_pos + 12, C_GOLD)
-        
-        # Close button for modal
-        close_rect = pygame.Rect(mx_pos + mw - 35, my_pos + 8, 28, 28)
-        if draw_button(screen, fonts, close_rect, "X", (120, 40, 40), C_GOLD, C_WHITE, (mx, my), "med"):
-            if pygame.mouse.get_pressed()[0]:
-                _selected_law_category = None
-                pygame.time.wait(150)
-                
-        list_x = mx_pos + 20
-        list_y = my_pos + 50
-        list_w = mw - 40
-        list_h = mh - 70
-        
-        row_h = 52
-        row_gap = 6
-        max_visible = 7
-        
-        # Scroll Buttons
-        if len(laws_in_cat) > max_visible:
-            up_rect = pygame.Rect(list_x + list_w - 22, list_y, 20, 20)
-            down_rect = pygame.Rect(list_x + list_w - 22, list_y + list_h - 20, 20, 20)
-            
-            # Draw Up Arrow
-            if draw_button(screen, fonts, up_rect, "▲", (45, 38, 30), C_GOLD, C_WHITE, (mx, my), "sm"):
-                if pygame.mouse.get_pressed()[0] and _law_scroll > 0:
-                    _law_scroll -= 1
-                    pygame.time.wait(80)
-            # Draw Down Arrow
-            if draw_button(screen, fonts, down_rect, "▼", (45, 38, 30), C_GOLD, C_WHITE, (mx, my), "sm"):
-                if pygame.mouse.get_pressed()[0] and _law_scroll < len(laws_in_cat) - max_visible:
-                    _law_scroll += 1
-                    pygame.time.wait(80)
-                    
-        visible_laws = laws_in_cat[_law_scroll : _law_scroll + max_visible]
-        for idx, law_name in enumerate(visible_laws):
-            item_y = list_y + idx * (row_h + row_gap)
-            row_rect = pygame.Rect(list_x, item_y, list_w - 30, row_h)
-            
-            is_active = (country.active_laws.get(category) == law_name)
-            hover_row = row_rect.collidepoint(mx, my)
-            
-            if is_active:
-                bg_c = (25, 60, 35)
-                border_c = C_GOLD
-            elif hover_row:
-                bg_c = (55, 65, 75)
-                border_c = C_GOLD_DIM
-            else:
-                bg_c = (42, 34, 28)
-                border_c = C_BORDER
-                
-            pygame.draw.rect(screen, bg_c, row_rect, border_radius=4)
-            pygame.draw.rect(screen, border_c, row_rect, 1, border_radius=4)
-            
-            # Law icon
-            fn = resolve_law_icon_fn(law_name)
-            icon_img = get_law_icon(fn) if fn else None
-            if icon_img:
-                scaled = pygame.transform.smoothscale(icon_img, (32, 32))
-                screen.blit(scaled, (row_rect.x + 10, row_rect.y + (row_h - 32) // 2))
-                t_x = row_rect.x + 52
-            else:
-                t_x = row_rect.x + 12
-                
-            text(screen, fonts, "med", law_name, t_x, row_rect.y + 6, C_WHITE if (is_active or hover_row) else C_GREY)
-            
-            # Small description snippet under name
-            law_d = PARSED_LAWS.get(law_name, {})
-            desc_snippet = law_d.get("desc", "")
-            if len(desc_snippet) > 60:
-                desc_snippet = desc_snippet[:57] + "..."
-            text(screen, fonts, "sm", desc_snippet, t_x, row_rect.y + 32, C_GREY)
-            
-            if hover_row:
-                hovered_tooltip_law = law_name
-                if pygame.mouse.get_pressed()[0] and not is_active:
-                    country.enacting_law = {
-                        "category": category,
-                        "law_name": law_name,
-                        "turns_left": 3
-                    }
-                    _selected_law_category = None
+            # Nút hủy (nhỏ ở góc)
+            cancel_rect = pygame.Rect(card_x + col_w - 45, card_y + 152, 30, 24)
+            if draw_button(screen, fonts, cancel_rect, "X", (120, 40, 40), C_GOLD, C_WHITE, (mx, my), "sm"):
+                if m_clicked:
+                    cancel_project(country)
                     pygame.time.wait(200)
-                    break
-
-    # Finally, draw law tooltip if hovered
-    if hovered_tooltip_law:
-        draw_law_tooltip(screen, fonts, hovered_tooltip_law, mx, my, sw, sh)
-        
+        else:
+            # Chưa kích hoạt
+            can_start = req_met and has_money and (country.active_project is None)
+            btn_bg = (46, 176, 105) if can_start else (58, 54, 50)
+            btn_text = "KÍCH HOẠT" if can_start else ("KHOÁ" if not req_met else "THIẾU GOLD")
+            btn_border = C_GOLD if can_start else C_BORDER
+            btn_txt_color = C_WHITE if can_start else C_GREY
+            
+            if draw_button(screen, fonts, btn_rect, btn_text, btn_bg, btn_border, btn_txt_color, (mx, my), "sm"):
+                if m_clicked and can_start:
+                    start_project(country, pk)
+                    pygame.time.wait(200)
+                    
     return False
 
 def draw_war_panel(screen, fonts, game_state):
@@ -2426,7 +2730,7 @@ def draw_leaderboard(screen, fonts, game_state, x=12, y=12, width=290, max_rows=
     """BXH Uy tính: nút lớn hiển thị Rank Logo -> click mở panel sổ cái đầy đủ bên tay trái (Victoria 3 style).
     Returns the toggle button Rect.
     """
-    global _leaderboard_open, _profile_tag, _leaderboard_row_held, _leaderboard_btn_held, _leaderboard_sort_by, _leaderboard_header_held
+    global _leaderboard_open, _profile_tag, _focus_country_tag, _leaderboard_row_held, _leaderboard_btn_held, _leaderboard_sort_by, _leaderboard_header_held
     
     country = game_state.player_country
     if not country:
@@ -2592,6 +2896,7 @@ def draw_leaderboard(screen, fonts, game_state, x=12, y=12, width=290, max_rows=
         if row_hover and pygame.mouse.get_pressed()[0]:
             if not _leaderboard_row_held:
                 _gui_m._profile_tag = c_obj.tag
+                _gui_m._focus_country_tag = c_obj.tag
                 _leaderboard_row_held = True
                 pygame.time.wait(200)
         else:
@@ -2628,13 +2933,7 @@ def draw_leaderboard(screen, fonts, game_state, x=12, y=12, width=290, max_rows=
         
         # Draw Flag
         flag_box = pygame.Rect(px + 50, ry + 4, 30, 22)
-        fl = get_flag(c_obj.tag, "default", size=(30, 22), game_state=game_state)
-        if fl:
-            screen.blit(fl, flag_box.topleft)
-        else:
-            raw_c = game_state.countries_data.get(c_obj.tag, [100, 100, 100])
-            pygame.draw.rect(screen, tuple(int(v) for v in raw_c[:3]), flag_box, border_radius=2)
-        pygame.draw.rect(screen, C_BORDER, flag_box, 1, border_radius=2)
+        draw_flag_or_tag(screen, fonts, c_obj.tag, flag_box, game_state=game_state)
         
         # Draw Country Name
         cname = get_country_display_name(c_obj.tag, c_obj.tag)
@@ -2752,11 +3051,8 @@ def draw_country_profile(screen, fonts, game_state, tag, mouse_pos):
     lx = px + 20
     # Big Flag
     flag_r = pygame.Rect(lx, py + 85, 140, 95)
-    fl = get_flag(tag, getattr(c_obj, "government", "default"), size=(140, 95), game_state=game_state)
-    if fl:
-        screen.blit(fl, flag_r.topleft)
-    else:
-        raw_c = game_state.countries_data.get(tag, [100, 100, 100])
+    draw_flag_or_tag(screen, fonts, tag, flag_r, game_state=game_state,
+                     mode=getattr(c_obj, "government", "default"))
     # Leader / Ruler Portrait
     portrait_center = (lx + 70, py + 265)
     pygame.draw.circle(screen, C_GOLD, portrait_center, 52, 2)
@@ -2958,7 +3254,12 @@ def is_ui_blocking_click(pos, game_state=None):
         return False
         
     ex, ey = pos
-    sw, sh = pygame.display.get_surface().get_size()
+    # pygame.display.get_surface() may be None if no display initialized; fall back to configured screen size
+    surf = pygame.display.get_surface()
+    if surf is None:
+        sw, sh = SCREEN_W, SCREEN_H
+    else:
+        sw, sh = surf.get_size()
     import game_ui as _gui
     
     # 1. Hộp thoại sự kiện chặn hoàn toàn click trên map
@@ -2985,6 +3286,12 @@ def is_ui_blocking_click(pos, game_state=None):
             
     # 5. Bảng Chiến tranh
     if getattr(_gui, "show_war_panel", False):
+        px, py = (sw - 1000) // 2, (sh - 530) // 2
+        if pygame.Rect(px, py, 1000, 530).collidepoint(ex, ey):
+            return True
+            
+    # Bảng Dự án Quốc gia
+    if getattr(_gui, "show_projects_panel", False):
         px, py = (sw - 1000) // 2, (sh - 530) // 2
         if pygame.Rect(px, py, 1000, 530).collidepoint(ex, ey):
             return True
@@ -3308,9 +3615,8 @@ def draw_diplomacy_panel(screen, fonts, game_state, mouse_pos):
 
         # Row 2: flag + country name (left-aligned, no overlap with back)
         y_hdr = py + 44
-        tc = _rgb_color(game_state.countries_data.get(_diplo_detail_tag))
-        flag_rect = pygame.Rect(px + 12, y_hdr, 24, 26)
-        pygame.draw.rect(screen, tc, flag_rect, border_radius=3)
+        flag_rect = pygame.Rect(px + 12, y_hdr, 30, 24)
+        draw_flag_or_tag(screen, fonts, _diplo_detail_tag, flag_rect, game_state=game_state)
         pygame.draw.rect(screen, C_GOLD, flag_rect, 1, border_radius=3)
         name_max_w = (px + PW - 8 - close_btn.width) - (flag_rect.right + 12)
         tn = fonts["title"].render(target_name, True, C_GOLD)
@@ -3756,10 +4062,8 @@ def draw_diplomacy_panel(screen, fonts, game_state, mouse_pos):
             pygame.draw.rect(screen, (32, 48, 68), row_rect, border_radius=4)
             pygame.draw.rect(screen, C_GOLD_DIM, row_rect, 1, border_radius=4)
 
-        # Country color dot
-        tc2 = _rgb_color(game_state.countries_data.get(tag))
-        pygame.draw.circle(screen, tc2, (px + 18, y + 14), 8)
-        pygame.draw.circle(screen, C_GOLD_DIM, (px + 18, y + 14), 8, 1)
+        flag_box = pygame.Rect(px + 12, y + 6, 30, 22)
+        draw_flag_or_tag(screen, fonts, tag, flag_box, game_state=game_state)
 
         ct_obj = game_state.countries.get(tag)
         status = ""
@@ -3767,8 +4071,8 @@ def draw_diplomacy_panel(screen, fonts, game_state, mouse_pos):
             if tag in country.at_war_with: status = "[WAR]"
             elif tag in country.allies:    status = "[ALLY]"
 
-        ns2 = fonts["sm"].render(f"{status} {rel_name[:22]}", True, C_WHITE)
-        screen.blit(ns2, (px + 32, y + 9))
+        ns2 = fonts["sm"].render(f"{status} {rel_name[:20]}", True, C_WHITE)
+        screen.blit(ns2, (px + 50, y + 9))
 
         # Relation bar
         bx4 = px + 268
@@ -3790,6 +4094,8 @@ def draw_diplomacy_panel(screen, fonts, game_state, mouse_pos):
         if dh and pygame.mouse.get_pressed()[0]:
             _diplo_detail_tag = tag
             _diplo_scroll = 0
+            import game_ui as _gui_focus
+            _gui_focus._focus_country_tag = tag
             pygame.time.wait(200)
 
         y += row_h
@@ -3925,14 +4231,14 @@ def run_lobby(screen, fonts, original_map, pol_map, color_to_province, zoom_leve
                                 if prov:
                                     owner = getattr(prov, "owner", None)
                                     if owner and owner not in ("SEA", "LAKE", "Không có / Đất trống"):
-                                        if get_overlord(owner) is not None:
-                                            print(f"Cannot select subject country {owner}!")
-                                            continue
                                         if sel_tag != owner:
                                             sel_tag = owner
                                             mode_idx = 0
                                             sel_mode = "default"
-                                        print(f"✓ Chọn: {owner} tại ({rx},{ry}) RGB={rgb}")
+                                        try:
+                                            sys.stdout.buffer.write((f"✓ Chọn: {owner} tại ({rx},{ry}) RGB={rgb}\n").encode("utf-8"))
+                                        except Exception:
+                                            print("Chosen:", owner, "at", f"({rx},{ry})", "RGB=", rgb)
                         is_pan = True
                         last_pos = event.pos
                 elif event.button == 3:
@@ -4048,7 +4354,7 @@ def run_lobby(screen, fonts, original_map, pol_map, color_to_province, zoom_leve
 # ── GAME ─────────────────────────────────────────────
 def run_game(screen, fonts, game_state, original_map, pol_map,
              color_to_province, init_zoom, combined_political, combined_province):
-    global show_diplomacy, diplomacy_selected_tag, current_map_mode, _leaderboard_btn_held, _leaderboard_open, country_name_surface, _menu_btn_held_global
+    global show_diplomacy, diplomacy_selected_tag, current_map_mode, _leaderboard_btn_held, _leaderboard_open, country_name_surface, _menu_btn_held_global, show_projects_panel
     
     sw, sh = screen.get_size()
     map_w, map_h = original_map.get_size()
@@ -4073,6 +4379,25 @@ def run_game(screen, fonts, game_state, original_map, pol_map,
         sw2 = int(map_w * zoom)
         sh2 = int(map_h * zoom)
         return cx % sw2, max(sh - sh2, min(float(HUD_H), cy))
+
+    def center_camera_on_country(tag):
+        nonlocal cam_x, cam_y, zoom, sc, sel_tag
+        center = _country_centers.get(tag)
+        if not center:
+            return False
+
+        target_zoom = min(ZOOM_MAX, max(zoom, init_zoom * 3.0))
+        if target_zoom != zoom:
+            zoom = target_zoom
+            sc = pygame.transform.scale(cur_map, (int(map_w * zoom), int(map_h * zoom)))
+
+        focus_x = sw // 2 + (170 if sw > 900 else 0)
+        focus_y = HUD_H + (sh - HUD_H) // 2
+        cam_x = focus_x - center[0] * zoom
+        cam_y = focus_y - center[1] * zoom
+        cam_x, cam_y = clamp(cam_x, cam_y)
+        sel_tag = tag
+        return True
 
     sc = pygame.transform.scale(cur_map, (int(map_w * zoom), int(map_h * zoom)))
     clock = pygame.time.Clock()
@@ -4107,9 +4432,15 @@ def run_game(screen, fonts, game_state, original_map, pol_map,
 
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    _gui_m._menu_open = not _gui_m._menu_open
-                    _gui_m._menu_mode = "main"
-                    show_diplomacy = False
+                    if show_build_panel or show_politics_panel or show_war_panel or show_diplomacy or show_projects_panel:
+                        show_build_panel = False
+                        show_politics_panel = False
+                        show_war_panel = False
+                        show_diplomacy = False
+                        show_projects_panel = False
+                    else:
+                        _gui_m._menu_open = not _gui_m._menu_open
+                        _gui_m._menu_mode = "main"
                 elif event.key == pygame.K_c:
                     if getattr(game_state, 'cheat_mode', False):
                         player_country = game_state.player_country
@@ -4130,6 +4461,7 @@ def run_game(screen, fonts, game_state, original_map, pol_map,
                         show_build_panel = False
                         show_politics_panel = False
                         show_war_panel = False
+                        show_projects_panel = False
                 elif event.key == pygame.K_1:
                     current_map_mode = MAP_MODE_POLITICAL
                     game_state.needs_map_update = True
@@ -4147,18 +4479,28 @@ def run_game(screen, fonts, game_state, original_map, pol_map,
                         show_diplomacy = False
                         show_politics_panel = False
                         show_war_panel = False
+                        show_projects_panel = False
                 elif event.key == pygame.K_p:
                     show_politics_panel = not show_politics_panel
                     if show_politics_panel:
                         show_build_panel = False
                         show_diplomacy = False
                         show_war_panel = False
+                        show_projects_panel = False
                 elif event.key == pygame.K_w:
                     show_war_panel = not show_war_panel
                     if show_war_panel:
                         show_build_panel = False
                         show_politics_panel = False
                         show_diplomacy = False
+                        show_projects_panel = False
+                elif event.key == pygame.K_f:
+                    show_projects_panel = not show_projects_panel
+                    if show_projects_panel:
+                        show_build_panel = False
+                        show_politics_panel = False
+                        show_diplomacy = False
+                        show_war_panel = False
 
             elif event.type == pygame.MOUSEWHEEL:
                 # Scroll diplomacy panel if open, else zoom map
@@ -4291,6 +4633,12 @@ def run_game(screen, fonts, game_state, original_map, pol_map,
             cur_map = combined_political if is_political else combined_province
             sc = pygame.transform.scale(cur_map, (int(map_w * zoom), int(map_h * zoom)))
 
+        import game_ui as _gui_focus
+        if _gui_focus._focus_country_tag:
+            if center_camera_on_country(_gui_focus._focus_country_tag):
+                print(f"Focused country: {_gui_focus._focus_country_tag}")
+            _gui_focus._focus_country_tag = None
+
         # Render
         mx, my = pygame.mouse.get_pos()
         screen.fill(C_SEA)
@@ -4338,6 +4686,11 @@ def run_game(screen, fonts, game_state, original_map, pol_map,
         if show_war_panel:
             draw_war_panel(screen, fonts, game_state)
 
+        if show_projects_panel:
+            should_close = draw_projects_panel(screen, fonts, game_state)
+            if should_close:
+                show_projects_panel = False
+
         # Xử lý click nút Next Turn
         if pygame.mouse.get_pressed()[0] and next_turn_cooldown == 0:
             if btn.collidepoint(mx, my):
@@ -4358,12 +4711,12 @@ def run_game(screen, fonts, game_state, original_map, pol_map,
             _menu_btn_held_global = False
 
         help_text = fonts["sm"].render(
-            "SPACE: Turn | V: Ngoai giao | B: Xay dung | P: Chinh tri | L/R-Click | Cuon: Zoom/Diplo",
+            "SPACE: Turn | V: Ngoai giao | B: Xay dung | P: Chinh tri | F: Du an | L/R-Click | Cuon: Zoom/Diplo",
             True, C_GOLD_DIM)
         map_area_w = sw
         if help_text.get_width() > map_area_w - 20:
             line1 = fonts["sm"].render(
-                "SPACE: Turn | V: Ngoai giao | B: Xay dung | P: Chinh tri",
+                "SPACE: Turn | V: Ngoai giao | B: Xay dung | P: Chinh tri | F: Du an",
                 True, C_GOLD_DIM)
             line2 = fonts["sm"].render(
                 "L-Click: Chon quoc gia/bang | R-Click: Ngoai giao | Cuon chuot: Zoom hoac cuon panel",
@@ -4672,6 +5025,8 @@ def start_engine(game_state):
     try: 
         with open(full_path, "r", encoding="utf-8") as f:
             countries_full = json.load(f)
+        if game_state:
+            countries_full = {tag: info for tag, info in countries_full.items() if tag in game_state.countries}
         print(f"Loaded countries_full.json with {len(countries_full)} entries")
     except: 
         countries_full = {}
@@ -4819,9 +5174,10 @@ def start_engine(game_state):
                 player_country.treasury += 1000
                 print(f"Granted +1000 starting gold to player country {tag}")
             
-            for t in game_state.countries:
-                if t != tag and t not in game_state.countries[tag].relations:
-                    game_state.countries[tag].relations[t] = 0
+            if tag in game_state.countries:
+                for t in game_state.countries:
+                    if t != tag and t not in game_state.countries[tag].relations:
+                        game_state.countries[tag].relations[t] = 0
             
             game_state.needs_map_update = True
             try:

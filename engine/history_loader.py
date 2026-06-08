@@ -49,4 +49,8 @@ def load_state_history(provinces_dict):
                             # Kệ nó, bỏ qua các chuỗi tào lao trong file game
                             continue
 
-    print("Đã chia chác lãnh thổ xong cho năm 1836!")
+    try:
+        import sys
+        sys.stdout.buffer.write(("Đã chia chác lãnh thổ xong cho năm 1836!\n").encode("utf-8"))
+    except Exception:
+        print("State history assignment complete for 1836!")

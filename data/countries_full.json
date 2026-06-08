@@ -1331,6 +1331,18 @@
   "IDS": {
     "type": "recognized"
   },
+  "MAP": {
+    "type": "decentralized"
+  },
+  "NIM": {
+    "type": "decentralized"
+  },
+  "PNK": {
+    "type": "decentralized"
+  },
+  "ITR": {
+    "type": "unrecognized"
+  },
   "ALD": {
     "type": "unrecognized"
   },

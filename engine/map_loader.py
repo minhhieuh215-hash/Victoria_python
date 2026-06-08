@@ -1,6 +1,7 @@
 import csv
 import os
 import re
+import sys
 
 from PIL import Image
 from models.province import Province
@@ -43,7 +44,14 @@ def load_sea_colors():
     if match_lakes:
         lake_colors = _parse_hex_colors(match_lakes.group(1))
 
-    print(f"-> Biển: {len(sea_colors)} màu | Hồ nội địa: {len(lake_colors)} màu")
+    msg = f"-> Biển: {len(sea_colors)} màu | Hồ nội địa: {len(lake_colors)} màu"
+    try:
+        # Prefer writing UTF-8 bytes to the stdout buffer so terminals that
+        # don't use a Unicode-compatible encoding won't raise on print.
+        sys.stdout.buffer.write((msg + "\n").encode("utf-8"))
+    except Exception:
+        # Fallback to an ASCII-safe message
+        print("-> Seas:", len(sea_colors), "lakes:", len(lake_colors))
     return sea_colors, lake_colors
 
 def load_provinces():
@@ -95,8 +103,15 @@ def load_provinces():
                 province_id += 1
 
     img.close()
-    print(f"-> Tổng số province: {len(provinces)}")
-    print(f"-> Đất có chủ: {sum(1 for p in provinces.values() if p.owner not in ('SEA', 'LAKE', 'Không có / Đất trống'))}")
+    try:
+        sys.stdout.buffer.write((f"-> Tổng số province: {len(provinces)}\n").encode("utf-8"))
+    except Exception:
+        print("-> Total provinces:", len(provinces))
+
+    try:
+        sys.stdout.buffer.write((f"-> Đất có chủ: {sum(1 for p in provinces.values() if p.owner not in ('SEA', 'LAKE', 'Không có / Đất trống'))}\n").encode("utf-8"))
+    except Exception:
+        print("-> Owned provinces:", sum(1 for p in provinces.values() if p.owner not in ('SEA', 'LAKE', 'Không có / Đất trống')))
     return provinces
 
 def load_adjacencies(provinces):
